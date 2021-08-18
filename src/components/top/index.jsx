@@ -1,7 +1,8 @@
-import React from 'react'
-import { Link } from 'gatsby'
+import React from 'react';
+import { Link } from 'gatsby';
+import { ThemeSwitch } from '../theme-switch';
 
-import './index.scss'
+import './index.scss';
 
 export const Top = ({ title }) => {
   return (
@@ -9,6 +10,7 @@ export const Top = ({ title }) => {
       <Link to={`/`} className="link">
         {title}
       </Link>
+      <ThemeSwitch />
     </nav>
-  )
+  );
 }
