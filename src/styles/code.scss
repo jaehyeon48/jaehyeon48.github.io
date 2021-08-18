@@ -8,6 +8,20 @@
 @import url(https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css);
 @import './variables.scss';
 
+@font-face {
+  font-family: 'Hack';
+  font-weight: 400;
+  font-style: normal;
+  src: url('../../assets/fonts/Hack-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Hack';
+  font-weight: 700;
+  font-style: normal;
+  src: url('../../assets/fonts/Hack-Bold.ttf');
+}
+
 .gatsby-highlight-code-line {
   background-color: hsla(207, 95%, 15%, 1);
   display: block;
@@ -26,15 +40,15 @@ code[class*='language-'],
 pre[class*='language-'] {
   color: #e0e0e0;
   background: none;
-  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono',
-    monospace;
+  font-family: 'Hack', 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono',
+    'Ubuntu Mono', monospace;
   text-align: left;
   white-space: pre;
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
   line-height: 1.6;
-  font-size: 13px;
+  font-size: 16px;
 
   -moz-tab-size: 2;
   -o-tab-size: 2;
@@ -63,16 +77,23 @@ pre[class*='language-'] {
 
 :not(pre) > code[class*='language-'],
 pre[class*='language-'] {
-  background: #212121;
+  background: #282c34;
 }
 
 /* Inline code */
 :not(pre) > code[class*='language-'] {
-  padding: 0.1em 0.6em;
-  border-radius: 0.2em;
+  margin: 0;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
   white-space: normal;
-  background: $inline-dimmed-color;
-  color: $inline-text-color;
+  background: #2f333a;
+  color: #c9d1d9;
+  font-size: 14px;
+}
+
+.token {
+  font-family: 'Hack', 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono',
+    'Ubuntu Mono', monospace;
 }
 
 .token.comment,
