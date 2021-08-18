@@ -10,8 +10,8 @@ export const Layout = ({ title, children }) => {
   return (
     <React.Fragment>
       <Top title={title} />
+      <ThemeSwitch />
       <main className="main">
-        <ThemeSwitch />
         {children}
       </main>
       <Footer />

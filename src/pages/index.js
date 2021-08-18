@@ -45,17 +45,16 @@ export default ({ data, location }) => {
 
   return (
     <Layout location={location} title={siteMetadata.title}>
-      <Head title={HOME_TITLE} keywords={siteMetadata.keywords} />
-      <Category
-        categories={categories}
-        category={category}
-        selectCategory={selectCategory}
-      />
       <Contents
         posts={posts}
         countOfInitialPost={countOfInitialPost}
         count={count}
         category={category}
+      />
+      <Category
+        categories={categories}
+        category={category}
+        selectCategory={selectCategory}
       />
     </Layout>
   )

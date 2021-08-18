@@ -1,47 +1,48 @@
 @import '../../styles/variables.scss';
 
-.category-container {
+.categories {
   position: sticky;
-  position: -webkit-sticky;
-  top: 0;
+  top: 12px;
+  height: fit-content;
+  width: 24%;
+  border-radius: 4px;
+  margin-left: 2em;
+  padding: 0 1em;
+}
+
+.categories-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin: 0.3em 0;
+}
+
+.category-container {
   line-height: 0;
   white-space: nowrap;
-  overflow-x: scroll;
-  -ms-overflow-style: none; // IE 10+
-  overflow: -moz-scrollbars-none; // Firefox
-  z-index: 1;
-  padding: 6px 20px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
 
   .item {
     display: inline-block;
-    margin: 0.25rem 6px 0.25rem 0;
+    margin: 0.5em 0;
     border-radius: 15px;
     white-space: normal;
     box-sizing: border-box;
     cursor: pointer;
+    line-height: 1;
 
     div {
       display: block;
       padding: 14px 16px 16px 16px;
-      font-size: 13px;
       box-sizing: border-box;
+      text-align: center;
     }
   }
 
   .item:last-child {
     margin-right: 0;
-  }
-}
-
-.category-container::-webkit-scrollbar {
-  display: none; // Safari and Chrome
-}
-
-.category-container {
-  scroll-behavior: smooth;
-}
-@media (prefers-reduced-motion: reduce) {
-  .my-smooth-container {
-    scroll-behavior: auto;
   }
 }

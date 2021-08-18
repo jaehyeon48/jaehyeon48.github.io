@@ -29,6 +29,7 @@
 
 body {
   font-family: 'NanumSquareRound', sans-serif;
+  font-size: 18px;
   background-color: $light-background-color;
   -webkit-text-size-adjust: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -38,4 +39,5 @@ body {
 .main {
   max-width: 85vw;
   margin: 1em auto;
+  display: flex;
 }
