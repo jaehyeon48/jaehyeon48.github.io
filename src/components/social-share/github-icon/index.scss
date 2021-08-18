@@ -1,5 +1,10 @@
 .github {
-  float: right;
-  padding: 14px;
-  opacity: 0.6;
+  width: 30px;
+  height: 30px;
+  color: #24292f;
+  transition: all ease 0.15s;
+}
+
+.github:hover {
+  color: #5d656e;
 }

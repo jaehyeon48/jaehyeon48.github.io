@@ -1,11 +1,16 @@
 @import '../../styles/variables.scss';
 
 .footer {
-  padding-top: 52px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 1.3em 0;
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
 
   a {
     text-decoration: none !important;
   }
+}
+
+.footer-socials {
+  margin-top: 0.7em;
 }
