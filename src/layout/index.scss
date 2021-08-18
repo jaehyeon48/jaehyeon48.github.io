@@ -2,8 +2,33 @@
 @import '../styles/light-theme.scss';
 @import '../styles/dark-theme.scss';
 
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 400;
+  font-style: normal;
+  src: url('../../assets/fonts/NanumSquareRoundR.ttf');
+}
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 600;
+  font-style: normal;
+  src: url('../../assets/fonts/NanumSquareRoundB.ttf');
+}
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 800;
+  font-style: normal;
+  src: url('../../assets/fonts/NanumSquareRoundEB.ttf');
+}
+
+* {
+  font-family: 'NanumSquareRound', sans-serif !important;
+}
+
 body {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: 'NanumSquareRound', sans-serif;
   background-color: $light-background-color;
   -webkit-text-size-adjust: antialiased;
   -moz-osx-font-smoothing: grayscale;
