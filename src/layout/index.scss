@@ -69,6 +69,13 @@ strong {
   display: flex;
 }
 
+figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 figcaption {
   text-align: center;
   font-size: 14px;
