@@ -68,23 +68,27 @@ body.dark {
     color: #d9dcdf;
   }
 
-  // post
-  blockquote {
-    border-left: 4px solid rgba(255, 255, 255, 0.822);
-  }
-
-  h1,
-  h2 {
-    border-bottom-color: rgba(255, 255, 255, 0.3);
-  }
-
   .navigator {
     a {
-      background-color: $navigator-background-color;
-      color: $navigator-text-color;
+      background-color: #30363d;
+      color: #e6ecf3;
+
+      &:hover {
+        background-color: #616b77;
+      }
     }
   }
+
   td {
     border-bottom: 1px solid #eee;
+  }
+
+  blockquote {
+    color: #b6bac1;
+    background-color: #262a33;
+  }
+
+  figcaption {
+    color: #c4c8d2;
   }
 }

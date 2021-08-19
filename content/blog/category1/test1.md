@@ -7,8 +7,7 @@ draft: false
 
 Test1
 
-```js
-const hello = 'world!'
-```
-
-test `123` word
+<figure>
+    <img src="./fig1.png" alt="test figure" />
+    <figcaption>figcaption test</figcaption>
+</figure>

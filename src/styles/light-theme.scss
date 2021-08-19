@@ -23,6 +23,11 @@ body.light {
     border: 1px solid #c7c7c7;
   }
 
+  h1,
+  h2 {
+    border: none;
+  }
+
   .category-container {
     .item {
       border: 1px solid $light-category-border-color;
@@ -60,8 +65,22 @@ body.light {
   // post
   .navigator {
     a {
-      background-color: $navigator-background-color;
-      color: $navigator-text-color;
+      background-color: #f3f4f6;
+      color: #151a1f;
+
+      &:hover {
+        background-color: #b2b8c4;
+      }
     }
+  }
+
+  .post-category {
+    color: #838586;
+    font-size: 16px;
+  }
+
+  blockquote {
+    color: #464646;
+    background-color: #f7fcff;
   }
 }

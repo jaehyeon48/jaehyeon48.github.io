@@ -33,7 +33,9 @@
 }
 
 blockquote {
-  color: $blockquote-text-color;
+  border-left: 4px solid #05b166;
+  padding: 0.6em 0 0.6em 0.3em;
+  border-radius: 2px;
 }
 
 code[class*='language-'],
