@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 export default class HTML extends React.Component {
   render() {
     return (
-      <html {...this.props.htmlAttributes}>
+      <html lang="ko">
         <head>
+          <title>Jaehyeon's Dev Blog</title>
           <meta charSet="utf-8" />
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
           <meta
