@@ -1,13 +1,8 @@
-import React, { useEffect } from 'react';
-import { hasClassOfBody } from '../../../utils/dom';
+import React from 'react';
 
 import './index.scss'
 
 export const GitHubIcon = () => {
-  useEffect(() => {
-    console.log(hasClassOfBody('dark'));
-  }, []);
-
   return (
     <a
       href="https://github.com/jaehyeon48"
