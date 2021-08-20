@@ -22,6 +22,7 @@ void uv__io_poll(uv_loop_t* loop, int timeout)
 첫 번째 인자로 이벤트 루프를, 두 번째 인자로 "대기 시간"을 받는 것을 알 수 있다. 이렇게 Poll phase는 인자로 얼마만큼의 시간동안 대기할 것인가를 받아서 해당 시간만큼 대기한다.
 
 만약 `timeout` 값이 0이면 polling을 건너뛰고 바로 다음 phase인 Check phase로 넘어간다. `timeout` 값은 다음 과정을 통해 계산된다:
+
 - 만약 이벤트 루프가 현재 `UV_RUN_DEFAULT` 모드로 동작한다면 `timeout` 은 `uv_backend_timeout` 메소드를 통해 계산된다.
 - 만약 이벤트 루프가 현재 `UV_RUN_ONCE` 모드로 동작하고 `uv_run_pending` 의 리턴값이 0 (즉, `pending_queue` 가 비어있는 경우) 이면 `timeout` 은 `uv_backend_timeout` 메소드를 통해 계산된다.
 - 이외의 경우, `timeout` 은 0이다.
@@ -57,11 +58,12 @@ int uv_backend_timeout(const uv_loop_t* loop) {
 ```
 
 위 코드에서 볼 수 있듯, 다음 중 하나에 해당되는 경우 `timeout` 은 0이다.
-  - 루프의 `stop_flag` 가 0이 아닌경우 (즉, 루프를 종료해야 하는 경우).
-  - 현재 active한 핸들러(콜백)가 없고, 현재 active한 요청(operation)이 없는 경우.
-  - 실행되기를 기다리는 idle한 핸들러가 있는 경우.
-  - `pending_queue` 에서 대기 중인(pending) I/O 콜백이 있는 경우 (즉, 이미 대기 중인 I/O 동작이 있으므로 새로운 I/O 동작을 기다릴 필요가 없음).
-  - `close` 이벤트 핸들러가 있는 경우.
+
+- 루프의 `stop_flag` 가 0이 아닌경우 (즉, 루프를 종료해야 하는 경우).
+- 현재 active한 핸들러(콜백)가 없고, 현재 active한 요청(operation)이 없는 경우.
+- 실행되기를 기다리는 idle한 핸들러가 있는 경우.
+- `pending_queue` 에서 대기 중인(pending) I/O 콜백이 있는 경우 (즉, 이미 대기 중인 I/O 동작이 있으므로 새로운 I/O 동작을 기다릴 필요가 없음).
+- `close` 이벤트 핸들러가 있는 경우.
 
 위 다섯개의 상황을 제외한 나머지 경우, `uv__next_timeout` 을 호출하여 `timeout` 을 계산한다. 코드는 다음과 같다:
 
@@ -114,18 +116,18 @@ Check phase의 동작 방식은 Timer phase와 비슷하다고 할 수 있다. �
 
 ```js
 setTimeout(() => {
-    console.log('setTimeout');
-}, 0);
+  console.log('setTimeout')
+}, 0)
 
 setImmediate(() => {
-    console.log('setImmediate');
-});
+  console.log('setImmediate')
+})
 ```
 
 언뜻 보기엔 `setTimeout` 이 먼저 실행되고 그 다음 `setImmediate` 가 실행되는 것처럼 보인다. 하지만 위 코드의 결과는 **예측할 수 없다!** 😱 위 코드를 여러번 실행해보면 서로 다른 결과가 나오는것을 확인할 수 있다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_1" alt="setTimeout vs. setImmediate"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_1.png" alt="setTimeout vs. setImmediate"/>
     <figcaption>setTimeout vs. setImmediate</figcaption>
 </figure>
 
@@ -136,16 +138,16 @@ setImmediate(() => {
 하지만 다음과 같은 상황에서는 **무조건** `setImmediate` 의 콜백이 `setTimeout` 콜백보다 먼저 실행된다고 할 수 있다:
 
 ```js
-const fs = require('fs');
+const fs = require('fs')
 
 fs.readFile(__dirname, () => {
-    setTimeout(() => {
-        console.log('setTimeout');
-    }, 0);
-    setImmediate(() => {
-        console.log('setImmediate');
-    });
-});
+  setTimeout(() => {
+    console.log('setTimeout')
+  }, 0)
+  setImmediate(() => {
+    console.log('setImmediate')
+  })
+})
 ```
 
 그 이유는 우선, 프로그램이 시작되면 `fs.readFile()` 을 이용하여 파일을 비동기적으로 읽는다. 파일 읽기가 완료되면 `pending_queue` 에 콜백이 저장되어 추후에 실행되는데, 이 때 `setTimeout` 과 `setImmediate` 이 순차적으로 실행되고, 각각의 콜백이 Timer phase의 큐와 Check phase의 큐에 저장된다.
@@ -166,25 +168,25 @@ Node.js v11.0.0 이전에는 각 tick마다, 즉 어떤 phase에서 다음 phase
 하지만 Node.js v11.0.0 부터는 동작 방식이 약간 바뀌었는데, 기존 방식처럼 각 tick마다 두 개의 큐를 실행하는 것을 바탕으로 각 타이머 콜백(`setImmediate` & `setInterval`) 과 immediate 콜백 사이에 `nextTick` 콜백와 `microTask` 콜백이 실행된다. 다음 코드를 살펴보자:
 
 ```js
-setTimeout(() => console.log('timeout1'));
+setTimeout(() => console.log('timeout1'))
 setTimeout(() => {
-    console.log('timeout2')
-    Promise.resolve().then(() => console.log('promise resolve'))
-});
-setTimeout(() => console.log('timeout3'));
-setTimeout(() => console.log('timeout4'));
+  console.log('timeout2')
+  Promise.resolve().then(() => console.log('promise resolve'))
+})
+setTimeout(() => console.log('timeout3'))
+setTimeout(() => console.log('timeout4'))
 ```
 
 - Node.js v11.0.0 이후 버전에서 실행한 결과는 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nextTickQueue_1" alt="code result after v11.0.0"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nextTickQueue_1.png" alt="code result after v11.0.0"/>
 </figure>
 
 - Node.js v11.0.0 이전 버전에서 실행한 결과는 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nextTickQueue_2" alt="code result before v11.0.0 "/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nextTickQueue_2.png" alt="code result before v11.0.0 "/>
 </figure>
 
 위 결과에서 볼 수 있듯, v11.0.0 이전에는 매 tick마다 `nextTick` 콜백과 `microTask` 콜백들이 실행됐으나, v11.0.0 이후에는 타이머 콜백, (위 코드에는 없지만) immediate 콜백 마다 `nextTick` 콜백과 `microTask` 콜백을 실행함을 알 수 있다.
@@ -194,25 +196,25 @@ setTimeout(() => console.log('timeout4'));
 물론 `setImmediate` 에 대해 실험해 봐도 위와 동일한 로직으로 동작함을 알 수 있다:
 
 ```js
-setImmediate(() => console.log('immediate1'));
+setImmediate(() => console.log('immediate1'))
 setImmediate(() => {
-    console.log('immediate2')
-    Promise.resolve().then(() => console.log('promise resolve'))
-});
-setImmediate(() => console.log('immediate3'));
-setImmediate(() => console.log('immediate4'));
+  console.log('immediate2')
+  Promise.resolve().then(() => console.log('promise resolve'))
+})
+setImmediate(() => console.log('immediate3'))
+setImmediate(() => console.log('immediate4'))
 ```
 
 Node.js v11.0.0 이후 버전:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_2" alt="code result after v11.0.0"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_2.png" alt="code result after v11.0.0"/>
 </figure>
 
 Node.js v11.0.0 이전 버전:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_3" alt="code result before v11.0.0 "/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/setImmediate_3.png" alt="code result before v11.0.0 "/>
 </figure>
 
 ## REFERENCES

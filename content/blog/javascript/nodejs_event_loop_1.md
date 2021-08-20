@@ -18,12 +18,12 @@ draft: false
 Node.js를 실행하게 되면 이벤트 루프를 초기화하고 (개발자가 작성한) 자바스크립트 파일을 실행한다. 이벤트 루프의 전체적인 흐름을 그림으로 나타내면 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop1" alt="event loop example 1"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop1.png" alt="event loop example 1"/>
     <figcaption>출처: https://www.voidcanvas.com/nodejs-event-loop/</figcaption>
 </figure>
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop2" alt="event loop example 2"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop2.png" alt="event loop example 2"/>
     <figcaption>출처: https://blog.insiderattack.net/event-loop-and-the-big-picture-nodejs-event-loop-part-1-1cb67a182810</figcaption>
 </figure>
 
@@ -36,7 +36,7 @@ Node.js를 실행하게 되면 이벤트 루프를 초기화하고 (개발자가
 위 그림 중 첫 번째 그림은 이벤트 루프를 libuv의 관점에서 본 것이고, 두 번째 그림은 자바스크립트의 관점에서 본 것이라 할 수 있다. 위 두 관점을 하나로 합쳐 다음 그림으로 표현할 수 있다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop3" alt="event loop example 3"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop3.png" alt="event loop example 3"/>
     <figcaption>출처: https://blog.insiderattack.net/handling-io-nodejs-event-loop-part-4-418062f917d1</figcaption>
 </figure>
 
