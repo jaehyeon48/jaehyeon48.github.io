@@ -18,12 +18,12 @@ draft: false
 Node.js를 실행하게 되면 이벤트 루프를 초기화하고 (개발자가 작성한) 자바스크립트 파일을 실행한다. 이벤트 루프의 전체적인 흐름을 그림으로 나타내면 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop1.png" alt="event loop example 1"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop1.png" alt="event loop example 1" style="width:721px; height: 550px" />
     <figcaption>출처: https://www.voidcanvas.com/nodejs-event-loop/</figcaption>
 </figure>
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop2.png" alt="event loop example 2"/>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/nodejs_event_loop/nodejs_event_loop2.png" alt="event loop example 2" style="width:798px; height: 500px"/>
     <figcaption>출처: https://blog.insiderattack.net/event-loop-and-the-big-picture-nodejs-event-loop-part-1-1cb67a182810</figcaption>
 </figure>
 
