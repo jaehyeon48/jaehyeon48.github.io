@@ -32,6 +32,7 @@ export default ({ data, pageContext, location }) => {
       <div className="post-container">
         <PostTitle title={postTitle} category={category} />
         <PostDate date={date} />
+        <Elements.Hr />
         <PostContainer html={post.html} />
         <Elements.Hr />
         <PostNavigator pageContext={pageContext} />
