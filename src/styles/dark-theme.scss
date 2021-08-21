@@ -92,7 +92,19 @@ body.dark {
     color: #c4c8d2;
   }
 
-  th, td {
+  th,
+  td {
     border: 1px solid #3a424a;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    &:hover .anchor svg {
+      fill: #dedede;
+    }
   }
 }
