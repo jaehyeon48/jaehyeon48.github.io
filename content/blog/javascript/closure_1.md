@@ -10,11 +10,12 @@ draft: false
 [You Don't Know JS Yet/Chapter 7: Using Closures](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch7.md)
 
 [2편 보러가기](../closure_2)
+
 [3편 보러가기](../closure_3)
 
-<br/>
+<hr class="custom-hr">
 
-[이 글](../limiting_scope_exposure_1)에서 살펴본 POLE 원칙에 의하면, identifier의 불필요한 노출을 최소화 하기 위해 함수/블록 스코프를 적절히 활용하는 것이 좋다. 이렇게 하면 코드의 가독성이 더 좋아지고 유지보수 또한 더 쉬워질뿐만 아니라 이름 충돌과 같은 여러 문제들도 피할 수 있게 된다.
+[이 글](../limiting_scope_exposure_1) 에서 살펴본 POLE 원칙에 의하면, identifier의 불필요한 노출을 최소화 하기 위해 함수/블록 스코프를 적절히 활용하는 것이 좋다. 이렇게 하면 코드의 가독성이 더 좋아지고 유지보수 또한 더 쉬워질뿐만 아니라 이름 충돌과 같은 여러 문제들도 피할 수 있게 된다.
 
 **클로저**는 이와 같은 방식에 기반을 두고 있다. 즉, 계속해서 사용할 변수들을 바깥의 더 큰 스코프에 놔두기 보다는 더 작은 내부 스코프에 "캡슐화(encapsulate)" 하여 해당 변수를 숨김과 동시에, 내부 함수에서는 계속해서 해당 변수들에 참조할 수 있게 하는 것이다. **함수들은 클로저를 통해 참조하고 있는 바깥 변수들을 "기억"한다.**
 

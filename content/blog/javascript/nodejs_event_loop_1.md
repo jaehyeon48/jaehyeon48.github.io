@@ -5,7 +5,9 @@ category: 'javascript'
 draft: false
 ---
 
-[2부 보러가기](https://jaehyeon48.github.io/javascript/nodejs_event_loop_2/)
+[2부 보러가기](../nodejs_event_loop_2/)
+
+<hr class="custom-hr">
 
 ## 이벤트 루프란?
 

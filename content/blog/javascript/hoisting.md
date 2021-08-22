@@ -9,6 +9,8 @@ draft: false
 
 [You Don't Know JS Yet/Chapter 5: The (Not So) Secret Lifecycle of Variables](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch5.md)
 
+<hr class="custom-hr">
+
 ## 언제 변수를 사용할 수 있을까?
 
 스코프 내에 있는 변수는 어느순간 부터 사용 가능한 걸까? 변수가 선언(생성)된 시점부터 사용할 수 있지 않을까?? 꼭 그렇지만은 않다. 다음 코드를 생각해보자:

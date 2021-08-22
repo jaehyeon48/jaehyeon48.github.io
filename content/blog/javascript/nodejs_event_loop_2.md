@@ -5,7 +5,9 @@ category: 'javascript'
 draft: false
 ---
 
-[1부 보러가기](https://jaehyeon48.github.io/javascript/nodejs_event_loop_1/)
+[1부 보러가기](../nodejs_event_loop_1/)
+
+<hr class="custom-hr">
 
 ### Poll phase
 

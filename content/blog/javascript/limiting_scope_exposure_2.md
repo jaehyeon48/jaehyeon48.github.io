@@ -5,7 +5,9 @@ category: 'javascript'
 draft: false
 ---
 
-[1부 보러가기](https://jaehyeon48.github.io/javascript/limiting_scope_exposure_1)
+[1부 보러가기](../limiting_scope_exposure_1)
+
+<hr class="custom-hr">
 
 ## var, 그리고 let
 

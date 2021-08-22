@@ -5,10 +5,9 @@ category: 'javascript'
 draft: false
 ---
 
-[2부 보러가기](https://jaehyeon48.github.io/javascript/limiting_scope_exposure_2)
+[2부 보러가기](../limiting_scope_exposure_2)
 
-<br/>
-<br/>
+<hr class="custom-hr">
 
 이 글은 아래의 원문을 번역/요약한 글입니다.
 
