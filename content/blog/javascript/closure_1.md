@@ -10,6 +10,7 @@ draft: false
 [You Don't Know JS Yet/Chapter 7: Using Closures](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch7.md)
 
 [2편 보러가기](../closure_2)
+[3편 보러가기](../closure_3)
 
 <br/>
 
@@ -304,3 +305,5 @@ console.log(keeps[2]());   // 2
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/closure/closure_in_loop_3.png" alt="Using Closure in loop example 3" />
 </figure>
+
+\> 2편에 계속...
