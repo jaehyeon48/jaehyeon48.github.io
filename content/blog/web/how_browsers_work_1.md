@@ -5,6 +5,10 @@ category: 'web'
 draft: false
 ---
 
+[2편](../how_browsers_work_2)
+
+<hr class="custom-hr">
+
 ## 브라우저의 주요 구성 요소
 
 <figure>
