@@ -9,13 +9,22 @@ draft: false
 
 <hr class="custom-hr">
 
+## Critical Rendering Path
+
+브라우저가 HTML, CSS, JS 파일들을 분석하여 화면의 픽셀로 변환하는 과정을 **Critical Rendering Path, CRP**라고 한다. 이 포스트에서는 브라우저가 서버로 부터 응답을 받은 이후 CRP를 진행하는 과정을 살펴보자.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/crp.png" alt="Critical Rendering Path" />
+    <figcaption>Critical Rendering Path</figcaption>
+</figure>
+
 ## 파싱
 
 ### DOM
 
-브라우저가 서버로 부터 응답으로 HTML 데이터를 받으면 해당 HTML을 분석하여 [DOM](https://en.wikipedia.org/wiki/Document_Object_Model)으로 변환한다.
+버로 부터 응답으로 HTML 데이터를 받으면 브라우저는 해당 HTML을 분석하여 [DOM](https://en.wikipedia.org/wiki/Document_Object_Model)으로 변환한다.
 
-DOM이란 간단히 말해, HTML 혹은 XML 문서를 트리 구조로 나타낸 것이다. 트리의 각 노드는 문서의 각 부분들을 나타내는 객체이다. (자바스크립트와 같은) 프로그래밍 언어가 DOM을 조작하여 문서의 구조, 내용등을 조작할 수 있다.
+여기서 DOM이란, HTML (혹은 XML) 문서를 트리 구조로 나타낸 것임과 동시에 프로그래밍 언어로 문서를 조작할 수 있도록 하는 API 이다. 이 때 트리의 각 노드는 문서의 각 요소들을 나타내는 객체이다.
 
 [DOM 스펙](https://dom.spec.whatwg.org/#ref-for-dom-node-nodetype%E2%91%A0)에 따르면, 노드의 종류는 다음과 같다:
 
@@ -138,7 +147,7 @@ CSSOM의 각 노드는 해당 노드가 타겟으로 삼고있는 DOM 요소의 
     <figcaption>https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-즉, 위와 같이 DOM에 선언된 노드 순서와 페인트 순서는 다를 수 있다.
+위 그림에서는 `<h1>` 요소가 `<div>` 요소보다 위에 와야 정확하게 렌더링한 것이다. 이러한 경우와 같이, DOM에 선언된 노드 순서와 페인트 순서는 다를 수 있다.
 
 페인트 단계에서 브라우저의 메인 스레드는 render tree를 순회하여 paint record를 생성한다. Paint record는 "배경을 먼저 그리고, 그 다음 텍스트, 그리고 나서 직사각형"과 같이 페인팅 과정을 기록한 일종의 노트이다.
 
@@ -214,7 +223,7 @@ compositor 쓰레드는 서로 다른 raster 쓰레드들간의 우선순위를 
     <figcaption>Compositor thread creating compositing frame. Frame is sent to the browser process then to GPU: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-합성(compositioning)의 장점은 메인 쓰레드와 별개로 동작한다는 점이다. Compositor 쓰레드는 메인 쓰레드가 스타일(CSS) 계산, 혹은 자바스크립트 실행을 끝마칠 때까지 기다릴 필요가 없다. 이 때문에 [합성만 하는 애니메이션](https://developers.google.com/web/updates/2018/09/inside-browser-part3)이 성능상 가장 부드럽다고 한다. 레이아웃이나 페인트를 다시 계산해야하는 경우, 메인 쓰레드가 관여해야만 한다.
+합성(compositioning)의 장점은 메인 쓰레드와 별개로 동작한다는 점이다. Compositor 쓰레드는 메인 쓰레드가 스타일(CSS) 계산, 혹은 자바스크립트 실행을 끝마칠 때까지 기다릴 필요가 없다. 이 때문에 [합성만 하는 애니메이션](https://www.html5rocks.com/en/tutorials/speed/high-performance-animations/)이 성능상 가장 부드럽다고 한다. 레이아웃이나 페인트를 다시 계산해야하는 경우, 메인 쓰레드가 관여해야만 한다.
 
 ## Reference
 
@@ -227,6 +236,8 @@ compositor 쓰레드는 서로 다른 raster 쓰레드들간의 우선순위를 
 [https://developers.google.com/web/updates/2018/09/inside-browser-part2](https://developers.google.com/web/updates/2018/09/inside-browser-part2)
 
 [https://developers.google.com/web/updates/2018/09/inside-browser-part3](https://developers.google.com/web/updates/2018/09/inside-browser-part3)
+
+[https://medium.com/jspoint/how-the-browser-renders-a-web-page-dom-cssom-and-rendering-df10531c9969](https://medium.com/jspoint/how-the-browser-renders-a-web-page-dom-cssom-and-rendering-df10531c9969)
 
 [https://d2.naver.com/helloworld/5237120](https://d2.naver.com/helloworld/5237120)
 
