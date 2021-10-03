@@ -91,7 +91,7 @@ while (eventLoop.waitForTask()) {
 - 엔진이 어떤 task를 처리하는 동안에는 렌더링이 발생하지 않는다. 실행중인 task를 완료한 이후에야 DOM에 발생한 변화를 반영하여 화면에 렌더링할 수 있다.
 - UI 렌더링은 이벤트 루프의 매 iteration의 마지막 (즉 macrotask를 처리하고, microtask도 처리한 이후)에 "수행될 수도 있다".
 - 수행될 수도 있다라고 한 이유는, 브라우저가 렌더링을 하지 않고 task만 처리하는 경우도 있기 때문이다. 즉, 렌더링을 할지 말지는 브라우저가 자유롭게 결정할 수 있기 때문에 이벤트 루프의 매 iteration 마지막에 렌더링 작업이 수행될 수도, 그렇지 않을 수도 있는 것이다.
-- 또한, `[requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame)` 이라는 메소드를 통해 렌더링 직전에 특정 작업을 수행하도록 요청할 수도 있다. `requestAnimationFrame()` 에 전달되는 콜백들은 **animationFrames** 라는 큐에 저장되어 브라우저가 렌더링을 하는 경우, 렌더링을 하기 직전에 해당 큐에 있는 콜백들을 수행한다.
+- 또한, [requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) 이라는 메소드를 통해 렌더링 직전에 특정 작업을 수행하도록 요청할 수도 있다. `requestAnimationFrame()` 에 전달되는 콜백들은 **animationFrames** 라는 큐에 저장되어 브라우저가 렌더링을 하는 경우, 렌더링을 하기 직전에 해당 큐에 있는 콜백들을 수행한다.
 - 이 때 이벤트 루프의 iteration이 시작되는 시점에 존재하던 콜백들은 모두 실행되지만, 도중에 추가된 콜백들은 현재 iteration에서는 실행되지 않고, 이후의 iteration에서 렌더링을 할 때 실행된다:
 
 <figure>
@@ -120,21 +120,21 @@ while (eventLoop.waitForTask()) {
 ```
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/Execution_timing_event_loop_with_rendering" alt="Execution timing: event loop with microtask queues" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/Execution_timing_event_loop_with_rendering.png" alt="Execution timing: event loop with rendering" />
     <figcaption>출처: https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/</figcaption>
 </figure>
 
 - 최종적으로 이벤트 루프의 흐름을 간단한 그림으로 나타내면 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/event_loop_flow" alt="Event loop flow" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/event_loop_flow.png" alt="Event loop flow" />
     <figcaption>출처: https://javascript.info/event-loop</figcaption>
 </figure>
 
 - 또한, 브라우저 런타임을 간단한 그림으로 나타내면 다음과 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/browser_runtime_in_a_nutshell" alt="browser runtime in a nutshell" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/browser_event_loop/browser_runtime_in_a_nutshell.png" alt="browser runtime in a nutshell" />
 </figure>
 
 ## REFERENCES
