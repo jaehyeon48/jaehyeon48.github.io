@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://jaehyeon48.github.io/sitemap.xml
+Host: https://jaehyeon48.github.io
