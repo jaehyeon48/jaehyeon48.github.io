@@ -14,7 +14,7 @@ draft: false
 아무래도 개발자들은 구현을 하는 입장이다 보니, 구현 사항을 들으면 어떻게 구현을 하면 좋을지 자연스럽게 떠올리는 경향이 있는 것 같다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@deploy/assets/images/web/programming101/developer_instinct.png" alt="구현 본능" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/programming101/developer_instinct.png" alt="구현 본능" />
     <figcaption>구현 본능</figcaption>
 </figure>
 
@@ -70,15 +70,15 @@ if (count > 0 && 다른 조건 추가) {
 우선 코드를 WHAT으로, 즉 실제 의미가 드러나도록 코딩을 해보자. 그리고 나서 실제로 구현(HOW)해보자.
 
 ```js
-let addPointRate = 0;
+let addPointRate = 0
 if (isUserRegisteredLessThanNYear(1, userId)) {
-  addPointRate = 1;
+  addPointRate = 1
 }
 
 // ...
 
 if (addPointRate > 0) {
-  recordAddPointHistory(userId, addPointRate);
+  recordAddPointHistory(userId, addPointRate)
 }
 ```
 
