@@ -69,7 +69,7 @@
 <h2 id="개발자들의-구현-본능" style="position:relative;"><a href="#%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%93%A4%EC%9D%98-%EA%B5%AC%ED%98%84-%EB%B3%B8%EB%8A%A5" aria-label="개발자들의 구현 본능 permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>개발자들의 구현 본능</h2>
 <p>아무래도 개발자들은 구현을 하는 입장이다 보니, 구현 사항을 들으면 어떻게 구현을 하면 좋을지 자연스럽게 떠올리는 경향이 있는 것 같다:</p>
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@deploy/assets/images/web/programming101/developer_instinct.png" alt="구현 본능">
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/programming101/developer_instinct.png" alt="구현 본능">
     <figcaption>구현 본능</figcaption>
 </figure>
 <p>이를 코드로 “직역”에 가깝게 구현하면 아마 다음과 비슷하게 구현할 수 있을 것같다:</p>
@@ -125,15 +125,15 @@
 </table>
 <h3 id="코드를-우선-what으로-표현해보자-how는-그-다음에" style="position:relative;"><a href="#%EC%BD%94%EB%93%9C%EB%A5%BC-%EC%9A%B0%EC%84%A0-what%EC%9C%BC%EB%A1%9C-%ED%91%9C%ED%98%84%ED%95%B4%EB%B3%B4%EC%9E%90-how%EB%8A%94-%EA%B7%B8-%EB%8B%A4%EC%9D%8C%EC%97%90" aria-label="코드를 우선 what으로 표현해보자 how는 그 다음에 permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>코드를 우선 WHAT으로 표현해보자! HOW는 그 다음에…</h3>
 <p>우선 코드를 WHAT으로, 즉 실제 의미가 드러나도록 코딩을 해보자. 그리고 나서 실제로 구현(HOW)해보자.</p>
-<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">let</span> addPointRate <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">let</span> addPointRate <span class="token operator">=</span> <span class="token number">0</span>
 <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isUserRegisteredLessThanNYear</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> userId<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  addPointRate <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  addPointRate <span class="token operator">=</span> <span class="token number">1</span>
 <span class="token punctuation">}</span>
 
 <span class="token comment">// ...</span>
 
 <span class="token keyword">if</span> <span class="token punctuation">(</span>addPointRate <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">recordAddPointHistory</span><span class="token punctuation">(</span>userId<span class="token punctuation">,</span> addPointRate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">recordAddPointHistory</span><span class="token punctuation">(</span>userId<span class="token punctuation">,</span> addPointRate<span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre></div>
 <h2 id="what과-how의-분리-결과" style="position:relative;"><a href="#what%EA%B3%BC-how%EC%9D%98-%EB%B6%84%EB%A6%AC-%EA%B2%B0%EA%B3%BC" aria-label="what과 how의 분리 결과 permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>WHAT과 HOW의 분리 결과</h2>
 <p>WHAT(코드의 의미, 의도)과 HOW(실제 구현)를 분리하게 되면, 구현을 잠시 잊고 실제로 코드가 하려고 하는 것이 무엇인지 생각해보게 된다. 그로 인해</p>
