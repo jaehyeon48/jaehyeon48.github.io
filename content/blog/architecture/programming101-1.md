@@ -71,13 +71,15 @@ const result = Summary.builder()
 
 물론, 변수를 아끼자는 말이 변수를 무조건 적게 사용하자는 말이 아니다. 다음과 같은 상황에서는 변수를 사용하는 것이 적합할 수 있다:
 
-- 의미를 더해주는 변수 위주로 사용한다. 예를 들면, 식이 복잡하거나 길어지는 경우 변수 이름으로 설명한다.
-  - ```js
+- 의미를 더해주는 변수 위주로 사용한다. 예를 들면, 식이 복잡하거나 길어지는 경우 변수 이름으로 설명한다:
+
+  ```js
     const age = Date.getFullYear() - User.getBirthYear();
-    ```
+  ```
 - 같은 계산을 반복하는 경우, 변수로 재사용한다.
-- 가능한 한 선언과 할당을 한 번에 하는 것이 좋다
-  - ```js
+- 가능한 한 선언과 할당을 한 번에 하는 것이 좋다:
+
+  ```js
     /* NOT GOOD */
     let age;
 
@@ -88,7 +90,7 @@ const result = Summary.builder()
 
     /* GOOD */
     const age = Date.getFullYear() - User.getBirthYear();
-    ```
+  ```
 
 ## 최대한(절대로...) 변수의 용도나 의미를 변경하지 말자
 
@@ -120,39 +122,37 @@ const api2Res: string = callApi2();
 따라서 변수는 최대한 짧은 범위에서 사용되는 것이 정신건강에 이롭다.
 
 - 짧은 루프 블록 안으로 한정
-  ```js
-  /* NOT GOOD */
-  let msg;
-  for (const Person of people) {
-    msg = Person.getName();
-    // ...
-  }
 
-
-  /* GOOD */
-  for (const Person of people) {
-    const msg = Person.getName();
-    // ...
-  }
-  ```
+```js
+/* NOT GOOD */
+let msg;
+for (const Person of people) {
+  msg = Person.getName();
+  // ...
+}
+/* GOOD */
+for (const Person of people) {
+  const msg = Person.getName();
+  // ...
+}
+```
 
 - 짧은 `if-else` 블록 안으로 한정
 - 짧은 메서드로 한정
 - 사용되기 직전에 정의
-  ```js
-  /* NOT GOOD */
-  const msg = 'blah blah';
 
-  //... (코드 10줄, msg 변경 없음)
+```js
+/* NOT GOOD */
+const msg = 'blah blah';
+//... (코드 10줄, msg 변경 없음)
+return formatMsg(msg);
 
-  return formatMsg(msg);
 
-
-  /* GOOD */
-  // ... (코드 10줄)
-  const msg = 'blah blah';
-  return formatMsg(msg);
-  ```
+/* GOOD */
+// ... (코드 10줄)
+const msg = 'blah blah';
+return formatMsg(msg);
+```
 
 ## 초짜라면..
 
