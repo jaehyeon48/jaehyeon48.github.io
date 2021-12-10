@@ -38,7 +38,7 @@ if (A) {
 하지만, 다음 그림과 같이 `if` 블록이 길어지게 되면 모니터 한 화면에 안 들어오게 되고 스크롤을 해야 `if` 블록의 끝을 알 수 있다. 또한, 코드를 분석할 때 `if` 블록의 실행 조건을 머릿속에 기억하면서 코드를 분석해 나가야 한다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/programming101/too_long_if_block.png" alt="너무 긴 if 블록" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/programming101/too_long_if_block.png" alt="너무 긴 if 블록" />
     <figcaption>출처: https://www.youtube.com/watch?v=z4qE_IfSrD4&list=PLwouWTPuIjUg0dmHoxgqNXyx3Acy7BNCz&index=7</figcaption>
 </figure>
 

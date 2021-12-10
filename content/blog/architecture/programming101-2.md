@@ -20,7 +20,7 @@ draft: false
 프로그래밍 초보들이 만드는 코드의 특징 중 하나는 시간이 지날수록 함수/메서드/클래스 등이 점점 비대해진다는 점이다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/programming101/newbie.png" alt="프로그래밍 뉴비 특징" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/programming101/newbie.png" alt="프로그래밍 뉴비 특징" />
     <figcaption>https://www.youtube.com/watch?v=NaeXpswLvxk&list=PLwouWTPuIjUg0dmHoxgqNXyx3Acy7BNCz&index=2</figcaption>
 </figure>
 
@@ -37,7 +37,7 @@ draft: false
 나눈다는 것은 곧 기능을 분해하고, 분리한다는 의미이다. 일반적으로, 어떤 하나의 기능은 여러개의 더 작은 하위 기능으로 구성된다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/programming101/divide_logic.png" alt="기능 나누기" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/programming101/divide_logic.png" alt="기능 나누기" />
     <figcaption>기능 나누기</figcaption>
 </figure>
 
