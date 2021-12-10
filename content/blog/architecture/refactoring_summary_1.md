@@ -2,7 +2,7 @@
 title: '리팩토링 2판 요약 정리 Ch.1'
 date: 2021-12-06
 category: 'architecture'
-draft: true
+draft: false
 ---
 
 [리팩토링 2판](https://www.amazon.com/Refactoring-Improving-Existing-Addison-Wesley-Signature/dp/0134757599)을 번역/요약한 글입니다.
