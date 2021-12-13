@@ -65,6 +65,13 @@ element.addEventListener(type, listener, true);
 - 공식적으로는 이벤트 흐름에 총 3단계가 있지만 2번째 단계인 타겟 단계는 따로 처리되지 않는다. 캡처링과 버블링 단계의 이벤트 핸들러가 trigger 되는 시점은 타겟 단계이다.
 - [예시](https://jsfiddle.net/oz16g4mb/6/)
 
+## target과 currentTarget
+
+- 이벤트 핸들러의 첫 번째 매개 변수인 [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event) 객체의 `target`과 `currentTarget` 속성을 통해, 부모 요소는 이벤트가 실제로 발생한 요소가 어디인지에 대한 정보를 얻을 수 있다.
+- `Event.target`은 이벤트가 **실제로 발생한** 요소를 가리킨다. 이벤트 버블링이 일어나더라도 `Event.target`이 가리키는 요소는 바뀌지 않는다.
+- `Event.currentTarget`은 **현재 실행중인 이벤트 핸들러가 처리하고 있는** 요소를 가리킨다.
+- [예제](https://codepen.io/jaehyeon48/pen/rNwJLNG)
+
 ## 이벤트 위임
 
 - 추가 예정...
