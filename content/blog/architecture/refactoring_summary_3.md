@@ -76,8 +76,7 @@ draft: false
 - 만약 어떤 변수가 기존의 것과 다른 것을 저장하도록 변경된다면, [Split Variable]()을 사용해서 두 값을 분리하여 관리하도록 하는 것을 권장한다.
 - [Slide Statements]()와 [Extract Function]()을 활용하여 데이터를 업데이트 하는 부분을 최대한 따로 빼내어 함수를 순수 함수로 바꿀 수 있다.
 - API에선 [Separate Query from Modifier]()를 사용하여, 정말 필요한 경우가 아니라면 side effect가 존재하는 코드를 호출자가 사용하지 못하도록 하는 것을 추천한다. 또한 최대한 빨리 [Remove Setting Method]()를 적용하라.
-- 여러 군데에서 계산할 수 있는 (따라서 변경 가능한) mutable 데이터에선 상당히 불쾌한 냄새가 난다. Mutable 데이터는 버그와 혼란의 근원일 뿐만 아니라, 딱히 필요가 없는 존재이다.
-- Mutable 데이터엔 [Replace Derived Variable with Query]()를 사용하여 냄새를 제거할 수 있다.
+- 여러 군데에서 계산할 수 있는 (따라서 변경 가능한) mutable 데이터에선 상당히 불쾌한 냄새가 난다. 이와 같은 Mutable 데이터는 버그와 혼란의 근원일 뿐만 아니라, 딱히 필요가 없는 존재이다. 이러한 Mutable 데이터엔 [Replace Derived Variable with Query]()를 사용하여 냄새를 제거할 수 있다.
 - 물론, mutable 데이터의 스코프 범위가 몇 줄 안되는 경우엔 딱히 문제 될 게 없을 수 있으나, 스코프가 커짐에 따라 리스크도 커지게 된다. [Combine Functions into Class]() 혹은 [Combine Functions into Transform]()과 같은 방법을 사용하여 변수를 업데이트하는데 필요한 코드의 수를 제한하라.
 - 만약 (mutable) 변수가 어떤 내부적인 구조를 가지고 있다면 일반적으로 그 자리에서 변경하기보단 구조 전체를 갈아치우는 게 더 좋을 수 있다. 이 경우 [Change Reference to Value]()를 사용하라.
 
