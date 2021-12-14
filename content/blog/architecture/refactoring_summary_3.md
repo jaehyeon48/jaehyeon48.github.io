@@ -118,6 +118,11 @@ draft: false
 - [Replace Primitive with Object]()를 이용하여 원시 타입을 의미있는 타입으로 변경할 수 있다. 만약 원시 타입이 분기문을 제어하는 역할을 한다면 [Replace Type Code with Subclasses]()와 [Replace Conditional with Polymorphism]()을 이용할 수 있다.
 - 같이 어울려 다니는 원시 타입들엔 [Extract Class]()와 [Introduce Parameter Object]()를 적용할 수 있다.
 
+## 반복된 Switch 문 (Repeated Switches)
+
+- `switch` 문을 중복해서 사용하는 경우, 하나의 케이스가 추가될 때 (중복된) 모든 `switch` 문을 찾아 바꿔줘야 한다.
+- 이렇게 중복이 발생하고 있다면 [Replace Conditional with Polymorphism]()을 이용하여 조건부 로직을 다형성 로직으로 바꿔보자.
+
 ## 루프문 (Loops)
 
 - [Replace Loop with Pipeline]() 기법을 통해 루프문을 일급 함수로 변환하는 것을 추천한다. 우리의 경험으로 보자면 `filter` 나 `map` 같은 파이프라인 함수들을 통해 코드의 흐름을 더욱 쉽고 빠르게 파악할 수 있었다.
