@@ -58,6 +58,7 @@ module.exports = {
             resolve: `gatsby-remark-prismjs`,
             options: {
               inlineCodeMarker: '%',
+              noInlineHighlight: false,
             },
           },
           `gatsby-remark-copy-linked-files`,
