@@ -106,3 +106,186 @@ domNode.className = 'blue';
 
 domContainer.appendChild(domNode);
 ```
+
+- 만약 React 요소에 자식 요소가 존재한다면 (`reactElement.props.children`), React는 첫 번째 렌더링 때 재귀적으로 해당 자식 요소들을 생성한다.
+
+## 재조정 (Reconciliation)
+
+- 동일한 컨테이너에 대해 `ReactDOM.render()`를 두 번 호출하면 어떻게 될까?
+
+```jsx{2, 11}
+ReactDOM.render(
+  <button className="blue" />,
+  document.getElementById('container')
+);
+
+// ... 이후
+
+// 현재의 "버튼" 호스트 객체를 대체해야할 까, 아니면
+// 단순히 기존 호스트 객체의 프로퍼티를 업데이트 해야할까?
+ReactDOM.render(
+  <button className="red" />,
+  document.getElementById('container')
+);
+```
+
+- 다시 말하자면, React의 역할은 호스트 트리와 현재 주어진 React 요소 트리를 같게 만드는 것이다. 새로운 정보를 바탕으로 호스트 객체에 어떤 작업을 해야 하는지를 알아내는 과정을 [reconciliation](https://reactjs.org/docs/reconciliation.html) 이라고 한다.
+- 재조정에는 두 가지 방법이 존재한다. 단순히 기존의 트리를 날려버리고 새로운 트리를 처음부터 다시 만드는 방법이 있을 수 있다:
+
+```js
+let domContainer = document.getElementById('container');
+// 트리 초기화
+domContainer.innerHTML = '';
+// 새로운 호스트 트리를 생성
+let domNode = document.createElement('button');
+domNode.className = 'red';
+domContainer.appendChild(domNode);
+```
+
+- 하지만 DOM의 경우 위 방법은 느리다. 또한, 포커스, 선택, 스크롤 상태와 같은 정보들도 다 날아간다. 따라서 위 방법 대신 다음과 같은 방법을 사용할 수 있다:
+
+```js
+let domNode = domContainer.firstChild;
+// 기존에 존재하는 호스트 객체를 업데이트
+domNode.className = 'red';
+```
+
+- 즉, React는 *언제* 기존의 호스트 객체를 업데이트 할지, 그리고 언제 새로운 객체를 생성할지 결정해야 한다. 하지만 이때, React 요소들은 매번 다른데 어떻게 같은 호스트 객체를 나타낸다는 것을 어떻게 알 수 있을까?
+- 위 예제에서는 간단하다. `<button>`을 첫 번째 자식으로 렌더링 했고, 똑같은 위치에 `<button>`을 다시 렌더링 하고 싶어 하므로, 기존에 존재하는 `<button>` 호스트 객체를 재사용하면 된다. 이는 React가 생각하는 방식과 흡사하다.
+- **직전 렌더링과 다음 렌더링 사이에, 트리상에서 같은 위치에 있는 요소들의 타입이 같으면 React는 기존에 존재하는 호스트 객체를 재사용한다**. 다음 예제를 살펴보자:
+
+```jsx{9-10,16,26-27}
+// let domNode = document.createElement('button');
+// domNode.className = 'blue';
+// domContainer.appendChild(domNode);
+ReactDOM.render(
+  <button className="blue" />,
+  document.getElementById('container')
+);
+
+// 호스트 객체를 재사용할 수 있다! (button → button)
+// domNode.className = 'red';
+ReactDOM.render(
+  <button className="red" />,
+  document.getElementById('container')
+);
+
+// 호스트 객체를 재사용할 수 없다.. (button → p)
+// domContainer.removeChild(domNode);
+// domNode = document.createElement('p');
+// domNode.textContent = 'Hello';
+// domContainer.appendChild(domNode);
+ReactDOM.render(
+  <p>Hello</p>,
+  document.getElementById('container')
+);
+
+// 호스트 객체를 재사용할 수 있다! (p → p)
+// domNode.textContent = 'Goodbye';
+ReactDOM.render(
+  <p>Goodbye</p>,
+  document.getElementById('container')
+);
+```
+
+- 자식 트리에도 동일한 휴리스틱 알고리즘이 적용된다. 예를 들어, 두 개의 `<button>` 요소를 자식으로 가지는 `<dialog>` 요소를 업데이트할 때, React는 우선 부모 요소인 `<dialog>`를 재사용할 수 있는지 따져보고 그다음 이러한 과정을 자식 요소인 `<button>`에 대해서도 동일하게 진행한다.
+
+## 조건 (Conditions)
+
+- 업데이트할 때, React가 같은 타입의 호스트 객체들만 재사용한다면 조건부 컨텐츠(특정 조건을 만족하는 경우 나타나는 컨텐츠?)에 대해선 어떻게 해야할까? 다음 예제와 같이, 처음에는 input만 보여줬다가 이후 메세지도 함께 보여준다고 하자:
+
+```js{12}
+// First render
+ReactDOM.render(
+  <dialog>
+    <input />
+  </dialog>,
+  domContainer
+);
+
+// Next render
+ReactDOM.render(
+  <dialog>
+    <p>I was just added here!</p>
+    <input />
+  </dialog>,
+  domContainer
+);
+```
+
+- 위 예제에서 `<input>` 호스트 객체는 다시 생성될 것이다. React가 이전 버전의 트리와 비교하는 과정을 다음처럼 나타낼 수 있다:
+
+  - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+    - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야함.
+    - `(noting) → input`: 새로운 `input` 객체를 생성해야함.
+
+- 따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 같을 것이다:
+
+```js{1-2,8-9}
+let oldInputNode = dialogNode.firstChild;
+dialogNode.removeChild(oldInputNode);
+
+let pNode = document.createElement('p');
+pNode.textContent = 'I was just added here!';
+dialogNode.appendChild(pNode);
+
+let newInputNode = document.createElement('input');
+dialogNode.appendChild(newInputNode);
+```
+
+- 하지만 생각해 보면, `<input>`이 `<p>`로 바뀐 것이 아니라 단순히 이동된 것이므로 위와 같은 동작은 뭔가 아쉽다. 또, 이렇게 하면 포커스, 선택, 입력한 내용들도 다 날아가버린다.
+- 사실 이 문제엔 (곧 살펴볼) 간단한 해결책이 존재한다. 하지만 위와 같은 상황이 그리 자주 발생하지는 않는다. 왜냐면, 실제로는 `ReactDOM.render`를 직접 호출할 일이 거의 없기 때문이다. 대신, React 앱들은 주로 다음과 같이 함수들로 나뉘게 된다:
+
+```jsx
+function Form({ showMessage }) {
+  let message = null;
+  if (showMessage) {
+    message = <p>I was just added here!</p>;
+  }
+  return (
+    <dialog>
+      {message}
+      <input />
+    </dialog>
+  );
+}
+```
+
+- 이 예제에선 방금 살펴본 문제가 발생하지 않는다. 왜 그런지는 다음과 같이 JSX를 객체 형태로 표시하면 더 쉽게 확인할 수 있다. `dialog`의 자식 트리를 살펴보자:
+
+```js{12-15}
+function Form({ showMessage }) {
+  let message = null;
+  if (showMessage) {
+    message = {
+      type: 'p',
+      props: { children: 'I was just added here!' }
+    };
+  }
+  return {
+    type: 'dialog',
+    props: {
+      children: [
+        message,
+        { type: 'input', props: {} }
+      ]
+    }
+  };
+}
+```
+
+- 여기서, `showMessage`가 `true`이건 `false`이건 상관없이 `<input>`은 항상 `<dialog>`의 두 번째 자식이므로 그 위치가 변하지 않는다. `showMessage`가 `false`에서 `true`로 바뀌면 React는 다음과 같이 이전 버전과 비교할 것이다:
+
+  - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+    - `(null) → p`: 새로운 `p` 호스트 객체를 추가해야함.
+    - `input → input`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+  
+- 따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 같을 것이다:
+
+```js
+// "input"의 상태가 그대로 유지된다!
+let inputNode = dialogNode.firstChild;
+let pNode = document.createElement('p');
+pNode.textContent = 'I was just added here!';
+dialogNode.insertBefore(pNode, inputNode);
+```
