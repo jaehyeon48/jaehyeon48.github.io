@@ -365,7 +365,7 @@ function Form({ showMessage }) {
 ```js
 function Button(props) {
   // 🔴 동작하지 않음!
-  props.isActive = true;
+  props.isActive = true
 }
 ```
 
@@ -374,14 +374,12 @@ function Button(props) {
 
 ```jsx{2,5}
 function FriendList({ friends }) {
-  let items = [];
+  let items = []
   for (let i = 0; i < friends.length; i++) {
-    let friend = friends[i];
-    items.push(
-      <Friend key={friend.id} friend={friend} />
-    );
+    let friend = friends[i]
+    items.push(<Friend key={friend.id} friend={friend} />)
   }
-  return <section>{items}</section>;
+  return <section>{items}</section>
 }
 ```
 
@@ -391,7 +389,7 @@ function FriendList({ friends }) {
 ```js
 function ExpenseForm() {
   // 다른 컴포넌트에 영향을 주지 않는다면 괜찮다:
-  SuperCalculator.initializeIfNotReady();
+  SuperCalculator.initializeIfNotReady()
 
   // 계속해서 렌더링...
 }
@@ -405,28 +403,28 @@ function ExpenseForm() {
 - 컴포넌트는 그냥 "함수"이므로, 해당 함수 컴포넌트를 호출함으로써 한 컴포넌트들 다른 컴포넌트에서 사용할 수 있다:
 
 ```js
-let reactElement = Form({ showMessage: true });
-ReactDOM.render(reactElement, domContainer);
+let reactElement = Form({ showMessage: true })
+ReactDOM.render(reactElement, domContainer)
 ```
 
 - 하지만 이는 React 런타임에서 자연스러운 방법이 아니다. 대신 우리가 여태껏 본 것과 같이, 컴포넌트를 React 요소를 사용하는 방법처럼 사용하는 것이 더 자연스러운 방법이다. 다시 말해 **함수 (컴포넌트)를 직접 호출하지 않고, React가 알아서 대신 호출하도록 하는 것이다**:
 
 ```jsx
 // { type: Form, props: { showMessage: true } }
-let reactElement = <Form showMessage={true} />;
-ReactDOM.render(reactElement, domContainer);
+let reactElement = <Form showMessage={true} />
+ReactDOM.render(reactElement, domContainer)
 
 // React 어딘가에서 해당 컴포넌트가 호출될 것이다
-let type = reactElement.type; // Form
-let props = reactElement.props; // { showMessage: true }
-let result = type(props); // Whatever Form returns
+let type = reactElement.type // Form
+let props = reactElement.props // { showMessage: true }
+let result = type(props) // Whatever Form returns
 ```
 
 - 함수 컴포넌트의 이름은 항상 대문자로 시작한다. JSX를 번역할 때, `<form>` 대신 `<Form>`을 보게 되면 해당 객체의 타입을 문자열이 아니라 식별자로 본다:
 
 ```jsx
-console.log(<form />.type); // 'form' string
-console.log(<Form />.type); // Form function
+console.log((<form />).type) // 'form' string
+console.log((<Form />).type) // Form function
 ```
 
 - (컴포넌트가) 전역으로 등록되는 메커니즘 같은 건 없다. 단순히 컴포넌트의 이름을 통해 참조하는 것이다. 만약 컴포넌트가 로컬 스코프에 없다면 일반적인 자바스크립트에서 변수를 잘못 참조한 경우와 같이 에러를 보게 될 것이다.
@@ -442,7 +440,7 @@ console.log(<Form />.type); // Form function
     - `Content`: 나는 텍스트와 `<Footer>`를 `<article>` 안에 그려.
   - **React**: 안녕 `Footer`! 무엇을 렌더링하고 싶니?
     - `Footer`: 나는 `<footer>` 안에 텍스트를 적고 싶어.
-  - **React**: 좋아. 여깄어:
+  - **React**: 좋아. 여기있어:
 
 ```html
 // 결과:
