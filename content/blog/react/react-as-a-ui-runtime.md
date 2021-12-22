@@ -2,7 +2,7 @@
 title: 'UI 런타임으로서의 React'
 date: 2021-12-22
 category: 'react'
-draft: true
+draft: false
 ---
 
 이 포스트는 [React as a UI Runtime](https://overreacted.io/react-as-a-ui-runtime/)를 번역/요약한 글입니다.
