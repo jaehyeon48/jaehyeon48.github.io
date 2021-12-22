@@ -90,12 +90,19 @@ ReactDOM.render(
 ```
 
 - `ReactDOM.render(reactElement, domContainer)`라고 하는 것은 "React님, `domContainer` 호스트 트리를 `reactElement`와 같게 해주세요"라고 하는 것과 같다.
+- React는 요소의 타입 (`reactElement.type`, 위 예시에서는 `'button'`)을 보고, ReactDOM 렌더러에게 해당 타입에 맞는 호스트 객체를 생성하고 프로퍼티를 설정하도록 요청한다:
 
-```js{2-3}
+```js{3-4,9-10}
 // ReactDOM 렌더러 어딘가 (간략한 버전)
 function createHostInstance(reactElement) {
   let domNode = document.createElement(reactElement.type);
   domNode.className = reactElement.props.className;
   return domNode;
 }
+
+// 현재 예시에 대해 React가 실질적으로 하는 동작은 다음과 같다:
+let domNode = document.createElement('button');
+domNode.className = 'blue';
+
+domContainer.appendChild(domNode);
 ```
