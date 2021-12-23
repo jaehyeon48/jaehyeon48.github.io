@@ -603,3 +603,8 @@ function Example() {
 
 - `useState`는 현재 상태와 상태를 업데이트 하는 함수로 구성된 쌍(pair)를 반환한다. [Array destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#array_destructuring)을 통해 `useState`가 반환하는 상태와 업데이트 함수의 이름을 지정할 수 있다.
 - `useState`를 비롯한 다른 여러가지 hook들은 [React 공식 문서](https://reactjs.org/docs/hooks-intro.html)에서 더 자세히 살펴볼 수 있다.
+
+## 일관성 (Consistency)
+
+- 재조정 과정을 [non-blocking](https://www.youtube.com/watch?v=mDdgfyRB5kg)한 작업들로 분할하여 수행한다고 하더라도, 여전히 단일 동기 흐름(single synchronous swoop)에 호스트 트리 연산을 수행해야만 한다. 이렇게 하면 사용자가 만들어지다 만 UI를 안 볼 수 있게끔 할 수 있고, 사용자가 볼 필요 없는 (어떤 UI를 완성하는 과정의) 중간 상태에 대한 불필요한 레이아웃 작업과 스타일 계산을 수행하지 않아도 된다.
+- 이러한 이유로, React는 모든 작업을 "렌더링 단계"와 "커밋 단계"로 나눈다. **렌더링 단계**에선 React가 컴포넌트를 호출하여 재조정을 수행하는데, 단계 중간에 방해를 받아도 안전하고 [추후엔](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 비동기적으로 수행될 예정이다. **커밋 단계**는 React가 호스트 트리를 조작하는 단계로, 항상 동기적으로 수행된다.
