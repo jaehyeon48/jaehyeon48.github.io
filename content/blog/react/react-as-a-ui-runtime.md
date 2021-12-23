@@ -455,3 +455,127 @@ console.log((<Form />).type) // Form function
 - 이것이 우리가 앞에서 재조정(reconciliation) 과정이 재귀적이라고 했던 이유이다. React가 요소 트리를 순회하는 과정에서 타입이 컴포넌트인 요소를 만나게 되면 해당 컴포넌트를 호출하고, 컴포넌트에서 반환된 요소들을 타고 내려가 계속해서 순회를 이어나간다. 결국 더 이상 순회할 요소가 없게 되면 React는 호스트 트리를 어떻게 변경해야 할지 알게 된다.
 
 ## 제어의 역전 (Inversion of Control)
+
+- `Form()` 대신 `<Form/>`이라고 쓰는 것처럼, 왜 컴포넌트를 직접 호출하지 않는지에 대해 궁금할 수도 있을 것이다. 그 이유는, **재귀적으로 (직접) 호출한 React 요소를 보는 것보다 React 스스로가 컴포넌트들에 대해 알고 있으면 React가 해야 할 작업을 더 잘 수행할 수 있기 때문이다.**
+
+```jsx
+// 🔴 (사용자가) 컴포넌트를 직접 호출하게되면 React로선
+// "Layout"과 "Article"이 존재하는지 알 수 없다.
+ReactDOM.render(
+  Layout({ children: Article() }),
+  domContainer
+)
+
+// ✅ 반면, React가 컴포넌트를 호출하면 
+// "Layout"과 "Article"이 존재하는지 알 수 있다!
+ReactDOM.render(
+  <Layout>
+    <Article />
+  </Layout>,
+  domContainer
+)
+```
+
+- 이는 [제어의 역전](https://en.wikipedia.org/wiki/Inversion_of_control)의 대표적인 예시이다. 또한, React가 컴포넌트 호출 제어권을 가지게 함으로써 생기는 몇 가지 흥미로운 이점들이 있다:
+
+  - **컴포넌트는 함수 이상의 역할을 하게 된다**: React는 지역 상태와 같은 기능들을 컴포넌트와 묶을 수 있게 된다. 앞서 살펴본 것처럼 React는 이벤트에 응답하는 UI 트리를 생성하는데, 컴포넌트를 (React 대신) 직접 호출하면 부가적인 기능들을 직접 구현해야 한다.
+  - **컴포넌트 타입으로 재조정을 한다**: React가 컴포넌트를 호출하게 되면 React는 트리의 구조를 더욱 많이 알게 된다. 예를 들어 `<Feed>` 페이지에서 `<Profile>` 페이지로 이동하면 React는 (`<button>`을 `<p>`로 바꾸는 것처럼) 해당 요소의 호스트 객체를 재사용하지 않는다. 이렇듯 다른 view를 렌더링 하는 경우엔 이와 같이 (기존의) 모든 상태를 날려버리는 것이 바람직하다. `<input>` 요소가 우연히 트리상에서 같은 위치에 존재한다고 하더라도 `<PasswordFrom>`과 `<MessengerChat>`간에 입력 상태를 유지하고 싶지는 않을 것이다.
+  - **React가 재조정을 지연할 수 있다**: React가 컴포넌트 호출 제어권을 가지면 여러 가지 흥미로운 것들을 할 수 있다. 예를 들면, 거대한 컴포넌트를 리렌더링 하는 것이 [메인 스레드를 blocking 하지 않도록](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 컴포넌트 호출 사이에 브라우저로 하여금 일부 작업을 더 하도록 할 수 있다. React를 뜯어고치지 않고선 이 작업을 수동으로 하는 것은 쉽지 않을 것이다.
+  - **더 나은 디버깅**: 컴포넌트가 React가 인지하고 있는 일급 객체라면 [풍부한 디버깅 도구](https://github.com/facebook/react-devtools)들을 만들 수 있게 된다.
+
+- 마지막 이점은 **지연 평가(lazy evaluation)**에 관한 것이다. 다음 섹션에서 살펴보자.
+
+## 지연 평가 (Lazy Evaluation)
+
+- 자바스크립트에서 함수를 호출할 때, 함수에 전달되는 인자들은 호출 전에 평가된다:
+
+```js
+// (2) 나중에 계산됨
+eat(
+  // (1) 먼저 계산됨
+  prepareMeal();
+);
+```
+
+- 자바스크립트 함수가 암묵적으로 side effect를 가질 수 있기 때문에 이는 대개 자바스크립트 개발자들이 생각하는 방식이다. 함수를 직접 호출했다면 (예상치 못한 문제로) 놀랄 수도 있겠지만, 자바스크립트 어딘가에서 결과가 사용될 때까지 실행되지 않는다.
+- 하지만 React 컴포넌트는 상대적으로 순수하다. 컴포넌트의 (반환) 결과가 화면에 렌더링 되지 않는다는 것을 알고 있다면, 이를 실행할 필요가 없다.
+- 다음의 예제를 살펴보자:
+
+```jsx{11}
+function Story({ currentUser }) {
+  // return {
+  //   type: Page,
+  //   props: {
+  //     user: currentUser,
+  //     children: { type: Comments, props: {} }
+  //   }
+  // }
+  return (
+    <Page user={currentUser}>
+      <Comments />
+    </Page>
+  );
+}
+```
+
+- 여기서 `<Page>` 컴포넌트는 넘겨받은 `children`을 `Layout` 내부에 사용할 수 있다:
+
+```jsx{4}
+function Page({ user, children }) {
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
+}
+```
+
+(JSX에서 `<A><B /></A>`와 `<A children={<B /} />`는 
+똑같다.)
+
+- 하지만 특정 조건에 의해 일찍 반환된다면 어떨까?
+
+```jsx{2-4}
+function Page({ user, children }) {
+  if (!user.isLoggedIn) {
+    return <h1>Please log in</h1>;
+  }
+
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
+}
+```
+
+- 만약 `Comments()`와 같이 우리가 직접 `Comments`를 호출했다면 `Page`의 렌더링 여부에 관계없이 무조건 `Comments` 컴포넌트를 실행할 것이다:
+
+```jsx{4, 8}
+// {
+//   type: Page,
+//   props: {
+//     children: Comments() // 무조건 실행된다!
+//   }
+// }
+<Page>
+  {Comments()}
+</Page>
+```
+
+- 하지만 `<Comments />`와 같이 React 요소를 넘기게 되면 `Comments`를 실행하지 않는다:
+
+```jsx{4, 8}
+// {
+//   type: Page,
+//   props: {
+//     children: { type: Comments }
+//   }
+// }
+<Page>
+  <Comments />
+</Page>
+```
+
+- (React가 컴포넌트를 호출함으로써) React는 컴포넌트를 호출할지 말 지 결정할 수 있다. `Page` 컴포넌트가 `children` prop 대신 `<h1>Please log in</h1>`을 렌더링한다면 React는 (`children` prop으로 넘어온) `<Comments>` 함수를 실행하지 않는다.
+- 요점은, 이렇게 함으로써 불필요한 렌더링을 줄일 수 있게 되고 또한 코드의 취약성을 줄일 수 있게 된다는 것이다.
