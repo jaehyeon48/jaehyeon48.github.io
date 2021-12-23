@@ -635,3 +635,111 @@ export default React.memo(Row);
 - 물론 주식 애플리케이션과 같이 세밀한 구독이 더 도움되는 경우도 존재한다. 이는 드물게 볼 수 있는 "모든것이 동시에, 끊임없이 업데이트 된다"의 한 예시이다. [Imperative escape hatch](https://stackoverflow.com/questions/56051973/what-is-an-imperative-escape-hatch/56052388)를 통해 이러한 애플리케이션을 최적화할 수 있지만, React가 이러한 유스 케이스에 적합하지 않을 수 있다. 하지만 여전히 자신만의 세밀한 구독 시스템을 React 위에 구현할 수 있다.
 - **세밀한 구독 시스템과 반응형 시스템으로도 해결할 수 없는 성능 이슈**가 존재한다. 예를 들면 브라우저를 blocking 하지 않고 (매 페이지 이동마다 발생하는) 새로운 깊은 트리를 렌더링 하는 경우가 있을 수 있다. 변경 사항을 추적하는 것은 오히려 구독을 설정하기 위해 더 많은 작업을 수행해야 해서 더 느려질 수 있다.
 - 또 다른 문제는 view 렌더링을 시작하기 전에 데이터를 기다려야 하는 상황이다. React에서는 이러한 두 가지 문제를 [Concurrent Rendering](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html)를 통해 해결하려고 한다.
+
+## 배치 작업 (Batching)
+
+- 여러 컴포넌트가 같은 이벤트에 대한 응답으로 상태를 변경하고자 하는 경우가 있을 수 있다. 아래의 일반적인 예시를 살펴보자:
+
+```jsx{4, 14}
+function Parent() {
+  let [count, setCount] = useState(0);
+  return (
+    <div onClick={() => setCount(count + 1)}>
+      Parent clicked {count} times
+      <Child />
+    </div>
+  );
+}
+
+function Child() {
+  let [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Child clicked {count} times
+    </button>
+  );
+}
+```
+
+- 이벤트가 전파(dispatch)되면 `Child`의 `onClick`이 먼저 실행되고, 그 다음 `Parent`의 `onClick`이 실행된다. 만약 `setState`가 호출되는 즉시 컴포넌트를 리렌더링 하게 되면 다음과 같이 `Child`가 (불필요하게) 두 번 렌더링되는 상황이 발생할 수 있다:
+
+```js{4, 8}
+/* React의 브라우저 클릭 이벤트 핸들러 내부 진입 */
+Child(onClick)
+  // setState
+  // "Child 리렌더링" // 😞 불필요하다!
+Parent(onClick)
+  // setState
+  // "Parent 리렌더링"
+  // "Child 리렌더링"
+/* React의 브라우저 클릭 이벤트 핸들러를 빠져나감 */
+```
+
+- 여기서 `Child` 첫 번째 렌더링은 불필요한 낭비이다. 그리고  `Parent`의 상태 변경으로 인해 `Child`가 다시 렌더링 되는 것이므로 React 보고 `Child`의 두 번째 렌더링을 건너뛰라고 할 수도 없다.
+- 이러한 이유로 React가 이벤트 핸들러 내에서 업데이트를 일괄적으로 처리하는 이유이다:
+
+```js
+/* React의 브라우저 클릭 이벤트 핸들러 내부 진입 */
+Child(onClick)
+  // setState
+Parent(onClick)
+  // setState
+  // 상태 업데이트 처리
+  // "Parent 리렌더링"
+  // "Child 리렌더링"
+/* React의 브라우저 클릭 이벤트 핸들러를 빠져나감 */
+```
+
+- 컴포넌트 내의 `setState`를 호출한다고 해서 즉각적으로 리렌더링이 발생하지 않는다. 대신, React는 우선 모든 이벤트 핸들러를 실행한 다음 모든 변경사항을 한꺼번에 반영하여 한 번만 리렌더링 한다.
+- 일괄 처리는 성능 측면에선 좋지만, 다음과 같이 코드를 작성한다면 문제가 될 수도 있다 [예제](https://codesandbox.io/s/react-batch-wrong-example-rzvkz?file=/src/App.js):
+
+```js
+const [count, setCount] = useState(0);
+
+function increment() {
+  setCount(count + 1);
+}
+
+function handleClick() {
+  increment();
+  increment();
+  increment();
+}
+```
+
+- `count`가 `0`일 때 `handleClick` 함수를 호출하면 결과적으로 세 개의 `setCount(1)`을 호출하는 것이나 다름없다. 따라서 `count`의 값이 `0`에서 `3`이 되는 것이 아니라 `1`이 된다.
+- 이 문제를 해결하려면 다음과 같이 `setState`에서 제공하는 "updater" 함수를 사용하면 된다 [예제](https://codesandbox.io/s/react-batch-proper-example-gy9de?file=/src/App.js):
+
+```js
+const [count, setCount] = useState(0);
+
+function increment() {
+  setCount(c => c + 1);
+}
+
+function handleClick() {
+  increment();
+  increment();
+  increment();
+}
+```
+
+- 위와 같이 `setState`의 updater 함수를 사용하면 React는 updater 함수를 큐에 저장해놓고 이후에 차례로 하나씩 실행한다. 위 예제에선 정상적으로 `count`의 값이 `3`씩 증가함을 알 수 있다.
+- 복잡한 상태 로직의 경우, `useState` 대신 [useReducer hook](https://reactjs.org/docs/hooks-reference.html#usereducer)을 사용하는 것을 추천한다:
+
+```jsx
+// "action" 인자는 무엇이든 될 수 있지만 일반적으로 객체가 많이 사용된다.
+const [counter, dispatch] = useReducer((state, action) => {
+  if (action === 'increment') {
+    return state + 1;
+  } else {
+    return state;
+  }
+}, 0);
+
+function handleClick() {
+  dispatch('increment');
+  dispatch('increment');
+  dispatch('increment');
+}
+```
