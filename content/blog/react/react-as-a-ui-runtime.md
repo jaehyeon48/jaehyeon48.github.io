@@ -612,7 +612,7 @@ function Example() {
 ## 메모이제이션 (Memoization)
 
 - 부모 요소가 `setState`를 호출하여 업데이트를 예약하면 기본적으로 React는 해당 요소의 자식 트리 전체를 재조정한다. 이는 React로선 부모 요소의 업데이트가 자식 요소들에게 영향을 미칠지 안 미칠지 알 수 없기 때문에, 일관성을 위해 하위의 자식 트리 전체를 업데이트하는 것이다. 얼핏 보기엔 굉장히 비용이 클 것 같지만 중소형 하위 트리에 대해선 별문제가 되지 않는다.
-- 트리가 너무 깊어지거나 너무 넓어지면 React로 하여금 하위 트리를 [memoize](https://en.wikipedia.org/wiki/Memoization)하여 얉은 prop 비교를 할 때 직전에 렌더링한 트리를 재사용하도록 할 수 있다:
+- 트리가 너무 깊어지거나 너무 넓어지면 React로 하여금 하위 트리를 [memoize](https://en.wikipedia.org/wiki/Memoization)하여 얕은 prop 비교를 할 때 직전에 렌더링한 트리를 재사용하도록 할 수 있다:
 
 ```jsx{5}
 function Row({ item }) {
