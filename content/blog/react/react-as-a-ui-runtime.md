@@ -878,3 +878,90 @@ function useWindowWidth() {
 ```
 
 - 이와 같이 커스텀 hook은 재사용 가능한 stateful 로직을 서로 다른 컴포넌트끼리 공유할 수 있게 해준다. 이때, 상태 자체는 공유되지 않으며, hook을 호출할 때마다 각자의 독립된 상태를 선언하게 된다. 커스텀 hook에 대해 더 자세히 알고 싶으면 [여기](https://reactjs.org/docs/hooks-custom.html)를 참조하라.
+
+## Hook의 규칙 (Static Use Order)
+
+- `useState`를 "React 상태 변수"를 선언하기 위한 문법으로 생각할 수도 있지만, (당연하게도) 문법이 아니다. 우리는 여전히 일반적인 자바스크립트를 프로그래밍 하고 있는 것이다. 하지만 우리는 현재 런타임으로서의 React를 살펴보고 있기 때문에, 그리고 React가 UI 트리를 구축하기 위해 자바스크립트를 사용하기 때문에 React의 기능들은 때로 (라이브러리가 아니라) 프로그래밍 언어의 영역에 더 가깝게 느껴질 때도 있다.
+- 만약 `use`가 문법이라면 다음의 코드는 말이 될 것이다:
+
+```jsx{3}
+// 😉 실제 문법이 아니다!
+component Example(props) {
+  const [count, setCount] = use State(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+- 만약 컴포넌트 바깥에 이를 선언하면 어떻게 될까?
+
+```jsx
+// 😉 실제 문법이 아니다!
+
+// 무엇의 지역 상태일까..?
+const [count, setCount] = use State(0);
+
+component Example() {
+  if (condition) {
+    // 조건이 false라면 무슨 일이 일어날까?
+    const [count, setCount] = use State(0);
+  }
+
+  function handleClick() {
+    // 함수가 종료되면 무슨 일이 일어날까?
+    // 일반적인 변수랑 뭐가 다를까?
+    const [count, setCount] = use State(0);
+  }
+```
+
+- React 상태는 컴포넌트와 컴포넌트 트리에 국한되는 지역 상태이다. 만약 `use`가 실제 문법이었다면 컴포넌트의 최상위 스코프로만 한정하는 것이 옳을 것이다:
+
+```jsx
+// 😉 실제 문법이 아니다!
+component Example(props) {
+  // 오직 여기서만(최상위 스코프) 유효하다!
+  const [count, setCount] = use State(0);
+
+  if (condition) {
+    // syntax error 이어야 한다.
+    const [count, setCount] = use State(0);
+  }
+```
+
+- 이는 `import`가 모듈의 최상위 스코프에서만 동작하는 것과 비슷한 맥락이다.
+- 물론 `use`는 실제 문법이 아니다. 만약 실제 문법이 된다고 해도 그에 따른 이득보단 문제가 더 많을 것이다.
+- 하지만 React는 오직 컴포넌트의 최상위 스코프에서만, 그리고 조건이 없는 구문(unconditional) 에서만 hook을 호출한다고 생각한다. 이와 같은 [hook의 규칙](https://reactjs.org/docs/hooks-rules.html)들은 [linter 플러그인](https://www.npmjs.com/package/eslint-plugin-react-hooks)을 통해 강제할 수 있다.
+- 실제로 이러한 설계에 대해선 논쟁이 있지만, 나는 실제로 이 규칙들이 사람들을 혼란스럽게 하는 경우를 보지 못했다. 또한 [일반적인 대안들이 왜 작동하지 않는지](https://overreacted.io/why-do-hooks-rely-on-call-order/)에 대한 포스트도 썼다.
+- 내부적으로 hook들은 연결 리스트로 구현되어 있다. `useState`를 호출하면 우리는 연결 리스트 내의 포인터를 그다음 항목으로 옮긴다. 컴포넌트의 호출 트리 프레임을 나가는 경우엔 리스트를 다음 렌더링까지 저장한다.
+- [이 글](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)에선 hook이 내부적으로 어떻게 동작하는지에 대해 간단히 설명하고 있다. 연결 리스트 보단 배열이 더 이해하기 쉬울 것이다:
+
+```js
+// 수도코드
+let hooks, i;
+function useState() {
+  i++;
+  if (hooks[i]) {
+    // 다음 렌더링
+    return hooks[i];
+  }
+  // 최초 렌더링
+  hooks.push(...);
+}
+
+// 렌더링 준비
+i = -1;
+hooks = fiber.hooks || [];
+// 컴포넌트 호출
+YourComponent();
+// hook의 상태를 저장
+fiber.hooks = hooks;
+```
+
+- (만약 실제 코드를 보고싶다면 [여기](https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactFiberHooks.new.js)를 참조하라.)
