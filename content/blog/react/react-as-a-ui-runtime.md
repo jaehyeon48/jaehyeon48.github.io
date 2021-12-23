@@ -851,3 +851,30 @@ useEffect(() => {
 ```
 
 - 코드에 따라서 `handleChange`가 매번 렌더링 될 때마다 달라지므로 불필요한 재구독(resubscription)이 발생할 수도 있다. 이 경우 [useCallback hook](https://reactjs.org/docs/hooks-reference.html#usecallback)을 사용할 수도 있고, 혹은 그냥 재구독되게끔 내버려 둘 수도 있다. 예를 들어 브라우저가 제공하는 `addEventListener` API는 엄청 빠르기 때문에, (불필요한 호출을 줄이려고) 성급하게 최적화했다가 오히려 성능이 더욱 나빠질 수 있다.
+
+## 커스텀 훅 (Custom Hooks)
+
+- `useState`, `useEffect`와 같은 hook들은 함수이기 때문에, 이들을 조합해서 직접 우리만의 hook을 만들 수 있다:
+
+```jsx{2, 8}
+function MyResponsiveComponent() {
+  const width = useWindowWidth(); // 우리가 만든 커스텀 hook
+  return (
+    <p>Window width is {width}</p>
+  );
+}
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
+  return width;
+}
+```
+
+- 이와 같이 커스텀 hook은 재사용 가능한 stateful 로직을 서로 다른 컴포넌트끼리 공유할 수 있게 해준다. 이때, 상태 자체는 공유되지 않으며, hook을 호출할 때마다 각자의 독립된 상태를 선언하게 된다. 커스텀 hook에 대해 더 자세히 알고 싶으면 [여기](https://reactjs.org/docs/hooks-custom.html)를 참조하라.
