@@ -579,3 +579,27 @@ function Page({ user, children }) {
 
 - (React가 컴포넌트를 호출함으로써) React는 컴포넌트를 호출할지 말 지 결정할 수 있다. `Page` 컴포넌트가 `children` prop 대신 `<h1>Please log in</h1>`을 렌더링한다면 React는 (`children` prop으로 넘어온) `<Comments>` 함수를 실행하지 않는다.
 - 요점은, 이렇게 함으로써 불필요한 렌더링을 줄일 수 있게 되고 또한 코드의 취약성을 줄일 수 있게 된다는 것이다.
+
+## 상태 (State)
+
+- 호스트 객체는 포커스, 선택, 입력과 같은 모든 종류의 지역 상태를 가질 수 있다. 우리는 동일한 UI를 업데이트할 때 이러한 지역 상태들을 유지하고자 하고, (`<SignupForm>`에서 `<MessengerChat>`으로 이동하는 것과 같이) 다른 UI로 변경할 때 상태들을 (예측대로) 날려버리길 원한다.
+- React 컴포넌트는 자체적으로 이렇게나 유용한 지역 상태를 가질 수 있다. 컴포넌트는 본질적으로 일반적인 함수이지만, React를 통해 UI에 유용한 상태들을 컴포넌트와 결합할 수 있다.
+- 우리는 이것을 **훅(Hooks)** 이라고 부른다. 예를 들면, `useState`는 hook이다.
+
+```jsx{2,6-7}
+function Example() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+- `useState`는 현재 상태와 상태를 업데이트 하는 함수로 구성된 쌍(pair)를 반환한다. [Array destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#array_destructuring)을 통해 `useState`가 반환하는 상태와 업데이트 함수의 이름을 지정할 수 있다.
+- `useState`를 비롯한 다른 여러가지 hook들은 [React 공식 문서](https://reactjs.org/docs/hooks-intro.html)에서 더 자세히 살펴볼 수 있다.
