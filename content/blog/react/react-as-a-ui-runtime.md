@@ -743,3 +743,12 @@ function handleClick() {
   dispatch('increment');
 }
 ```
+
+## 호출 트리 (Call Tree)
+
+- 프로그래밍 언어 런타임 환경은 일반적으로 호출 스택(call stack)을 가지고 있다. 여러 함수들을 호출하면 호출 스택에 함수들의 호출 순서를 기록하여 현재의 위치와 다음에 실행될 코드를 추적한다.
+- 물론 React는 자바스크립트로 동작하므로 (애초에 React는 "자바스크립트 라이브러리"다!) 자바스크립트의 규칙을 따른다. 하지만 React는 예를 들어 `[App, Page, Layout, Article(→ 현재 렌더링 하는 부분!)]`와 같이 현재 어떤 컴포넌트를 렌더링 하고 있는지 추적하기 위해 내부적으로 자체적인 호출 스택을 가지고 있다.
+- React는 UI 트리를 렌더링 하는 것이 주 목적임을 다시 한번 상기하자. 이 트리들은 상호 작용을 위해 계속해서 "살아 있어야 한다". 우리가 처음으로 `ReactDOM.render()`를 호출한 이후에도 DOM은 사라지지 않는다.
+- 다소 은유적인 표현이지만, 나는 React 컴포넌트들이 "호출 스택"이 아니라 "호출 트리" 내부에 있다고 생각한다. `Article` 컴포넌트의 렌더링이 끝나도 `Article`의 React "호출 트리" 프레임은 파괴되지 않고 남아있다. 우리는 해당 호스트 객체의 지역 상태와 참조를 [어딘가](https://medium.com/react-in-depth/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-67f1014d0eb7)에 저장해 두어야 한다.
+- 재조정 규칙에 의에 필요한 경우에만 지역 상태, 호스트 객체와 함께 "호출 트리" 프레임이 제거된다. 이때, 이러한 호출 트리 프레임을 흔히 [Fiber](https://en.wikipedia.org/wiki/Fiber_(computer_science))라고 부른다.
+- Fiber는 지역 상태들이 실제로 "살아 있는" 곳이다. 상태가 업데이트되면 React는 해당 Fiber와 그 자식들을 "재조정 대상"으로 표시해놓고, 해당 Fiber와 연관된 컴포넌트들을 호출한다.
