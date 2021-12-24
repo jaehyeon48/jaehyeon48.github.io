@@ -5,7 +5,7 @@ category: 'react'
 draft: false
 ---
 
-이 포스트는 [A Complete Guide to useEffect](https://overreacted.io/a-complete-guide-to-useeffect/)를 번역/요약한 글입니다.
+이 포스트는 [A Complete Guide to useEffect](https://overreacted.io/a-complete-guide-to-useeffect/)를 번역/요약한 글입니다. 원글의 작성일이 2019년 3월인 것을 감안해 주세요!
 
 <hr class="custom-hr">
 
@@ -1512,3 +1512,19 @@ function Article({ id }) {
 ```
 
 [이 글](https://www.robinwieruch.de/react-hooks-fetch-data/)에서 비동기 요청의 에러와 로딩 상태, 그리고 이러한 로직을 커스텀 훅으로 빼는 방법을 더 자세히 알 수 있습니다.
+
+## 기대치 높이기 (Raising the Bar)
+
+클래스 컴포넌트 라이프 사이클의 마인드 셋으로 접근하면 side effect들은 렌더링 결과들과는 다르게 동작하게 됩니다. UI를 렌더링 하는 것은 props와 state에 의해 좌우되며 이들과 일관된다는 보장이 있지만 side effect들은 아닙니다. 이것이 흔히 버그가 일어나는 원인입니다.
+
+`useEffect`의 마인드 셋으로 접근하면 모든 것이 기본적으로 동기화되고, side effect는 React 데이터 흐름의 일부가 됩니다. 모든 `useEffect` 호출에 대해 제대로만 사용한다면 여러분의 컴포넌트는 엣지 케이스들을 훨씬 잘 처리하게 될 것입니다.
+
+하지만 `useEffect`를 제대로 사용하기 위한 초기 비용은 꽤 높습니다. 짜증이 날 수도 있지요. 엣지 케이스들을 잘 처리하는 동기화 코드를 작성하는 것은 렌더링과 별개로 발생하는 일회성 side effect를 실행하는 것보다 훨씬 어렵습니다.
+
+이 때문에 `useEffect`를 사용하는 것이 꽤나 걱정스러울 수 있습니다. 하지만 `useEffect`는 기초적인 구성 요소입니다. 아직 hooks가 등장한지 얼마 안 된 시기라서 모두가 로우 레벨 수준으로 다루고 있습니다만, 차차 더 높은 수준으로 추상화된 hooks로 옮겨갈 것이라 예상됩니다.
+
+아직까지는 `useEffect`가 가장 흔히 사용되는 경우는 데이터 fetching인데, 사실 데이터 fetching은 동기화의 문제와 별 관련이 없습니다. 특히, 주로 deps가 `[]` 이기 때문에 더욱 명백해 보입니다. 그럼 우리는 도대체 무엇을 동기화하고 있는 걸까요?
+
+장기적인 관점에서, [데이터 fetching을 위한 서스펜스]()가 도입되면 서드 파티 라이브러리들이 React로 하여금 (코드, 데이터 이미지 등의) 비동기적인 것들을 가져올 때까지 렌더링을 잠시 미룰 수 있도록 할 것입니다.
+
+서스펜스가 점차 더 많은 데이터 fetching 경우를 커버하게 된다면, `useEffect`는 로우 레벨로 더욱 내려가서 props와 state들을 특정 side 이펙트와 동기화하고자 할 때 사용되는 도구로 변모하게 될 것입니다. 기본적으로 `useEffect`가 이것을 위해 설계되었다 보니 데이터 fetching 과는 다르게 이러한 케이스를 더욱 잘 처리할 수 있을 것입니다. 하지만 그때까진 [여기](https://www.robinwieruch.de/react-hooks-fetch-data/)에 나온 것처럼 커스텀 hook이 데이터를 가져오는 로직을 구성하는데 좋은 도구가 될 것입니다. (2021년 12월 현재 데이터 fetching과 관련된 로직은 [React Query](https://www.npmjs.com/package/react-query)를 점점 많이 사용하는 추세인 듯합니다)
