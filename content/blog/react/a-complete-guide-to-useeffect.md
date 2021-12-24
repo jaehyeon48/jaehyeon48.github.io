@@ -867,3 +867,40 @@ function Counter() {
 **두 번째 방법은 이펙트를 수정함으로써 우리가 원하는 것보다 더 자주 바뀌는 값을 필요로 하지 않게 하는 것입니다.** 이는 의존성에 대해 거짓말을 하는 것이 아니라, 의존성을 줄이기 위해 이펙트를 수정하는 것입니다.
 
 의존성을 줄이는 몇 가지 공통적인 테크닉을 살펴봅시다.
+
+## 이펙트가 자급자족 하도록 만들기 (Making Effects Self-Sufficient)
+
+현재 우리는 의존성에서 `count`를 제거하도록 만들고 싶습니다.
+
+```jsx{3,6}
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, [count]);
+```
+
+이렇게 하기 위해 우선 **무엇을 위해 `count`를 사용하고 있는지**에 대해 생각해 봐야 합니다. 여기선 `setCount`에서만 사용하고 있는 것 같군요. 사실 이 경우, 스코프에서 `count`를 사용할 필요가 전혀 없습니다. 이전 state를 기반으로 state를 업데이트하고 싶다면 `setState`의 [함수 형태의 업데이터](https://reactjs.org/docs/hooks-reference.html#functional-updates)를 사용할 수 있습니다:
+
+```jsx{3}
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(c => c + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+저는 이러한 경우를 "가짜 의존관계"라고 부르고 싶습니다. 맞아요. `setCount(count + 1)`에서 `count`를 사용하고 있었기 때문에 `count`는 이펙트에 필요한 의존성이었습니다. 하지만 `count + 1`을 하여 값을 1만큼 증가시킨 다음 다시 React에 돌려주기 위해 필요했던 겁니다. 하지만 React는 이미 현재의 `count` 값을 알고 있습니다. **우리가 해야하는 것은 그 값이 무엇이든 간에 값을 증가시키라고 React에게 말하는 겁니다.**
+
+그리고 이는 `setCount(c => c + 1)`가 하고 있는 역할입니다. 이러한 업데이터 형태는 [여러 개의 업데이트를 배치 처리](../react-as-a-ui-runtime/#배치-작업-batching)하는 경우에서도 유용하게 사용될 수 있습니다.
+
+이때, 여기서 **꼼수를 쓴 것이 아니라 의존성을 제거함으로써 문제를 해결했다는 것을 잘 알아두셔야 합니다. 우리의 이펙트는 더 이상 렌더링의 스코프에서 `counter` 값을 읽지 않습니다.** [예제](https://codesandbox.io/s/q3181xz1pj)
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/interval-right.gif" alt="Diagram of interval that works" />
+    <figcaption>의존성 값이 같기 때문에 이펙트를 재실행 하지 않음</figcaption>
+</figure>
+
+이렇게 하면 이펙트는 첫 렌더링 때 한 번만 실행되지만, 그때 등록된 인터벌은 `c => c + 1` 업데이터 함수를 통해 계속해서 값을 업데이트할 수 있습니다. 더 이상 인터벌이 현재의 `counter` 값을 알 필요가 없게 되었습니다. React가 이미 알고 있으니까요!
