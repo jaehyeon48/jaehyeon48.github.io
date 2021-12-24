@@ -1432,3 +1432,83 @@ function ColorPicker() {
 그렇지만 **`useCallback`을 여기저기서 막 사용하는 것은 좋지 않은 방법임을 강조하고 싶습니다.** 물론 함수가 자식 컴포넌트로 전달되어 (자식 컴포넌트의) 이펙트 내부에서 사용되는 경우에 `useCallback`는 유용합니다. 혹은 자식 컴포넌트의 메모이제이션이 고장 나는 것을 방지하기 위해 사용할 수도 있습니다. 하지만 hooks가 [콜백을 내려보내는 것을 피하는](https://reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down) 더 좋은 방법을 함께 제공하고 있다는 점을 알아두세요.
 
 위 예제라면 저는 `fetchData`를 이펙트 안에 두거나 (혹은 커스텀 hook으로 분리할 수도 있구요) 최상위 레벨 import 방식으로 만들 것 같습니다. 저는 이펙트를 최대한 심플하게 유지하려고 하는데 콜백이 이펙트안에 들어있으면 이펙트를 심플하게 유지하기 쉽지 않거든요. [클래스 방식을 흉내](./#흐름을-거슬러-올라가기-swimming-against-the-tide)낼 순 있겠지만 race condition을 해결할 수는 없습니다.
+
+## 경쟁 상태에 대해 (Speaking of Race Conditions)
+
+클래스 컴포넌트에서 데이터를 가져오는 일반적인 예시는 다음과 같을겁니다:
+
+```jsx
+class Article extends Component {
+  state = {
+    article: null
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  async fetchData(id) {
+    const article = await API.fetchArticle(id);
+    this.setState({ article });
+  }
+  // ...
+}
+```
+
+이미 잘 알고 계시겠지만 이 코드에는 업데이트되는 상황을 다루지 않는다는 버그가 있습니다. 그래서 구글링을 통해 다른 예제를 찾아보면 다음과 비슷할겁니다:
+
+```jsx{8-12}
+class Article extends Component {
+  state = {
+    article: null
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.fetchData(this.props.id);
+    }
+  }
+  async fetchData(id) {
+    const article = await API.fetchArticle(id);
+    this.setState({ article });
+  }
+  // ...
+}
+```
+
+훨씬 낫지만, 여전히 버그가 존재합니다. 버그가 발생하는 이유는 요청의 순서를 보장할 수 없기 때문입니다. 따라서 만약 제가 `{id: 10}`을 먼저 요청하고, `{id: 20}`으로 바꿨을 때 `{id: 20}` 요청의 결과가 먼저 도착하게 된다면 앞서 요청한 `{id: 10}` 결과가 도착했을 때 `{id: 20}`의 결과가 덮어씌워져 버리게 됩니다.
+
+이를 **경쟁 상태(race condition)** 라고 하는데, 위에서 아래로 데이터가 흐르는 상황에서 `async`/`await`가 섞여 있는 코드에 흔히 나타나는 현상입니다. 이때 데이터가 위에서 아래로 흐른다는 것은 props, state가 async 함수 실행 도중에 바뀔 수 있다는 의미입니다.
+
+이펙트가 마법같이 이 문제를 해결해주지는 않습니다. 대신, async 함수를 직접 이펙트에 전달하게 되면 경고를 띄웁니다.
+
+만약 여러분이 사용하는 비동기 접근 방식이 (요청) 취소 기능을 제공한다면 아주 좋습니다. 취소 기능을 클린업 함수에 넣어서 비동기 요청을 취소할 수 있기 때문이죠.
+
+혹은 boolean 값을 사용하는 방법도 있습니다:
+
+```jsx{5,9,16-18}
+function Article({ id }) {
+  const [article, setArticle] = useState(null);
+
+  useEffect(() => {
+    let didCancel = false;
+
+    async function fetchData() {
+      const article = await API.fetchArticle(id);
+      if (!didCancel) {
+        setArticle(article);
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      didCancel = true;
+    };
+  }, [id]);
+
+  // ...
+}
+```
+
+[이 글](https://www.robinwieruch.de/react-hooks-fetch-data/)에서 비동기 요청의 에러와 로딩 상태, 그리고 이러한 로직을 커스텀 훅으로 빼는 방법을 더 자세히 알 수 있습니다.
