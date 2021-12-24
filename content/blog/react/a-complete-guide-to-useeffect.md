@@ -1030,3 +1030,110 @@ function Counter({ step }) {
 "이게 왜 되는 거지? 어떻게 다른 렌더링에 속한 이펙트 안에서 reducer를 불렀는데 props를 알고 있는 거지?" 하고 궁금해하실 수 있을 겁니다. 이에 대한 해답은, `dispatch`를 호출하면 React는 액션을 기억해 놓습니다. 그리고선 다음번 렌더링 도중에 reducer를 호출합니다. 그럼 reducer가 호출된 그 순간에 새로운 props 값을 참조할 수 있게 되고 이펙트 내부와는 관련이 없게 되는 것이죠.
 
 **이것이 제가 `useReducer`를 hooks의 치트키라고 생각하는 이유입니다. `useReducer`는 어떤 일이 일어났는지 묘사하도록 함으로써 업데이트 로직을 분리시킬 수 있게 해줍니다. 이를 통해 이펙트의 의존성을 줄일 수 있고 더 나아가 이펙트가 추가적으로 불필요하게 실행되는 것을 방지해 줍니다.**
+
+## 함수를 이펙트 안으로 옮기기 (Moving Functions Inside Effects)
+
+함수를 의존성에 포함하면 안된다고 하시는 분들이 있는데, 이는 흔히 하는 실수 중 하나입니다. 예를 들어, 이 코드는 정상적으로 동작하는 것처럼 보입니다:
+
+```jsx{13}
+function SearchResults() {
+  const [data, setData] = useState({ hits: [] });
+
+  async function fetchData() {
+    const result = await axios(
+      'https://hn.algolia.com/api/v1/search?query=react',
+    );
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []); // 이래도 괜찮을까?
+
+  // ...
+```
+
+([이 예제](https://codesandbox.io/s/8j4ykjyv0)는 Robin Wieruch의 멋진 글에서 차용한 것입니다. [확인해보세요!](https://www.robinwieruch.de/react-hooks-fetch-data/))
+
+일단 이 코드는 정상적으로 동작하긴 합니다. **하지만 지역 함수를 의존성에서 제외하는 것은 컴포넌트가 커짐에 따라 우리가 모든 경우의 수를 전부 다루고 있는지 보장하기 힘들다는 점입니다.**
+
+위 코드가 여러 모듈로 분할되어 있고 함수도 한 5배 정도는 더 크다고 생각해봅시다:
+
+```jsx
+function SearchResults() {
+  // 이 함수가 훨씬 길다고 해봅시다
+  function getFetchUrl() {
+    return 'https://hn.algolia.com/api/v1/search?query=react';
+  }
+
+  // 이 함수 또한 훨씬 길다고 해봅시다
+  async function fetchData() {
+    const result = await axios(getFetchUrl());
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // ...
+}
+```
+
+그리고 추후에 이러한 지역함수에서 state 혹은 prop을 추가로 사용한다고 해봅시다:
+
+```jsx{6}
+function SearchResults() {
+  const [query, setQuery] = useState('react');
+
+  // 이 함수가 훨씬 길다고 해봅시다
+  function getFetchUrl() {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }
+
+  // 이 함수 또한 훨씬 길다고 해봅시다
+  async function fetchData() {
+    const result = await axios(getFetchUrl());
+    setData(result.data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // ...
+}
+```
+
+만약 이 함수를 사용하는 이펙트의 의존성에 이 함수를 추가하는 것을 깜빡하게 된다면 (혹은 이 함수를 사용하는 다른 함수를 사용하는 경우가 될 수도 있습니다 복잡하죠?), 해당 이펙트는 state와 prop의 변화에 동기화하지 못하게 됩니다.
+
+다행히 이 문제를 손쉽게 해결할 수 있는 방법이 있습니다. **만약 어떤 함수를 특정 이펙트 내에서만 사용한다면, 그 함수를 이펙트 내부로 옮기세요**:
+
+```jsx
+function SearchResults() {
+  // ...
+  useEffect(() => {
+    // 이 함수를 이펙트 내부로 옮겼어요!
+    function getFetchUrl() {
+      return 'https://hn.algolia.com/api/v1/search?query=react';
+    }
+    async function fetchData() {
+      const result = await axios(getFetchUrl());
+      setData(result.data);
+    }
+
+    fetchData();
+  }, []); // ✅ OK
+  // ...
+}
+```
+
+([데모](https://codesandbox.io/s/04kp3jwwql))
+
+이렇게 하면 더 이상 "전이되는(transitive) 의존성"에 신경 쓸 필요가 없습니다. **실제로 이펙트에서 이펙트 바깥에 존재하는 그 어떠한 것도 사용하고 있지 않기 때문이** 더 이상 의존성에 대해 거짓말을 하지 않게 되는 것이죠.
+
+추후에 `query` state를 사용하기 위해 `getFetchUrl`을 수정한다고 해도 이펙트 안에 있는 함수만 고치면 된다는 것을 쉽게 파악할 수 있습니다. 거기에 `query` state만 의존성에 추가하면 되겠지요.
+
+([데모](https://codesandbox.io/s/pwm32zx7z7))
+
+**`useEffect`의 설계는 여러분들로 하여금 데이터 흐름의 변화를 감지하도록 하고, 우리의 이펙트가 그 데이터에 대해 어떻게 동기화해야 하는지 선택하도록 강제합니다. 사용자가 버그를 겪을 때까지 무시하도록 내버려 두는 대신에요.**
