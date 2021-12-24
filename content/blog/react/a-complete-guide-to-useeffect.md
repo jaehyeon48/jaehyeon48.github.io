@@ -243,3 +243,103 @@ function Counter() {
 **특정 렌더링 때 존재하는 props와 상태는 영원히 같은 상태로 유지됩니다.**
 
 참고: 위 예제에서 저는 `handleAlertClick` 함수 안에 구체적인 `count` 값을 (변수 이름 대신) 치환하여 표시했습니다. 이는 `count`가 상수이고, 또 숫자이기 때문에 별 상관없습니다. 숫자 말고 다른 값에 대해서도 이러한 방식으로 생각하는 것은 괜찮지만, 객체의 경우엔 오로지 불변 객체를 사용한다는 전제가 있어야만 합니다. 예를 들어, `setSomething(newObj)`와 같이 기존의 객체를 변경시키는 것이 아니라 새로운 객체를 생성하여 전달하는 것은 이전 렌더링에 속해있는 상태를 변경시키는 것이 아니기 때문에 괜찮습니다.
+
+## 모든 렌더링은 각자의 effect를 가진다 (Each Render Has Its Own Effects)
+
+이제 진짜로 effect에 대해서 살펴봅시다! 사실, effect라고 해서 크게 다른 건 없습니다. [공식 문서](https://reactjs.org/docs/hooks-effect.html)에 있는 예제를 살펴봅시다:
+
+```jsx{4-6}
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    document.title = `You clicked ${count} times`;
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+여기서 질문! effect는 어떻게 해서 최신의 `count` 상태를 읽는 걸까요? 혹시 "데이터 바인딩"과 같은 무언가 특별한 일이 effect 함수 내에서 일어나는 걸까요? 아니면 `count`가 가변 변수라서 effect가 항상 최신 값을 읽을 수 있게끔 React가 값을 세팅해 주는 걸까요?
+
+전부 아닙니다! 🙅
+
+이미 우리는 `count`가 특정 렌더링에 속한 상수라는 것을 잘 알고 있습니다. `count`는 특정 렌더링 때의 스코프에 속하는 상수이기 때문에 이벤트 핸들러는 그 렌더링에 속한 `count`를 볼 수 있습니다. Effect도 이와 마찬가지입니다!
+
+**변하지 않는 effect 내에서 `count` 값이 어찌어찌 변하는 것이 아닙니다. 변하는 것은 effect 입니다. Effect는 매 렌더링마다 변하게 됩니다.**
+
+(렌더링마다 변하는) 각각의 이펙트는 해당 이펙트가 속하는 렌더링 내의 `count`를 "보는" 것입니다. 마치 앞서 살펴본 이벤트 핸들러의 경우처럼요:
+
+```jsx{5-8,17-20,29-32}
+// 첫 렌더링 시
+function Counter() {
+  // ...
+  useEffect(
+    // 첫 렌더링 때의 effect 함수
+    () => {
+      document.title = `You clicked ${0} times`;
+    }
+  );
+  // ...
+}
+
+// 버튼을 다시 클릭하면 Counter가 다시 호출됨
+function Counter() {
+  // ...
+  useEffect(
+    // 두 번째 렌더링 때의 effect 함수
+    () => {
+      document.title = `You clicked ${1} times`;
+    }
+  );
+  // ...
+}
+
+// 버튼을 또 다시 클릭하면 Counter가 다시 호출됨
+function Counter() {
+  // ...
+  useEffect(
+    // 세 번째 렌더링 때의 effect 함수
+    () => {
+      document.title = `You clicked ${2} times`;
+    }
+  );
+  // ..
+}
+```
+
+React는 여러분이 제공한 effect 함수를 기억해 두었다가, DOM에 변화를 반영(flush)하고 스크린에 페인팅을 하고 난 후에 실행합니다. 지금 우리는 하나의 개념으로 "이펙트"를 이야기하고 있지만, 실질적으로 이펙트는 매 렌더링마다 서로 다른 함수입니다. 그리고 이렇게 서로 다른 각각의 이펙트 함수들은 자신들이 속한 렌더링에 존재하는 props와 상태를 참조하는 것입니다.
+
+(엄밀히 따지자면 아니지만) 개념적으로 이펙트를 렌더링 결과의 일부로 생각할 수 있습니다. 현재 멘탈 모델을 형성하고 있는 과정에서, 이펙트 함수들은 (이벤트 핸들러의 경우처럼) 특정 렌더링에 종속된다고 생각하셔도 좋습니다.
+
+여기까지 잘 이해했는지를 점검하기 위해, 첫 번째 렌더링을 되짚어 봅시다:
+
+- **React**: 상태가 `0`일때의 UI를 보여줘.
+- **컴포넌트**:
+  - 여기있어: `<p>You clicked 0 times</p>`.
+  - 아, 그리고 이 이펙트를 실행하는 것을 잊지마: `() => { document.title = 'You clicked 0 times' }`
+- **React**: 물론이지. UI를 업데이트 해야겠어. 브라우저야, DOM에 뭘 좀 추가하려고 해.
+- **브라우저**: 좋아. 화면에 페인팅할게.
+- **React**: 좋아. 이제 컴포넌트가 준 이펙트를 실행해야겠어.
+  - `() => { document.title = 'You clicked 0 times' }` 실행
+
+<br/>
+
+이번엔 클릭 이후에 어떤 일이 일어나는지를 되짚어 봅시다:
+
+- **컴포넌트**: React야, 내 상태를 `1`로 바꿔줘.
+- **React**: 좋아. 상태가 `1`일때의 UI를 보여줘.
+- **컴포넌트**:
+  - 여기있어: `<p>You clicked 1 times</p>`.
+  - 아, 그리고 이 이펙트를 실행하는 것을 잊지마: `() => { document.title = 'You clicked 1 times' }`
+- **React**: 물론이지. UI를 업데이트 해야겠어. 브라우저야, DOM을 변경할게!
+- **브라우저**: 좋아. 화면에 변경사항을 페인팅할게.
+- **React**: 좋아. 이제 방금 렌더링에 속한 이펙트를 실행해야겠어.
+  - `() => { document.title = 'You clicked 1 times' }` 실행
