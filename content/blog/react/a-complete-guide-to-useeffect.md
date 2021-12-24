@@ -914,3 +914,80 @@ useEffect(() => {
 결과 대신 의도를 나타내는 것은 구글 독스가 [협동 편집 기능](https://srijancse.medium.com/how-real-time-collaborative-editing-work-operational-transformation-ac4902d75682)에 관한 문제를 해결한 방법과 흡사합니다. 다소 과장된 비유일 수 있으나, 이는 함수형 업데이트가 React에서 하는 역할과 비슷합니다. 함수형 업데이트들은 (이벤트 핸들러, 이펙트 구독과 같은) 여러 소스에서 이루어지는 업데이트를 예측 가능한 방식으로 정확하게 모아서 처리할 수 있도록 보장합니다.
 
 **하지만 `setCount(c => c + 1)`과 같은 형태도 그리 좋은 방법은 아닙니다.** 좀 이상해 보이기도 하고 할 수 있는 일이 굉장히 제한적입니다. 예를 들어 서로를 의존하는 두 개의 state가 있다든가, 혹은 prop을 기반으로 다음 state를 계산해야 하는 등의 상황에서 함수형 업데이트는 그다지 많은 도움이 되지 않습니다. 다행히도, `setCount(c => c + 1)`에는 `useReducer`라는 더욱 강력한 자매 패턴이 존재합니다.
+
+## 액션으로 부터 업데이트 떼어내기 (Decoupling Updates from Actions)
+
+이전에 살펴본 예제를 `count`와 `step` 두 가지 state를 가지는 컴포넌트로 바꿔봅시다. 이제 인터벌은 `step` 입력 값에 따라 `count` 값을 더하게 될 것입니다.
+
+```jsx{7,10}
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(c => c + step);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [step]);
+
+  return (
+    <>
+      <h1>{count}</h1>
+      <input value={step} onChange={e => setStep(Number(e.target.value))} />
+    </>
+  );
+}
+```
+
+([예제](https://codesandbox.io/s/zxn70rnkx))
+
+이 예제에서 `step`이 변경되면 인터벌이 재시작됩니다 (이펙트의 의존성 중 하나이니까요!). 그리고 대부분의 경우 이게 우리가 원하는 결과입니다. 이펙트를 분해하여 재설정하는 것에 아무런 문제가 없습니다. 특별히 좋은 이유가 없는 한 이를 피할 필요가 없습니다.
+
+하지만 만약 `step`이 변경되어도 인터벌을 리셋하고 싶지 않으면 어떻게 해야될까요? 이펙트 의존성에서 `step`을 어떻게 제거할 수 있을까요?
+
+**어떤 state가 다른 state의 현재 값에 의존하는 경우, 이 둘을 (`useState` 대신) `useReducer`로 교체해야 할 수도 있습니다.**
+
+`setSomething(sth => ...)`와 같은 함수 업데이트를 사용한다면 reducer 사용을 한번 고려해 보세요. **Reducer는 컴포넌트에서 발생한 "액션"에 대한 표현과, 그에 대한 반응으로 일어나는 state 업데이트를 분리하도록 해줍니다.**
+
+`step` 의존성을 `dispatch` 의존성으로 바꿔봅시다:
+
+```jsx{1,6,9}
+const [state, dispatch] = useReducer(reducer, initialState);
+const { count, step } = state;
+
+useEffect(() => {
+  const id = setInterval(() => {
+    dispatch({ type: 'tick' }); //setCount(c => c + step); 대신
+  }, 1000);
+  return () => clearInterval(id);
+}, [dispatch]);
+```
+
+([데모](https://codesandbox.io/s/xzr480k0np))
+
+"이게 왜 더 좋은 건가요?"라고 물어보실 수도 있을텐데, 이렇게 하면 **컴포넌트가 유지되는 동안에는 `dispatch` 함수가 항상 같다는 것을 React가 보장합니다. 따라서 위 예제의 경우 인터벌이 재구독 되는 일은 발생하지 않습니다.**
+
+이제 문제가 해결됐네요!
+
+(아마 여러분은 `dispatch`, `setState`, `useRef`의 값이 항상 같다는 것을 React가 보장하기 때문에 이것들을 deps에서 뺄 수도 있습니다. 하지만 적는다고 해서 나쁠 건 없습니다 🙂)
+
+변경된 예제에선 이펙트 안에서 state를 읽는것 대신에, 어떤 일이 일어났는지에 대한 정보를 담고 있는 "액션"을 발생시킵니다. 덕분에 우리의 이펙트를 `step` state로 부터 분리할 수 있습니다. 이제 이펙트는 **어떻게** 상태를 업데이트 하는지에는 관심없고 오로지 **무엇이** 일어났는지만 알려줍니다. 그리고 reducer가 업데이트 로직들을 모아서 관리합니다:
+
+```jsx{8-9}
+const initialState = {
+  count: 0,
+  step: 1,
+};
+
+function reducer(state, action) {
+  const { count, step } = state;
+  if (action.type === 'tick') {
+    return { count: count + step, step };
+  } else if (action.type === 'step') {
+    return { count, step: action.step };
+  } else {
+    throw new Error();
+  }
+}
+```
