@@ -400,3 +400,64 @@ componentDidUpdate() {
 **클로저는 클로저로 감싸려고(close over, 즉 접근하려고)하는 값이 절.대.로. 바뀌지 않는 경우에 유용합니다. 이렇게 하면 근본적으로 상수를 참조하는 것이기 때문에 생각하기 쉽도록 만들어줍니다.** 그리고 우리가 앞서 살펴봤듯이 props와 상태는 특정 렌더링 내에선 절.대. 바뀌지 않습니다.
 
 (그나저나 위 클래스 컴포넌트 버전의 문제는 [클로저를 이용해서](https://codesandbox.io/s/w7vjo07055) 고칠 수 있습니다..😂)
+
+## 흐름을 거슬러 올라가기 (Swimming Against the Tide)
+
+이쯤에서, 다시 한번 이 구절을 되짚어봅시다: "컴포넌트 렌더링 내에 존재하는 모든 함수 (이벤트 핸들러, 이펙드, 타임아웃 혹은 API 호출 등)는 렌더링 될 때의 props와 state를 캡처합니다".
+
+따라서 아래의 두 예제는 사실상 동일합니다:
+
+```jsx{4}
+function Example(props) {
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(props.counter);
+    }, 1000);
+  });
+  // ...
+}
+```
+
+```jsx{2,5}
+function Example(props) {
+  const counter = props.counter;
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(counter);
+    }, 1000);
+  });
+  // ...
+}
+```
+
+**컴포넌트 내에서 props나 상태를 얼마나 일찍 읽어들였는지는 사실 상관이 없습니다.** 왜냐면 이들은 변하지 않을 테니까요! 한 렌더링의 스코프 내에서 props와 상태는 항상 변하지 않은 채 남아있게 됩니다.
+
+물론, 때로는 이벤트 내에 정의한 콜백에서 사전에 캡처한 값 말고 최신의 값을 읽고 싶을 때가 있습니다. 가장 쉬운 방법은 `ref`를 이용하는 방법인데, [이 포스트](https://overreacted.io/how-are-function-components-different-from-classes/)의 마지막 섹션에 설명되어 있습니다.
+
+과거의 렌더링 시점에서 미래의 props 혹은 상태를 읽는 것은 흐름을 거슬러 올라가는 것임을 유의하세요. 물론 이는 잘못된 것이 아니지만 (사실 때로는 필요하기도 합니다), 일반적인 패러다임에서 벗어나는 것이 덜 깨끗해 보일 수 있으니까요. 사실 이는 의도된 결과인데 이렇게 하면 코드의 연약한 부분과 타이밍에 민감한 부분을 잘 나타낼 수 있습니다. 클래스 컴포넌트에서는 언제 이러한 일이 일어나는지 잘 보이지 않을 수가 있습니다.
+
+아래의 코드는 앞서 살펴본 클래스 컴포넌트 카운터 예제를 `ref`를 이용하여 따라한 버전입니다:
+
+```jsx{3,6-7,9-10}
+function Example() {
+  const [count, setCount] = useState(0);
+  const latestCount = useRef(count);
+
+  useEffect(() => {
+    // 변경 가능한 최신의 값으로 설정
+    latestCount.current = count;
+    setTimeout(() => {
+      // 변경 가능한 최신의 값을 참조
+      console.log(`You clicked ${latestCount.current} times`);
+    }, 3000);
+  });
+  // ...
+```
+
+[예제](https://codesandbox.io/s/rm7z22qnlp)
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/timeout_counter_refs.gif" alt="Timeout counter with ref demo" />
+</figure>
+
+React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습니다. 하지만 이는 React가 클래스에서 `this.state`를 변경하는 방식과 동일합니다. 캡처된 props, 상태와는 달리 특정 콜백에서 `latestCount.current`를 읽을 때 언제나 같은 값을 읽을 거라는 보장은 없습니다. 정의된 바에 따라 언제든 그 값을 변경할 수 있습니다. 그렇기 때문에 이는 React에서 기본적인 동작이 아니며 여러분이 직접 가져다 사용해야 합니다.
