@@ -461,3 +461,79 @@ function Example() {
 </figure>
 
 React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습니다. 하지만 이는 React가 클래스에서 `this.state`를 변경하는 방식과 동일합니다. 캡처된 props, 상태와는 달리 특정 콜백에서 `latestCount.current`를 읽을 때 언제나 같은 값을 읽을 거라는 보장은 없습니다. 정의된 바에 따라 언제든 그 값을 변경할 수 있습니다. 그렇기 때문에 이는 React에서 기본적인 동작이 아니며 여러분이 직접 가져다 사용해야 합니다.
+
+## 클린업이란 무엇인가? (So What About Cleanup?)
+
+[공식 문서](https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup)에서 설명한 대로, 몇몇 effect들은 클린업 단계를 거칠 수도 있습니다. 본질적으로 클린업은 구독과 같은 effect를 "되돌리는(undo)" 것입니다. 다음의 코드를 살펴봅시다:
+
+```jsx
+useEffect(() => {
+  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange);
+  return () => {
+    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange);
+  };
+});
+```
+
+첫 번째 렌더링에서 `props`는 `{id: 10}`이고, 두 번째 렌더링에선 `{id: 20}`이라고 해봅시다. 아마 여러분은 다음과 같은 일이 일어날 것이라고 생각하실 겁니다:
+
+- React가 `{id: 10}`인 effect를 클린업 한다.
+- `{id: 20}`일 때의 UI를 렌더링 한다.
+- `{id: 20}`일 때의 effect를 실행한다.
+
+하지만 실제론 이와 조금 다릅니다.
+
+이러한 멘탈 모델 대로라면, 클린업이 리렌더링 되기 전에 실행되기 때문에 이전의 props를 볼 수 있고, 새로운 이펙트는 리렌더링 이후에 실행되기 때문에 새로운 props를 본다고 생각할 수 있습니다. 사실 이는 클래스 컴포넌트의 라이프 사이클을 그대로 반영한 것이라, **여기서는 잘못된 내용입니다**. 왜 그런지 살펴봅시다.
+
+React는 [브라우저가 페인팅을 하고 나서야](https://medium.com/@dan_abramov/this-benchmark-is-indeed-flawed-c3d6b5b6f97f) effect를 실행합니다. 이렇게 하면 화면 업데이트를 blocking하지 않기 때문에 앱을 더 빠르게 할 수 있습니다. 물론 effect 클린업 또한 미뤄지고요. **이전 effect의 클린업은 새로운 props와 함께 리렌더링 되고 난 뒤에 수행됩니다:**
+
+- React가 `{id: 20}`일 때의 UI를 렌더링 한다.
+- 브라우저가 페인팅 한다. 이제 사용자는 `{id: 20}`일 때의 UI를 화면에서 볼 수 있다.
+- React가 `{id: 10}`인 effect를 클린업 한다.
+- `{id: 20}`일 때의 effect를 실행한다.
+
+하지만 여기서, "그럼 어떻게 이전 effect의 클린업이 현재 props가 `{id: 20}`임에도 불구하고 여전히 `{id: 10}`인 이전 props를 볼 수 있는 거지? " 하고 궁금하실 수도 있을 겁니다.
+
+어.. 근데 이거 어디서 겪어본 상황 같지 않나요? 🤔
+
+전에 살펴본 단락을 인용해 보자면:
+
+> 컴포넌트 렌더링 내에 존재하는 모든 함수 (이벤트 핸들러, effect, 타임아웃 혹은 API 호출 등)는 해당 함수를 정의한 렌더링 당시의 props와 state를 캡처합니다
+
+이제 답이 명확해진 것 같네요! 이펙트 클린업은 "최신" 버전의 props를 읽는 것이 아니라, 해당 이펙트 클린업 (함수)가 정의된 렌더링 당시의 props를 읽습니다.
+
+```jsx{8-11}
+// 첫 번째 렌더링. props는 {id: 10} 이다.
+function Example() {
+  // ...
+  useEffect(
+    // 첫 렌더링의 이펙트
+    () => {
+      ChatAPI.subscribeToFriendStatus(10, handleStatusChange);
+      // 첫 렌더링의 (이펙트의) 클린업
+      return () => {
+        ChatAPI.unsubscribeFromFriendStatus(10, handleStatusChange);
+      };
+    }
+  );
+  // ...
+}
+
+// 그 다음 렌더링. props는 {id: 20} 이다.
+function Example() {
+  // ...
+  useEffect(
+    // 두 번째 렌더링의 이펙트
+    () => {
+      ChatAPI.subscribeToFriendStatus(20, handleStatusChange);
+      // 두 번째 렌더링의 (이펙트의) 클린업
+      return () => {
+        ChatAPI.unsubscribeFromFriendStatus(20, handleStatusChange);
+      };
+    }
+  );
+  // ...
+}
+```
+
+이것이 React로 하여금 페인팅 이후에 이펙트를 다룰 수 있게 하는 방식입니다. 이전의 props (그리고 상태) 들은 원한다면 계속해서 남아있습니다.
