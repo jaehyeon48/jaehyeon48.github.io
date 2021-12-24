@@ -991,3 +991,42 @@ function reducer(state, action) {
   }
 }
 ```
+
+## 왜 useReducer가 Hook의 치트키인가 (Why useReducer Is the Cheat Mode of Hooks)
+
+이제 우리는 이펙트가 이전 state 혹은 다른 state를 기반으로 state를 업데이트 하는 경우에 어떻게 의존성을 제거할 수 있는지 알게 되었습니다. **하지만 만약 다음 state를 계산하기 위해 props가 필요한 경우엔 어떻게 해야 할까요?** 예를 들어, API가 `<Count step={1}>`인 경우인 거죠. 이 경우엔 `props.step`을 의존성 배열에 추가해야만 하겠죠?
+
+사실 의존성 추가를 하지 않아도 됩니다! Reducer를 컴포넌트 안에 넣어서 props를 읽게 하면 되거든요!
+
+```jsx{1,6}
+function Counter({ step }) {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  function reducer(state, action) {
+    if (action.type === 'tick') {
+      return state + step;
+    } else {
+      throw new Error();
+    }
+  }
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      dispatch({ type: 'tick' });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [dispatch]);
+
+  return <h1>{count}</h1>;
+}
+```
+
+([데모](https://codesandbox.io/s/7ypm405o8q))
+
+이 방법을 이용하면 reducer 에서도 props에 접근할 수 있지만, 그렇다고 무턱대고 여기 저기 사용하면 몇 가지 성능 최적화 작업을 할 수 없기 때문에 막 쓰지는 마세요.
+
+위 예제의 경우에서조차 `dispatch`는 컴포넌트가 리렌더링 되어도 변하지 않습니다. 그래서 원한다면 `dispatch`를 의존성에서 제거할 수 있습니다.
+
+"이게 왜 되는 거지? 어떻게 다른 렌더링에 속한 이펙트 안에서 reducer를 불렀는데 props를 알고 있는 거지?" 하고 궁금해하실 수 있을 겁니다. 이에 대한 해답은, `dispatch`를 호출하면 React는 액션을 기억해 놓습니다. 그리고선 다음번 렌더링 도중에 reducer를 호출합니다. 그럼 reducer가 호출된 그 순간에 새로운 props 값을 참조할 수 있게 되고 이펙트 내부와는 관련이 없게 되는 것이죠.
+
+**이것이 제가 `useReducer`를 hooks의 치트키라고 생각하는 이유입니다. `useReducer`는 어떤 일이 일어났는지 묘사하도록 함으로써 업데이트 로직을 분리시킬 수 있게 해줍니다. 이를 통해 이펙트의 의존성을 줄일 수 있고 더 나아가 이펙트가 추가적으로 불필요하게 실행되는 것을 방지해 줍니다.**
