@@ -343,3 +343,60 @@ React는 여러분이 제공한 effect 함수를 기억해 두었다가, DOM에 
 - **브라우저**: 좋아. 화면에 변경사항을 페인팅할게.
 - **React**: 좋아. 이제 방금 렌더링에 속한 이펙트를 실행해야겠어.
   - `() => { document.title = 'You clicked 1 times' }` 실행
+
+## 모든 렌더링은 각자의 고유한 모든것을 가진다 (Each Render Has Its Own… Everything)
+
+이제 우리는 이펙트가 매 렌더링 때마다 실행되고, 개념적으론 렌더링 결과의 일부이며 특정 렌더링에 속한 props와 상태를 "볼 수 있다"는 사실을 알고 있습니다.
+
+한번 사고실험을 해봅시다. 다음의 코드를 봐주세요:
+
+```jsx{4-8}
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(`You clicked ${count} times`);
+    }, 3000);
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+만약 제가 조금씩 끊어서 버튼을 여러 번 누른다면 어떤 결과가 일어날까요?
+
+만약 이 문제가 일종의 함정이라고 생각해서 결과가 예상과는 다를 거라고 생각하셨을 수도 있지만, 아닙니다! 각 `setTimeout`은 각각의 렌더링에 속하기 때문에 해당 렌더 시의 `count`를 참조합니다. [직접 실험해 보세요!](https://codesandbox.io/s/lyx20m1ol)
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/timeout_counter.gif" alt="Timeout counter demo" />
+</figure>
+
+혹은, "아니 당연히 저렇게 동작하겠지!" 라고 생각하셨을 수도 있겠습니다만... [클래스 컴포넌트](https://codesandbox.io/s/kkymzwjqz3)에서는 아닙니다 😂
+
+```jsx
+componentDidUpdate() {
+  setTimeout(() => {
+    console.log(`You clicked ${this.state.count} times`);
+  }, 3000);
+}
+```
+
+여기서 `this.state.count`는 각 렌더링에 속하는 상태 대신 항상 최신의 상태를 참조합니다. 따라서 `5`가 다섯 번 출력되는 것을 보실 겁니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/timeout_counter_class.gif" alt="Timeout counter class demo" />
+</figure>
+
+정작 자바스크립트 클로저와 훨씬 연관된 건 hook인데 [전통적으로 클로저와 관련된](http://wsvincent.com/javascript-scope-closures/#closures-in-the-wild) 문제는 클래스 컴포넌트에서 더 많이 발생한다는 것이 참 아이러니합니다. 사실 이 예제에서 발생하는 문제의 원인은 클로저 그 자체가 아니라, 변이, 즉 React가 `this.state`가 최신 상태의 값을 가리키도록 변경하기 때문입니다.
+
+**클로저는 클로저로 감싸려고(close over, 즉 접근하려고)하는 값이 절.대.로. 바뀌지 않는 경우에 유용합니다. 이렇게 하면 근본적으로 상수를 참조하는 것이기 때문에 생각하기 쉽도록 만들어줍니다.** 그리고 우리가 앞서 살펴봤듯이 props와 상태는 특정 렌더링 내에선 절.대. 바뀌지 않습니다.
+
+(그나저나 위 클래스 컴포넌트 버전의 문제는 [클로저를 이용해서](https://codesandbox.io/s/w7vjo07055) 고칠 수 있습니다..😂)
