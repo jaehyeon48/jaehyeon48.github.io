@@ -693,3 +693,115 @@ function SearchResults() {
 이런 식으로 하면 가끔 무한 루프가 발생한다든가, 소켓이 너무 자주 재연결 되는 등의 문제가 생길 순 있습니다. 하지만 이에 대한 해결책은 deps를 제거하는 것이 아닙니다! 이 해결책에 대해선 잠시 후에 살펴봅시다.
 
 근데 일단 해결책을 살펴보기 전에, 문제를 좀 더 자세히 알아봅시다.
+
+## 의존성으로 거짓말 하면 생기는 일 (What Happens When Dependencies Lie)
+
+만약 이펙트가 사용하는 모든 값을 deps에 명시한다면 React는 언제 이펙트를 재실행해야 하는지 알 수 있습니다:
+
+```jsx{3}
+useEffect(() => {
+  document.title = 'Hello, ' + name;
+}, [name]);
+```
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/deps-compare-correct.gif" alt="Diagram of effects replacing one another" />
+    <figcaption>의존성 값이 다르기 때문에 이펙트를 재실행</figcaption>
+</figure>
+
+하지만 여기서 의존성을 `[]`로 명시한다면 이펙트 함수가 새로 실행되지 않을 겁니다:
+
+```jsx{3}
+  useEffect(() => {
+    document.title = 'Hello, ' + name;
+  }, []); // 잘못된 의존성
+```
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/deps-compare-wrong.gif" alt="Diagram of effects replacing one another" />
+    <figcaption>의존성 값이 같기 때문에 이펙트를 재실행 하지 않음</figcaption>
+</figure>
+
+이 경우엔 문제가 꽤 명확해 보입니다. 하지만 다른 경우에선 클래스 컴포넌트 방식의 해결책이 튀어나와 이러한 직관을 방해할 수 있습니다.
+
+예를 들어 매 초마다 값을 증가시키는 카운터를 작성한다고 해봅시다. 클래스 컴포넌트로 작성한다면, [이 예제](https://codesandbox.io/s/n5mjzjy9kl)에서와같이 우리는 "인터벌을 한 번만 설정하고, 한 번만 해제하자"가 될 겁니다. 이걸 `useEffect` 방식으로 옮긴다면 다음과 같이 직관적으로 deps를 `[]`로 작성할 겁니다. "이걸 한 번만 실행하고 싶어" 라고요:
+
+```jsx{9}
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <h1>{count}</h1>;
+}
+```
+
+하지만 이 예제는 값을 [오직 한 번만](https://codesandbox.io/s/91n5z8jo7r) 증가시킵니다. 이럴 수가..
+
+만약 여러분의 멘탈 모델이 "의존성 배열은 내가 언제 이펙트를 재실행하고 싶은지 지정할 때 사용된다" 와 같다면 위 예제를 보았을 때 큰 혼란에 휩싸이게 될 것입니다. 당연히 인터벌이니까 한 번만 실행하고 싶으시겠죠. 뭐가 문제일까요?
+
+반면 의존성 배열은 이펙트가 한 렌더링의 스코프 내에서 사용하는 모든 것에 대해 React에게 알려주는 힌트라고 생각하신다면 위 예제가 왜 저렇게 동작하는지 이해가 되실 겁니다. 위 예제에서는 `count`를 사용하고 있지만 이를 deps에 추가하지 않고 `[]`라고 거짓말을 했습니다. 이 거짓말 때문에 버그가 생기는 것은 시간문제입니다!
+
+첫 번째 렌더링에서 `count`의 값은 `0` 입니다. 따라서 첫 번째 렌더링에서의 `setCount(count + 1)`는 실제로 `setCount(0 + 1)`을 의미합니다. 이때, deps가 `[]` 이므로 이펙트는 첫 렌더링 이후에 다시 실행되지 않고, 결과적으로 매 초마다 `setCount(0 + 1)`을 호출하게 됩니다.
+
+```jsx{8,12,21-22}
+// 첫 렌더링. state는 0
+function Counter() {
+  // ...
+  useEffect(
+    // 첫 렌더링의 이펙트
+    () => {
+      const id = setInterval(() => {
+        setCount(0 + 1); // 항상 setCount(1)
+      }, 1000);
+      return () => clearInterval(id);
+    },
+    [] // 절대 재실행되지 않음
+  );
+  // ...
+}
+
+// 그 다음 렌더링. state는 1
+function Counter() {
+  // ...
+  useEffect(
+    // 우리가 React에게 deps가 없다고 거짓말을 했기 때문에
+    // 이 이펙트는 항상 스킵됨
+    () => {
+      const id = setInterval(() => {
+        setCount(1 + 1);
+      }, 1000);
+      return () => clearInterval(id);
+    },
+    []
+  );
+  // ...
+}
+```
+
+우리의 이펙트는 컴포넌트 안에 존재하는 `count`를 참조하고 있습니다:
+
+```jsx{1,5}
+  const count = // ...
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+```
+
+따라서 deps를 `[]`라고 하면 버그가 발생할 것입니다. React는 의존성을 비교하여 이펙트 재실행을 스킵하게 됩니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/interval-wrong.gif" alt="Diagram of stale interval closure" />
+    <figcaption>의존성 값이 같기 때문에 이펙트를 재실행 하지 않음</figcaption>
+</figure>
+
+이러한 이슈는 고려하기 어렵기 때문에, 저는 여러분께 언제나 이펙트의 의존성을 솔직하게 전부 명시하라고 권장하고 싶습니다.
