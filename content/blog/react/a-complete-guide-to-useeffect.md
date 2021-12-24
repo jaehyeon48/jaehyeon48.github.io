@@ -573,3 +573,97 @@ function Greeting({ name }) {
 당연하겠지만 매 렌더링마다 이펙트를 실행하는 것은 비효율적일 수 있습니다. 그리고 어느 경우엔 무한 루프가 발생할 수도 있고요.
 
 그럼 이걸 어떻게 고칠 수 있을까요?
+
+## 이펙트를 비교하는 법 가르치기 (Teaching React to Diff Your Effects)
+
+이미 우리가 배웠듯이, React는 실제로 변화가 생긴 부분에 대해서만 DOM을 업데이트 합니다.
+
+아래 컴포넌트를
+
+```jsx
+<h1 className="Greeting">
+  Hello, Dan
+</h1>
+```
+
+이렇게 바꾼다면
+
+```jsx
+<h1 className="Greeting">
+  Hello, Yuzhi
+</h1>
+```
+
+React는 다음의 두 객체를 비교하게 됩니다:
+
+```jsx
+const oldProps = {className: 'Greeting', children: 'Hello, Dan'};
+const newProps = {className: 'Greeting', children: 'Hello, Yuzhi'};
+```
+
+각각의 props를 살펴보고 `children`이 바뀌었기 때문에 DOM 업데이트가 필요하다는 것을 알았습니다. 하지만 `className`은 그대로이므로 React는 아래와 같이 행동할 것입니다:
+
+```js
+domNode.innerText = 'Hello, Yuzhi';
+// domNode.className 은 건드릴 필요가 없다
+```
+
+이걸 이펙트에도 적용할 수 있을까요? 굳이 이펙트를 적용할 필요가 없는 경우엔 이펙트를 실행하지 않는 것이 더 좋을 테니까요.
+
+예를 들어, state가 변경되어 컴포넌트가 리렌더링 되었다고 해봅시다:
+
+```jsx{11-13}
+function Greeting({ name }) {
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    document.title = 'Hello, ' + name;
+  });
+
+  return (
+    <h1 className="Greeting">
+      Hello, {name}
+      <button onClick={() => setCounter(count + 1)}>
+        Increment
+      </button>
+    </h1>
+  );
+}
+```
+
+하지만 여기서 이펙트는 `counter` state를 사용하고 있지 않습니다. 이펙트는 현재 `document.title`과 `name` prop을 동기화하고 있지만, `name` prop은 바뀌지 않았습니다. 따라서 `counter`가 바뀔 때마다 `document.title`을 다시 할당하는 것은 그다지 바람직하지 않은 것 같습니다.
+
+좋습니다 그럼... React가 이펙트를 비교하도록 하면 안될까요?
+
+```js
+let oldEffect = () => { document.title = 'Hello, Dan'; };
+let newEffect = () => { document.title = 'Hello, Dan'; };
+// React가 위 두 함수를 같은 함수라고 인식할 수 있을까요?
+```
+
+흠...  그렇게는 안 될 것 같네요. React는 실제로 함수를 호출하지 않고서는 함수가 무엇을 하는지 알아낼 수 없습니다. (저 코드는 어떤 특정한 값을 담고 있는 것이 아니라, `name` prop에 있는 것을 가져온 것뿐입니다.)
+
+이로 인해 특정 이펙트가 불필요하게 재실행되는 것을 방지하기 위해 `useEffect`의 인자로 의존성 배열 ("dep"이라고도 불리는 녀석입니다) 을 넘기는 이유입니다:
+
+```jsx{3}
+useEffect(() => {
+  document.title = 'Hello, ' + name;
+}, [name]); // 우리의 의존성
+```
+
+위 코드는 마치 React에게 "React야, 이펙트에서 `name` 말고 다른 값은 사용하지 않는다고 약속할게!"라고 하는 것과 같습니다.
+
+이전에 이펙트를 실행했을 때와 현재 이펙트를 실행하는 순간에 대해, 의존성 배열에 있는 각각의 값들이 모두 동일하다면 동기화할 것이 없으므로 React는 해당 이펙트의 실행을 건너뛰게 됩니다:
+
+```jsx
+const oldEffect = () => { document.title = 'Hello, Dan'; };
+const oldDeps = ['Dan'];
+
+const newEffect = () => { document.title = 'Hello, Dan'; };
+const newDeps = ['Dan'];
+
+// React는 함수 안을 들여다볼 순 없으나, dep을 비교할 순 있다.
+// 모든 dep이 같으므로 새 effect를 실행할 필요가 없다.
+```
+
+만약 의존성 배열에 있는 값 중 단 하나라도 이전과 다르다면 이펙트는 실행됩니다. (동기화 해야 하기 때문이죠!)
