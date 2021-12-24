@@ -15,29 +15,27 @@ draft: false
 
 ```jsx{6}
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
 ([예제](https://codesandbox.io/s/simple-counter-app-52qyt?file=/src/App.js))
 
-저게 도대체 무엇을 의미하는 걸까요? `count`가 상태의 변화를 어찌어찌 "관찰"해서 자동으로 업데이트하는 걸까요? 글쎄요, React를 처음 배우면서 직관적으로 그렇게 생각할 수는 있으나 사실 이는 [정확한 멘탈 모델](../react-as-a-ui-runtime)이 아닙니다.
+저게 도대체 무엇을 의미하는 걸까요? `count`가 state의 변화를 어찌어찌 "관찰"해서 자동으로 업데이트하는 걸까요? 글쎄요, React를 처음 배우면서 직관적으로 그렇게 생각할 수는 있으나 사실 이는 [정확한 멘탈 모델](../react-as-a-ui-runtime)이 아닙니다.
 
 여기서 `count`는 "데이터 바인딩", "watcher", "프록시" 와 같은 그 어느 것도 아닙니다. **이 예제에서 `count`는 단순히 숫자에 불과합니다.** 아래와 같이 말이죠:
 
 ```jsx
-const count = 42;
+const count = 42
 // ...
-<p>You clicked {count} times </p>
+;<p>You clicked {count} times </p>
 // ...
 ```
 
@@ -46,30 +44,30 @@ const count = 42;
 ```jsx{3,11,19}
 // 첫 렌더링 시
 function Counter() {
-  const count = 0; // useState()에 의해 반환됨
+  const count = 0 // useState()에 의해 반환됨
   // ...
-  <p>You clicked {count} times</p>
-  // ...
-}
-
-// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨 
-function Counter() {
-  const count = 1; // useState()에 의해 반환됨
-  // ...
-  <p>You clicked {count} times</p>
+  ;<p>You clicked {count} times</p>
   // ...
 }
 
-// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨 
+// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨
 function Counter() {
-  const count = 2; // useState()에 의해 반환됨
+  const count = 1 // useState()에 의해 반환됨
   // ...
-  <p>You clicked {count} times</p>
+  ;<p>You clicked {count} times</p>
+  // ...
+}
+
+// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨
+function Counter() {
+  const count = 2 // useState()에 의해 반환됨
+  // ...
+  ;<p>You clicked {count} times</p>
   // ...
 }
 ```
 
-**상태를 업데이트할 때마다 React는 컴포넌트를 호출합니다. 그리고 각 렌더링 결과는 함수 (컴포넌트) 안에서 constant로 존재하는 각자의 고유한 `counter` 상태 값을 참조합니다.**
+**state를 업데이트할 때마다 React는 컴포넌트를 호출합니다. 그리고 각 렌더링 결과는 함수 (컴포넌트) 안에서 constant로 존재하는 각자의 고유한 `counter` state 값을 참조합니다.**
 
 즉, 위에서 하이라이트 한 줄은 그 어떠한 데이터 바인딩도 수행하지 않습니다:
 
@@ -89,33 +87,29 @@ function Counter() {
 
 ```jsx{4-8,16-18}
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count);
-    }, 3000);
+      alert('You clicked on: ' + count)
+    }, 3000)
   }
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-      <button onClick={handleAlertClick}>
-        Show alert
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={handleAlertClick}>Show alert</button>
     </div>
-  );
+  )
 }
 ```
 
 이때, 다음의 과정을 수행한다고 해봅시다:
 
-  - 카운트 값을 3으로 증가시킨다.
-  - "Show alert" 버튼을 누른다.
-  - 타임아웃이 실행되기 전에 카운트 값을 5로 증가시킨다.
+- 카운트 값을 3으로 증가시킨다.
+- "Show alert" 버튼을 누른다.
+- 타임아웃이 실행되기 전에 카운트 값을 5로 증가시킨다.
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/counter.gif" alt="Counter demo" />
@@ -125,71 +119,71 @@ function Counter() {
 
 [직접 해보세요!](https://codesandbox.io/s/w2wxl3yo0l)
 
-만약 실행 결과가 잘 이해되지 않는다면, 좀 더 실질적인 예시를 한번 생각해 봅시다. 채팅 앱에서, 현재 상태로 수신자 ID를 가지고 있고 전송 버튼을 누른 경우를 상상해 봅시다. 왜 alert에 3이 출력되었는지에 대해선 [이 글](https://overreacted.io/how-are-function-components-different-from-classes/)이 자세히 설명해 줄 것입니다.
+만약 실행 결과가 잘 이해되지 않는다면, 좀 더 실질적인 예시를 한번 생각해 봅시다. 채팅 앱에서, 현재 state로 수신자 ID를 가지고 있고 전송 버튼을 누른 경우를 상상해 봅시다. 왜 alert에 3이 출력되었는지에 대해선 [이 글](https://overreacted.io/how-are-function-components-different-from-classes/)이 자세히 설명해 줄 것입니다.
 
-Alert는 제가 버튼을 눌렀을 때의 상태를 "캡처" 한 것입니다.
+Alert는 제가 버튼을 눌렀을 때의 state를 "캡처" 한 것입니다.
 
 하지만 왜 이렇게 동작하는 걸까요?
 
-앞서 우리는 `count` 값이 매번 호출되는 함수 (컴포넌트)에 대한 "상수"임을 살펴봤습니다. 저는 이걸 특히 강조하고 싶은데, **우리의 함수 (컴포넌트)는 매번 렌더링 될 때마다 호출되지만, 각 순간마다 해당 함수에 존재하는 `count` 값은 해당 렌더링 때의 상태 값을 가지는 "상수"입니다.**
+앞서 우리는 `count` 값이 매번 호출되는 함수 (컴포넌트)에 대한 "상수"임을 살펴봤습니다. 저는 이걸 특히 강조하고 싶은데, **우리의 함수 (컴포넌트)는 매번 렌더링 될 때마다 호출되지만, 각 순간마다 해당 함수에 존재하는 `count` 값은 해당 렌더링 때의 state 값을 가지는 "상수"입니다.**
 
 이건 React에 국한되는 것이 아닙니다. 일반적인 자바스크립트 함수들도 이와 비슷한 방식으로 동작합니다:
 
 ```jsx{2}
 function sayHi(person) {
-  const name = person.name;
+  const name = person.name
   setTimeout(() => {
-    alert('Hello, ' + name);
-  }, 3000);
+    alert('Hello, ' + name)
+  }, 3000)
 }
 
-let someone = { name: 'Dan' };
-sayHi(someone);
+let someone = { name: 'Dan' }
+sayHi(someone)
 
-someone = { name: 'Yuzhi' };
-sayHi(someone);
+someone = { name: 'Yuzhi' }
+sayHi(someone)
 
-someone = { name: 'Dominic' };
-sayHi(someone);
+someone = { name: 'Dominic' }
+sayHi(someone)
 ```
 
-[이 예제](https://codesandbox.io/s/mm6ww11lk8)에서 (함수) 외부의 `someone` 변수는 React 어딘가에서 컴포넌트의 현재 상태가 바뀌는 것처럼 여러 번 재할당 되고 있습니다. 하지만 `sayHi` 함수 내에는 특정 호출 시의 `person`과 연관된 `name` 이라는 지역 상수가 존재합니다. 이 상수는 지역 상수이므로 각각의 함수 호출과는 분리되어 있습니다. 이로 인해 타임아웃이 발생했을 때 각 alert가 해당 alert를 발생시킨 함수 호출 시의 `name`을 "기억"하는 것입니다. 만약 `name`이 각 함수 호출과 분리되어 있지 않다면 결과적으로 `Dominic`만 세 번 출력되겠죠?
+[이 예제](https://codesandbox.io/s/mm6ww11lk8)에서 (함수) 외부의 `someone` 변수는 React 어딘가에서 컴포넌트의 현재 state가 바뀌는 것처럼 여러 번 재할당 되고 있습니다. 하지만 `sayHi` 함수 내에는 특정 호출 시의 `person`과 연관된 `name` 이라는 지역 상수가 존재합니다. 이 상수는 지역 상수이므로 각각의 함수 호출과는 분리되어 있습니다. 이로 인해 타임아웃이 발생했을 때 각 alert가 해당 alert를 발생시킨 함수 호출 시의 `name`을 "기억"하는 것입니다. 만약 `name`이 각 함수 호출과 분리되어 있지 않다면 결과적으로 `Dominic`만 세 번 출력되겠죠?
 
 이를 통해 어떻게 이벤트 핸들러가 버튼을 클릭한 순간의 `count` 값을 "캡처"할 수 있는지에 대해 알 수 있습니다:
 
 ```jsx{3,15,27}
 // 첫 렌더링 시
 function Counter() {
-  const count = 0; // useState()에 의해 반환됨
+  const count = 0 // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count);
-    }, 3000);
+      alert('You clicked on: ' + count)
+    }, 3000)
   }
   // ...
 }
 
 // 버튼을 클릭하면 Counter가 다시 호출됨
 function Counter() {
-  const count = 1; // useState()에 의해 반환됨
+  const count = 1 // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count);
-    }, 3000);
+      alert('You clicked on: ' + count)
+    }, 3000)
   }
   // ...
 }
 
 // 버튼을 클릭하면 Counter가 다시 호출됨
 function Counter() {
-  const count = 2; // useState()에 의해 반환됨
+  const count = 2 // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count);
-    }, 3000);
+      alert('You clicked on: ' + count)
+    }, 3000)
   }
   // ...
 }
@@ -203,11 +197,11 @@ function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 0);
-    }, 3000);
+      alert('You clicked on: ' + 0)
+    }, 3000)
   }
   // ...
-  <button onClick={handleAlertClick} /> // "0"이 안에 들어있음
+  ;<button onClick={handleAlertClick} /> // "0"이 안에 들어있음
   // ...
 }
 
@@ -216,11 +210,11 @@ function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 1);
-    }, 3000);
+      alert('You clicked on: ' + 1)
+    }, 3000)
   }
   // ...
-  <button onClick={handleAlertClick} /> // "1"이 안에 들어있음
+  ;<button onClick={handleAlertClick} /> // "1"이 안에 들어있음
   // ...
 }
 
@@ -229,20 +223,20 @@ function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 2);
-    }, 3000);
+      alert('You clicked on: ' + 2)
+    }, 3000)
   }
   // ...
-  <button onClick={handleAlertClick} /> // "2"가 안에 들어있음
+  ;<button onClick={handleAlertClick} /> // "2"가 안에 들어있음
   // ...
 }
 ```
 
-이것이 [이 데모에서]() 이벤트 핸들러가 특정 렌더링에 "종속"되어 있는 이유이며, 버튼을 클릭했을 때 이벤트 핸들러가 해당 렌더링 순간의 `counter` 상태를 사용하는 이유입니다.
+이것이 [이 데모에서]() 이벤트 핸들러가 특정 렌더링에 "종속"되어 있는 이유이며, 버튼을 클릭했을 때 이벤트 핸들러가 해당 렌더링 순간의 `counter` state를 사용하는 이유입니다.
 
-**특정 렌더링 때 존재하는 props와 상태는 영원히 같은 상태로 유지됩니다.**
+**특정 렌더링 때 존재하는 props와 state는 영원히 같은 state로 유지됩니다.**
 
-참고: 위 예제에서 저는 `handleAlertClick` 함수 안에 구체적인 `count` 값을 (변수 이름 대신) 치환하여 표시했습니다. 이는 `count`가 상수이고, 또 숫자이기 때문에 별 상관없습니다. 숫자 말고 다른 값에 대해서도 이러한 방식으로 생각하는 것은 괜찮지만, 객체의 경우엔 오로지 불변 객체를 사용한다는 전제가 있어야만 합니다. 예를 들어, `setSomething(newObj)`와 같이 기존의 객체를 변경시키는 것이 아니라 새로운 객체를 생성하여 전달하는 것은 이전 렌더링에 속해있는 상태를 변경시키는 것이 아니기 때문에 괜찮습니다.
+참고: 위 예제에서 저는 `handleAlertClick` 함수 안에 구체적인 `count` 값을 (변수 이름 대신) 치환하여 표시했습니다. 이는 `count`가 상수이고, 또 숫자이기 때문에 별 상관없습니다. 숫자 말고 다른 값에 대해서도 이러한 방식으로 생각하는 것은 괜찮지만, 객체의 경우엔 오로지 불변 객체를 사용한다는 전제가 있어야만 합니다. 예를 들어, `setSomething(newObj)`와 같이 기존의 객체를 변경시키는 것이 아니라 새로운 객체를 생성하여 전달하는 것은 이전 렌더링에 속해있는 state를 변경시키는 것이 아니기 때문에 괜찮습니다.
 
 ## 모든 렌더링은 각자의 effect를 가진다 (Each Render Has Its Own Effects)
 
@@ -250,24 +244,22 @@ function Counter() {
 
 ```jsx{4-6}
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  });
+    document.title = `You clicked ${count} times`
+  })
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
-여기서 질문! effect는 어떻게 해서 최신의 `count` 상태를 읽는 걸까요? 혹시 "데이터 바인딩"과 같은 무언가 특별한 일이 이펙트 함수 내에서 일어나는 걸까요? 아니면 `count`가 가변 변수라서 effect가 항상 최신 값을 읽을 수 있게끔 React가 값을 세팅해 주는 걸까요?
+여기서 질문! effect는 어떻게 해서 최신의 `count` state를 읽는 걸까요? 혹시 "데이터 바인딩"과 같은 무언가 특별한 일이 이펙트 함수 내에서 일어나는 걸까요? 아니면 `count`가 가변 변수라서 effect가 항상 최신 값을 읽을 수 있게끔 React가 값을 세팅해 주는 걸까요?
 
 전부 아닙니다! 🙅
 
@@ -284,9 +276,9 @@ function Counter() {
   useEffect(
     // 첫 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${0} times`;
+      document.title = `You clicked ${0} times`
     }
-  );
+  )
   // ...
 }
 
@@ -296,9 +288,9 @@ function Counter() {
   useEffect(
     // 두 번째 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${1} times`;
+      document.title = `You clicked ${1} times`
     }
-  );
+  )
   // ...
 }
 
@@ -308,20 +300,20 @@ function Counter() {
   useEffect(
     // 세 번째 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${2} times`;
+      document.title = `You clicked ${2} times`
     }
-  );
+  )
   // ..
 }
 ```
 
-React는 여러분이 제공한 이펙트 함수를 기억해 두었다가, DOM에 변화를 반영(flush)하고 스크린에 페인팅을 하고 난 후에 실행합니다. 지금 우리는 하나의 개념으로 "이펙트"를 이야기하고 있지만, 실질적으로 이펙트는 매 렌더링마다 서로 다른 함수입니다. 그리고 이렇게 서로 다른 각각의 이펙트 함수들은 자신들이 속한 렌더링에 존재하는 props와 상태를 참조하는 것입니다.
+React는 여러분이 제공한 이펙트 함수를 기억해 두었다가, DOM에 변화를 반영(flush)하고 스크린에 페인팅을 하고 난 후에 실행합니다. 지금 우리는 하나의 개념으로 "이펙트"를 이야기하고 있지만, 실질적으로 이펙트는 매 렌더링마다 서로 다른 함수입니다. 그리고 이렇게 서로 다른 각각의 이펙트 함수들은 자신들이 속한 렌더링에 존재하는 props와 state를 참조하는 것입니다.
 
 (엄밀히 따지자면 아니지만) 개념적으로 이펙트를 렌더링 결과의 일부로 생각할 수 있습니다. 현재 멘탈 모델을 형성하고 있는 과정에서, 이펙트 함수들은 (이벤트 핸들러의 경우처럼) 특정 렌더링에 종속된다고 생각하셔도 좋습니다.
 
 여기까지 잘 이해했는지를 점검하기 위해, 첫 번째 렌더링을 되짚어 봅시다:
 
-- **React**: 상태가 `0`일때의 UI를 보여줘.
+- **React**: state가 `0`일때의 UI를 보여줘.
 - **컴포넌트**:
   - 여기있어: `<p>You clicked 0 times</p>`.
   - 아, 그리고 이 이펙트를 실행하는 것을 잊지마: `() => { document.title = 'You clicked 0 times' }`
@@ -334,8 +326,8 @@ React는 여러분이 제공한 이펙트 함수를 기억해 두었다가, DOM�
 
 이번엔 클릭 이후에 어떤 일이 일어나는지를 되짚어 봅시다:
 
-- **컴포넌트**: React야, 내 상태를 `1`로 바꿔줘.
-- **React**: 좋아. 상태가 `1`일때의 UI를 보여줘.
+- **컴포넌트**: React야, 내 state를 `1`로 바꿔줘.
+- **React**: 좋아. state가 `1`일때의 UI를 보여줘.
 - **컴포넌트**:
   - 여기있어: `<p>You clicked 1 times</p>`.
   - 아, 그리고 이 이펙트를 실행하는 것을 잊지마: `() => { document.title = 'You clicked 1 times' }`
@@ -346,28 +338,26 @@ React는 여러분이 제공한 이펙트 함수를 기억해 두었다가, DOM�
 
 ## 모든 렌더링은 각자의 고유한 모든것을 가진다 (Each Render Has Its Own… Everything)
 
-이제 우리는 이펙트가 매 렌더링 때마다 실행되고, 개념적으론 렌더링 결과의 일부이며 특정 렌더링에 속한 props와 상태를 "볼 수 있다"는 사실을 알고 있습니다.
+이제 우리는 이펙트가 매 렌더링 때마다 실행되고, 개념적으론 렌더링 결과의 일부이며 특정 렌더링에 속한 props와 state를 "볼 수 있다"는 사실을 알고 있습니다.
 
 한번 사고실험을 해봅시다. 다음의 코드를 봐주세요:
 
 ```jsx{4-8}
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(`You clicked ${count} times`);
-    }, 3000);
-  });
+      console.log(`You clicked ${count} times`)
+    }, 3000)
+  })
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -389,15 +379,15 @@ componentDidUpdate() {
 }
 ```
 
-여기서 `this.state.count`는 각 렌더링에 속하는 상태 대신 항상 최신의 상태를 참조합니다. 따라서 `5`가 다섯 번 출력되는 것을 보실 겁니다.
+여기서 `this.state.count`는 각 렌더링에 속하는 state 대신 항상 최신의 state를 참조합니다. 따라서 `5`가 다섯 번 출력되는 것을 보실 겁니다.
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/timeout_counter_class.gif" alt="Timeout counter class demo" />
 </figure>
 
-정작 자바스크립트 클로저와 훨씬 연관된 건 hook인데 [전통적으로 클로저와 관련된](http://wsvincent.com/javascript-scope-closures/#closures-in-the-wild) 문제는 클래스 컴포넌트에서 더 많이 발생한다는 것이 참 아이러니합니다. 사실 이 예제에서 발생하는 문제의 원인은 클로저 그 자체가 아니라, 변이, 즉 React가 `this.state`가 최신 상태의 값을 가리키도록 변경하기 때문입니다.
+정작 자바스크립트 클로저와 훨씬 연관된 건 hook인데 [전통적으로 클로저와 관련된](http://wsvincent.com/javascript-scope-closures/#closures-in-the-wild) 문제는 클래스 컴포넌트에서 더 많이 발생한다는 것이 참 아이러니합니다. 사실 이 예제에서 발생하는 문제의 원인은 클로저 그 자체가 아니라, 변이, 즉 React가 `this.state`가 최신 state의 값을 가리키도록 변경하기 때문입니다.
 
-**클로저는 클로저로 감싸려고(close over, 즉 접근하려고)하는 값이 절.대.로. 바뀌지 않는 경우에 유용합니다. 이렇게 하면 근본적으로 상수를 참조하는 것이기 때문에 생각하기 쉽도록 만들어줍니다.** 그리고 우리가 앞서 살펴봤듯이 props와 상태는 특정 렌더링 내에선 절.대. 바뀌지 않습니다.
+**클로저는 클로저로 감싸려고(close over, 즉 접근하려고)하는 값이 절.대.로. 바뀌지 않는 경우에 유용합니다. 이렇게 하면 근본적으로 상수를 참조하는 것이기 때문에 생각하기 쉽도록 만들어줍니다.** 그리고 우리가 앞서 살펴봤듯이 props와 state는 특정 렌더링 내에선 절.대. 바뀌지 않습니다.
 
 (그나저나 위 클래스 컴포넌트 버전의 문제는 [클로저를 이용해서](https://codesandbox.io/s/w7vjo07055) 고칠 수 있습니다..😂)
 
@@ -411,30 +401,30 @@ componentDidUpdate() {
 function Example(props) {
   useEffect(() => {
     setTimeout(() => {
-      console.log(props.counter);
-    }, 1000);
-  });
+      console.log(props.counter)
+    }, 1000)
+  })
   // ...
 }
 ```
 
 ```jsx{2,5}
 function Example(props) {
-  const counter = props.counter;
+  const counter = props.counter
   useEffect(() => {
     setTimeout(() => {
-      console.log(counter);
-    }, 1000);
-  });
+      console.log(counter)
+    }, 1000)
+  })
   // ...
 }
 ```
 
-**컴포넌트 내에서 props나 상태를 얼마나 일찍 읽어들였는지는 사실 상관이 없습니다.** 왜냐면 이들은 변하지 않을 테니까요! 한 렌더링의 스코프 내에서 props와 상태는 항상 변하지 않은 채 남아있게 됩니다.
+**컴포넌트 내에서 props나 state를 얼마나 일찍 읽어들였는지는 사실 상관이 없습니다.** 왜냐면 이들은 변하지 않을 테니까요! 한 렌더링의 스코프 내에서 props와 state는 항상 변하지 않은 채 남아있게 됩니다.
 
 물론, 때로는 이벤트 내에 정의한 콜백에서 사전에 캡처한 값 말고 최신의 값을 읽고 싶을 때가 있습니다. 가장 쉬운 방법은 `ref`를 이용하는 방법인데, [이 포스트](https://overreacted.io/how-are-function-components-different-from-classes/)의 마지막 섹션에 설명되어 있습니다.
 
-과거의 렌더링 시점에서 미래의 props 혹은 상태를 읽는 것은 흐름을 거슬러 올라가는 것임을 유의하세요. 물론 이는 잘못된 것이 아니지만 (사실 때로는 필요하기도 합니다), 일반적인 패러다임에서 벗어나는 것이 덜 깨끗해 보일 수 있으니까요. 사실 이는 의도된 결과인데 이렇게 하면 코드의 연약한 부분과 타이밍에 민감한 부분을 잘 나타낼 수 있습니다. 클래스 컴포넌트에서는 언제 이러한 일이 일어나는지 잘 보이지 않을 수가 있습니다.
+과거의 렌더링 시점에서 미래의 props 혹은 state를 읽는 것은 흐름을 거슬러 올라가는 것임을 유의하세요. 물론 이는 잘못된 것이 아니지만 (사실 때로는 필요하기도 합니다), 일반적인 패러다임에서 벗어나는 것이 덜 깨끗해 보일 수 있으니까요. 사실 이는 의도된 결과인데 이렇게 하면 코드의 연약한 부분과 타이밍에 민감한 부분을 잘 나타낼 수 있습니다. 클래스 컴포넌트에서는 언제 이러한 일이 일어나는지 잘 보이지 않을 수가 있습니다.
 
 아래의 코드는 앞서 살펴본 클래스 컴포넌트 카운터 예제를 `ref`를 이용하여 따라한 버전입니다:
 
@@ -460,7 +450,7 @@ function Example() {
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/timeout_counter_refs.gif" alt="Timeout counter with ref demo" />
 </figure>
 
-React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습니다. 하지만 이는 React가 클래스에서 `this.state`를 변경하는 방식과 동일합니다. 캡처된 props, 상태와는 달리 특정 콜백에서 `latestCount.current`를 읽을 때 언제나 같은 값을 읽을 거라는 보장은 없습니다. 정의된 바에 따라 언제든 그 값을 변경할 수 있습니다. 그렇기 때문에 이는 React에서 기본적인 동작이 아니며 여러분이 직접 가져다 사용해야 합니다.
+React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습니다. 하지만 이는 React가 클래스에서 `this.state`를 변경하는 방식과 동일합니다. 캡처된 props, state와는 달리 특정 콜백에서 `latestCount.current`를 읽을 때 언제나 같은 값을 읽을 거라는 보장은 없습니다. 정의된 바에 따라 언제든 그 값을 변경할 수 있습니다. 그렇기 때문에 이는 React에서 기본적인 동작이 아니며 여러분이 직접 가져다 사용해야 합니다.
 
 ## 클린업이란 무엇인가? (So What About Cleanup?)
 
@@ -468,11 +458,11 @@ React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습�
 
 ```jsx
 useEffect(() => {
-  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange);
+  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange)
   return () => {
-    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange);
-  };
-});
+    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange)
+  }
+})
 ```
 
 첫 번째 렌더링에서 `props`는 `{id: 10}`이고, 두 번째 렌더링에선 `{id: 20}`이라고 해봅시다. 아마 여러분은 다음과 같은 일이 일어날 것이라고 생각하실 겁니다:
@@ -509,13 +499,13 @@ function Example() {
   useEffect(
     // 첫 렌더링의 이펙트
     () => {
-      ChatAPI.subscribeToFriendStatus(10, handleStatusChange);
+      ChatAPI.subscribeToFriendStatus(10, handleStatusChange)
       // 첫 렌더링의 (이펙트의) 클린업
       return () => {
-        ChatAPI.unsubscribeFromFriendStatus(10, handleStatusChange);
-      };
+        ChatAPI.unsubscribeFromFriendStatus(10, handleStatusChange)
+      }
     }
-  );
+  )
   // ...
 }
 
@@ -525,15 +515,15 @@ function Example() {
   useEffect(
     // 두 번째 렌더링의 이펙트
     () => {
-      ChatAPI.subscribeToFriendStatus(20, handleStatusChange);
+      ChatAPI.subscribeToFriendStatus(20, handleStatusChange)
       // 두 번째 렌더링의 (이펙트의) 클린업
       return () => {
-        ChatAPI.unsubscribeFromFriendStatus(20, handleStatusChange);
-      };
+        ChatAPI.unsubscribeFromFriendStatus(20, handleStatusChange)
+      }
     }
-  );
+  )
   // ...
 }
 ```
 
-이것이 React로 하여금 페인팅 이후에 이펙트를 다룰 수 있게 하는 방식입니다. 이전의 props (그리고 상태) 들은 원한다면 계속해서 남아있습니다.
+이것이 React로 하여금 페인팅 이후에 이펙트를 다룰 수 있게 하는 방식입니다. 이전의 props (그리고 state) 들은 원한다면 계속해서 남아있습니다.
