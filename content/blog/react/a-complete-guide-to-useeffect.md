@@ -1308,3 +1308,127 @@ function Child({ fetchData }) {
 ```
 
 `fetchData`는 오로지 `Parent` 안에 있는 `query`가 변경될 때에만 바뀌므로, `Child`는 꼭 필요한 경우가 아니라면 데이터를 fetch 하지 않게 됩니다.
+
+## 함수도 데이터 흐름의 일부일까? (Are Functions Part of the Data Flow?)
+
+흥미롭게도, 이 패턴은 클래스 컴포넌트 방식에선 통하지 않는데 이게 이펙트와 클래스 컴포넌트의 라이프 사이클간의 차이를 제대로 보여줍니다. 위의 코드를 아래와 같이 변환했다고 해봅시다:
+
+```jsx{5-8,18-20}
+class Parent extends Component {
+  state = {
+    query: 'react'
+  };
+  fetchData = () => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + this.state.query;
+  };
+  render() {
+    return <Child fetchData={this.fetchData} />;
+  }
+}
+
+class Child extends Component {
+  state = {
+    data: null
+  };
+  componentDidMount() {
+    this.props.fetchData();
+  }
+  render() {
+    // ...
+  }
+}
+```
+
+아마 여러분은 "에이, 댄! `useEffect`가 `componentDidMount`와 `componentDidUpdate`를 섞은것이라는건 우리도 안다구요!" 라고 하실 수도 있을겁니다. 하지만 실제로 `componentDidUpdate`에서 동작하지 않습니다 (뭐라구요? 😱):
+
+```jsx{8-14}
+class Child extends Component {
+  state = {
+    data: null
+  };
+  componentDidMount() {
+    this.props.fetchData();
+  }
+  componentDidUpdate(prevProps) {
+    // 🔴 이 조건은 절대 true가 되지 않습니다!
+    if (this.props.fetchData !== prevProps.fetchData) {
+      this.props.fetchData();
+    }
+  }
+  render() {
+    // ...
+  }
+}
+```
+
+물론, `fetchData`는 클래스 메서드가 맞습니다. 하지만 state가 달라졌다고 해서 메서드가 달라지지는 않습니다. 따라서 `this.props.fetchData`는 항상 `prevProps.fetchData`와 같을 것이고 이로 인해 다시 fetch하는 일은 일어나지 않게 됩니다. 그럼 저 `if` 조건을 없애면 될까요?
+
+```jsx
+componentDidUpdate(prevProps) {
+  this.props.fetchData();
+}
+```
+
+잠깐만요, 이렇게 하면 매번 리렌더링이 될 때마다 다시 fetch하게 됩니다. 그럼 특정 `query`를 바인딩 해두는 건 어떨까요?
+
+```jsx
+render() {
+  return <Child fetchData={this.fetchData.bind(this, this.state.query)} />;
+}
+```
+
+하지만 이렇게 하면 `query`가 바뀌지 않아도 `this.props.fetchData !== prevProps.fetchData` 조건이 항상 `true`이기 때문에 매번 데이터를 다시 fetch하게 됩니다.
+
+이 수수께끼의 유일한 해결책은 `query` 자체를 `Child` 컴포넌트에 넘겨주는 수밖에 없습니다. `Child`가 실제로 `query`를 사용하지는 않지만 `query`가 바뀌었을 때 데이터를 다시 가져오도록 로직을 짤 수는 있게 됩니다:
+
+```jsx{10,22-24}
+class Parent extends Component {
+  state = {
+    query: 'react'
+  };
+  fetchData = () => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + this.state.query;
+    // ... Fetch data and do something ...
+  };
+  render() {
+    return <Child fetchData={this.fetchData} query={this.state.query} />;
+  }
+}
+
+class Child extends Component {
+  state = {
+    data: null
+  };
+  componentDidMount() {
+    this.props.fetchData();
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.query !== prevProps.query) {
+      this.props.fetchData();
+    }
+  }
+  render() {
+    // ...
+  }
+}
+```
+
+**클래스 컴포넌트에선 함수 prop 자체는 실제로 데이터 흐름의 일부가 아닙니다.** 메서드들은 mutable한 `this`에 묶여 있기 때문에 함수의 일관성을 담보할 수 없게 됩니다. 따라서 우리가 원하는 건 오직 함수일지라도 그 "차이"를 비교하기 위해 다른 데이터들도 같이 넘겨줘야 합니다. 부모 컴포넌트로부터 받은 `this.props.fetchData` 함수가 어떤 state에 의존하는지, 그리고 그 state가 바뀌었는지 알 길이 없습니다.
+
+하지만 **`useCallback`을 사용하면 함수는 명백히 데이터 흐름의 일부가 됩니다.** 즉, 함수의 입력값이 변경되면 함수 그 자체도 변경되었다고 확신할 수 있고, 입력값이 변경되지 않으면 함수는 바뀌지 않는다고 확신할 수 있습니다. `useCallback`이 제공하는 세밀함 덕분에 `props.fetchData`와 같은 props의 변경이 자동적으로 하위 컴포넌트에게 전달됩니다.
+
+이와 비슷하게, [useMemo](https://reactjs.org/docs/hooks-reference.html#usememo) 또한 복잡한 객체에 대해 위와 같은 해결책을 제공합니다:
+
+```jsx
+function ColorPicker() {
+  // "color"가 실제로 바뀌지 않는 한
+  // "Child"의 얕은 props 비교를 고장내지 않는다. 
+  const [color, setColor] = useState('pink');
+  const style = useMemo(() => ({ color }), [color]);
+  return <Child style={style} />;
+}
+```
+
+그렇지만 **`useCallback`을 여기저기서 막 사용하는 것은 좋지 않은 방법임을 강조하고 싶습니다.** 물론 함수가 자식 컴포넌트로 전달되어 (자식 컴포넌트의) 이펙트 내부에서 사용되는 경우에 `useCallback`는 유용합니다. 혹은 자식 컴포넌트의 메모이제이션이 고장 나는 것을 방지하기 위해 사용할 수도 있습니다. 하지만 hooks가 [콜백을 내려보내는 것을 피하는](https://reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down) 더 좋은 방법을 함께 제공하고 있다는 점을 알아두세요.
+
+위 예제라면 저는 `fetchData`를 이펙트 안에 두거나 (혹은 커스텀 hook으로 분리할 수도 있구요) 최상위 레벨 import 방식으로 만들 것 같습니다. 저는 이펙트를 최대한 심플하게 유지하려고 하는데 콜백이 이펙트안에 들어있으면 이펙트를 심플하게 유지하기 쉽지 않거든요. [클래스 방식을 흉내](./#흐름을-거슬러-올라가기-swimming-against-the-tide)낼 순 있겠지만 race condition을 해결할 수는 없습니다.
