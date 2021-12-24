@@ -805,3 +805,65 @@ function Counter() {
 </figure>
 
 이러한 이슈는 고려하기 어렵기 때문에, 저는 여러분께 언제나 이펙트의 의존성을 솔직하게 전부 명시하라고 권장하고 싶습니다.
+
+## 의존성에 대해 솔직해지는 두 가지 방법
+
+의존성을 솔직하게 적는 데에는 두 가지 방법이 있습니다. 우선 첫 번째 방법으로 시작하여 필요하면 두 번째 방법을 사용하는 것을 추천합니다.
+
+**첫 번째 방법은 이펙트 내에서 사용되는 컴포넌트 안의 모든 값을 의존성 배열에 넣는 것입니다.** deps에 `count`를 한 번 추가해 봅시다:
+
+```jsx{3,6}
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, [count]);
+```
+
+이렇게 해서 올바른 의존성 배열을 작성하였습니다. 이상적이지 않을 순 있으나 우리가 고쳐야 할 첫 번째 이슈를 해결했습니다. 이제 `count` 값이 변경되면 이펙트가 재실행되어 매번 다음 인터벌에서 `setCount(count + 1)` 구문은 해당 렌더링 시점의 `count` 값을 참조하게 됩니다.
+
+```jsx{8,12,24,28}
+// 첫 번째 렌더링. state는 0
+function Counter() {
+  // ...
+  useEffect(
+    // 첫 렌더링의 이펙트
+    () => {
+      const id = setInterval(() => {
+        setCount(0 + 1); // setCount(count + 1)
+      }, 1000);
+      return () => clearInterval(id);
+    },
+    [0] // [count]
+  );
+  // ...
+}
+
+// 두 번째 렌더링. state는 1
+function Counter() {
+  // ...
+  useEffect(
+    // 두 번째 렌더링의 이펙트
+    () => {
+      const id = setInterval(() => {
+        setCount(1 + 1); // setCount(count + 1)
+      }, 1000);
+      return () => clearInterval(id);
+    },
+    [1] // [count]
+  );
+  // ...
+}
+```
+
+[이렇게 해서](https://codesandbox.io/s/0x0mnlyq8l) 문제를 고칠 수 있게 되었지만, `count`가 변할 때마다 매번 인터벌을 설정하고 해제하는 것이 썩 맘에 들진 않습니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/a-complete-guide-to-useeffect/interval-rightish.gif" alt="Diagram of interval that re-subscribes" />
+    <figcaption>의존성 값이 다르기 때문에 이펙트를 재실행</figcaption>
+</figure>
+
+**두 번째 방법은 이펙트를 수정함으로써 우리가 원하는 것보다 더 자주 바뀌는 값을 필요로 하지 않게 하는 것입니다.** 이는 의존성에 대해 거짓말을 하는 것이 아니라, 의존성을 줄이기 위해 이펙트를 수정하는 것입니다.
+
+의존성을 줄이는 몇 가지 공통적인 테크닉을 살펴봅시다.
