@@ -78,6 +78,10 @@ strong {
   max-width: 85vw;
   margin: 1em auto;
   display: flex;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
 }
 
 figure {

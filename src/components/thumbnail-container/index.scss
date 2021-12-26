@@ -1,4 +1,8 @@
 .thumbnail-container {
   min-height: calc(100vh - 3.5rem);
   width: 76%;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 }

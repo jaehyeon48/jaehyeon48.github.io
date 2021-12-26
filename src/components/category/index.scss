@@ -8,6 +8,18 @@
   border-radius: 4px;
   margin-left: 2em;
   padding: 0 1em;
+
+  @media screen and (max-width: 1124px) {
+    width: 40%;
+  }
+
+  @media screen and (max-width: 768px) {
+    position: static;
+    width: 100%;
+    top: 0;
+    margin: 0 0 2em 0;
+    font-size: 14px;
+  }
 }
 
 .categories-header {
@@ -39,6 +51,10 @@
       padding: 14px 16px 16px 16px;
       box-sizing: border-box;
       text-align: center;
+    }
+
+    @media screen and (max-width: 768px) {
+      margin: 1em 0;
     }
   }
 
