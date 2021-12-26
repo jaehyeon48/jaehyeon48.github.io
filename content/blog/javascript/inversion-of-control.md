@@ -342,3 +342,30 @@ function stateReducer(state, changes) {
 [Render Props](https://reactjs.org/docs/render-props.html) 또한 제어의 역전의 훌륭한 예시이지만, 이제는 더 이상 그렇게 필요한 기능은 아니므로 언급하지 않겠습니다.
 
 [왜 Render Props를 예전만큼 필요로 하지 않는지에 대한 이유는 여기서 살펴보세요!](https://kentcdodds.com/blog/react-hooks-whats-going-to-happen-to-render-props)
+
+## 주의 사항 (A word of caution)
+
+제어의 역전은 재사용 가능한 코드가 미래에 필요로 할 기능을 잘못 예측하는 경우를 방지할 수 있는 훌륭한 방법입니다. 하지만 그 전에 여러분께 작은 팁을 드리려고 합니다. 우리가 제일 처음에 살펴본 예제를 다시 한번 빠르게 살펴봅시다:
+
+```js
+// Array.prototype.filter가 없다고 가정해 보자구요
+function filter(array) {
+  let newArray = [];
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    if (element !== null && element !== undefined) {
+      newArray[newArray.length] = element;
+    }
+  }
+  return newArray;
+}
+
+// 유스 케이스:
+
+filter([0, 1, undefined, 2, null, 3, 'four', '']);
+// [0, 1, 2, 3, 'four', '']
+```
+
+위와 같이 `filter`를 통해 `null`과 `undefined`만 걸러내는 기능만 필요하고, 이외의 기능은 절대 필요 없는 경우는 어떨까요? 이처럼 단 하나의 유스 케이스만을 위해 제어의 역전을 사용하는 것은 코드를 더 복잡하게 만들기만 하고 큰 이점을 얻지 못하게 될 수 있습니다.
+
+모든 추상화가 그렇듯이 제어의 역전도 신중하게 적용해야 하며, 항상 [AHA Programming]() 원칙을 기억하세요. 그리고 서투른 추상화도 되도록 피하시구요!
