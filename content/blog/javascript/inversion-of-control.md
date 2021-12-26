@@ -178,3 +178,73 @@ filter(
 ```
 
 이전 버전의 추상화에서 이러한 유스 케이스를 지원하게끔 한다고 해보세요... 휴 끔찍합니다 😅
+
+## 더 나쁜 API? (A worse API?)
+
+하지만 이렇게 제어가 역전된 API를 만들면 사람들로부터 "그래요.. 하지만 이전보다 더 사용하기 어려워졌어요"라는 불평을 듣곤 합니다. 다음의 예를 살펴봅시다:
+
+```js
+// before
+filter([0, 1, undefined, 2, null, 3, 'four', '']);
+
+// after
+filter(
+  [0, 1, undefined, 2, null, 3, 'four', ''],
+  el => el !== null && el !== undefined,
+);
+```
+
+음.. 확실히 둘 중 하나는 나머지보다 더 사용하기 편한 것 같기도 하네요. 하지만 제어가 역전된 API는 원한다면 이전의 API를 다시 구현할 수 있으며, (일반적으론) 재구현하기 굉장히 간단합니다:
+
+```js
+function filterWithOptions(
+  array,
+  {
+    filterNull = true,
+    filterUndefined = true,
+    filterZero = false,
+    filterEmptyString = false,
+  } = {},
+) {
+  return filter(
+    array,
+    element =>
+      !(
+        (filterNull && element === null) ||
+        (filterUndefined && element === undefined) ||
+        (filterZero && element === 0) ||
+        (filterEmptyString && element === '')
+      ),
+  );
+}
+```
+
+멋지지 않나요? 제어가 역전된 API를 기반으로 사람들이 원하는 간단한 API를 구현할 수 있습니다. 더욱이, 만약 이렇게 단순해진 API가 사용자의 유스 케이스에 그다지 적합하지 않다면, 복잡한 처리하도록 설계된 고차원의 API를 만들 때 사용한 것과 동일한 구성 요소를 사용할 수도 있습니다. 이러면 유저들은 여러분께 `filterWithOptions` 함수에 기능을 추가해달라고 요청한 다음 기다릴 필요가 없습니다. 왜냐면 우리가 유저들에게 그들이 원하는 기능을 스스로 구현할 수 있도록 도구를 준 셈이나 다름없기 때문이죠.
+
+아, 그리고 재미로요:
+
+```js
+function filterByLegCount(array, legCount) {
+  return filter(array, animal => animal.legs === legCount)
+}
+
+filterByLegCount(
+  [
+    { name: 'dog', legs: 4, mammal: true },
+    { name: 'dolphin', legs: 0, mammal: true },
+    { name: 'eagle', legs: 2, mammal: false },
+    { name: 'elephant', legs: 4, mammal: true },
+    { name: 'robin', legs: 2, mammal: false },
+    { name: 'cat', legs: 4, mammal: true },
+    { name: 'salmon', legs: 0, mammal: false },
+  ],
+  0,
+);
+
+// [
+//   { name: 'dolphin', legs: 0, mammal: true },
+//   { name: 'salmon', legs: 0, mammal: false },
+// ]
+```
+
+일반적인 유스 케이스를 해결하기 위해 여러분은 이러한 것들을 원하는 대로 조합할 수 있습니다.
