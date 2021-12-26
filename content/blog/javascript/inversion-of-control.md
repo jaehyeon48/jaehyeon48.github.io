@@ -38,3 +38,143 @@ draft: false
 
 이를 "여러분의 추상화가 해야 할 일을 사용자가 하도록 하세요"라고 생각하실 수도 있을 것 같네요. 물론 이것이 꽤 비직관적이실 수도 있습니다. 흔히 추상화의 장점은 복잡하고 반복적인 일들을 추상화가 처리하도록 함으로써 나머지 코드가 "깨끗"해지는 데에 있으니까요. 하지만 이미 우리가 경험했듯이, 전통적인 추상화는 때로 잘 동작하지 않을 수 있습니다.
 
+## 제어의 역전을 코드로 표현하면 어떻게 되나요? (What is Inversion of Control in Code?)
+
+우선, 다음의 예제를 살펴봅시다:
+
+```js
+// Array.prototype.filter가 없다고 가정해 보자구요
+function filter(array) {
+  let newArray = [];
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    if (element !== null && element !== undefined) {
+      newArray[newArray.length] = element;
+    }
+  }
+  return newArray;
+}
+
+// 유스 케이스:
+
+filter([0, 1, undefined, 2, null, 3, 'four', '']);
+// [0, 1, 2, 3, 'four', '']
+```
+
+위 코드와 관련된 기능들을 추가해서 새로운 유스 케이스를 지원하기 위해 "생각 없이 개선하는" 전형적인 "추상화 과정"을 살펴봅시다:
+
+```js
+// Array.prototype.filter가 없다고 가정해 보자구요
+function filter(
+  array,
+  {
+    filterNull = true,
+    filterUndefined = true,
+    filterZero = false,
+    filterEmptyString = false,
+  } = {},
+) {
+  let newArray = [];
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    if (
+      (filterNull && element === null) ||
+      (filterUndefined && element === undefined) ||
+      (filterZero && element === 0) ||
+      (filterEmptyString && element === '')
+    ) {
+      continue;
+    }
+
+    newArray[newArray.length] = element;
+  }
+  return newArray;
+}
+
+filter([0, 1, undefined, 2, null, 3, 'four', '']);
+// [0, 1, 2, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterNull: false });
+// [0, 1, 2, null, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterUndefined: false });
+// [0, 1, 2, undefined, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterZero: true });
+// [1, 2, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterEmptyString: true });
+// [0, 1, 2, 3, 'four']
+```
+
+좋습니다. 이제 우리의 예제는 여섯 개의 유스 케이스를 포함해 총 25가지의 경우를 지원할 수 있게 되었습니다 (제가 계산을 맞게 했다면 말이죠!).
+
+그리고 이는 꽤 간단한 추상화입니다. 물론 더욱 간소화할 수는 있겠습니다만 때로는 시간이 지난 후에 다시 코드로 돌아왔을 때 실제로 지원하는 유스 케이스에 맞게 코드를 획기적으로 간소화할 수 있습니다. 하지만 불행히도 추상화가 무언가 새 기능을 지원한다면 (마치 `{filterZero: true, filterUndefined: false}`와 같이 말이죠) 우리의 추상화를 사용하는 코드를 망가뜨릴까 걱정하는 마음에 선뜻 해당 기능을 제거하지 못하게 됩니다.
+
+또한, 우리의 추상화가 미래엔 필요할지도 모르지만 현재로선 그다지 필요 없는 유스 케이스를 지원하는 경우 이를 위한 테스트를 작성하게 되는 경우가 발생할 수도 있습니다. 그리고 이후에 가서 필요 없어진 유스 케이스에 대해 까먹거나, 미래에 필요하다고 생각되거나, 혹은 단순히 코드를 건드리기 싫어서 이러한 기능을 제거하지 않을 수 있습니다.
+
+좋아요. 이제는 위 예제 함수에 신중한 추상화와 제어의 역전을 적용해봅시다:
+
+```jsx
+// Array.prototype.filter가 없다고 가정해 보자구요
+function filter(array, filterFn) {
+  let newArray = [];
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    if (filterFn(element)) {
+      newArray[newArray.length] = element;
+    }
+  }
+  return newArray;
+}
+
+filter(
+  [0, 1, undefined, 2, null, 3, 'four', ''],
+  el => el !== null && el !== undefined,
+);
+// [0, 1, 2, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== undefined);
+// [0, 1, 2, null, 3, 'four', '']
+
+filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== null);
+// [0, 1, 2, undefined, 3, 'four', '']
+
+filter(
+  [0, 1, undefined, 2, null, 3, 'four', ''],
+  el => el !== undefined && el !== null && el !== 0,
+);
+// [1, 2, 3, 'four', '']
+
+filter(
+  [0, 1, undefined, 2, null, 3, 'four', ''],
+  el => el !== undefined && el !== null && el !== '',
+);
+// [0, 1, 2, 3, 'four']
+```
+
+어때요? 훨씬 간결해진 것 같지 않나요? 우리는 제어를 역전시켰습니다! `filter` 함수를 통해 걸러낼 요소들을 결정하는 책임을 위임한 것이지요. 우리의 `filter` 함수는 여전히 그 자체로 유용한 추상화이지만 훨씬 더 유능해졌습니다.
+
+하지만 이전 버전의 추상화가 그렇게 나쁘지만은 않았습니다. 하지만 이렇게 제어를 역전함으로써 훨씬 더 많은 특이한 유스 케이스를 지원할 수 있게 되었습니다:
+
+```js
+filter(
+  [
+    { name: 'dog', legs: 4, mammal: true },
+    { name: 'dolphin', legs: 0, mammal: true },
+    { name: 'eagle', legs: 2, mammal: false },
+    { name: 'elephant', legs: 4, mammal: true },
+    { name: 'robin', legs: 2, mammal: false },
+    { name: 'cat', legs: 4, mammal: true },
+    { name: 'salmon', legs: 0, mammal: false },
+  ],
+  animal => animal.legs === 0,
+);
+
+// [
+//   { name: 'dolphin', legs: 0, mammal: true },
+//   { name: 'salmon', legs: 0, mammal: false },
+// ]
+```
+
+이전 버전의 추상화에서 이러한 유스 케이스를 지원하게끔 한다고 해보세요... 휴 끔찍합니다 😅
