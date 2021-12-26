@@ -368,4 +368,14 @@ filter([0, 1, undefined, 2, null, 3, 'four', '']);
 
 위와 같이 `filter`를 통해 `null`과 `undefined`만 걸러내는 기능만 필요하고, 이외의 기능은 절대 필요 없는 경우는 어떨까요? 이처럼 단 하나의 유스 케이스만을 위해 제어의 역전을 사용하는 것은 코드를 더 복잡하게 만들기만 하고 큰 이점을 얻지 못하게 될 수 있습니다.
 
-모든 추상화가 그렇듯이 제어의 역전도 신중하게 적용해야 하며, 항상 [AHA Programming]() 원칙을 기억하세요. 그리고 서투른 추상화도 되도록 피하시구요!
+모든 추상화가 그렇듯이 제어의 역전도 신중하게 적용해야 하며, 항상 [AHA Programming](https://kentcdodds.com/blog/aha-programming) 원칙을 기억하세요. 그리고 서투른 추상화도 되도록 피하시구요!
+
+## 정리 (Conclusion)
+
+이것이 도움이 되었으면 좋겠네요. 여러분께 제어의 역전의 장점을 잘 살린 React 예시도 보여드렸습니다. 물론 이외에도 더욱 많은 사례들이 있으며, 제어의 역전은 저희가 살펴본 `filter` 예시와 같이 React에만 적용되는 개념이 아닙니다. 혹시 다음번에 여러분 앱의 `coreBusinessLogic`에 `if`문을 추가해야하는 상황이 생기면 우선 제어의 역전을 적용할 수 있는지 살펴보세요.
+
+만약 이 포스트에서 사용된 예제를 직접 체험해보고 싶으시다면 [여기](https://codesandbox.io/s/inversion-of-control-qunm8?fontsize=14&hidenavigation=1&theme=dark)를 누르세요! 행운을 빕니다. 🤞
+
+추신: 만약 이 글이 마음에 들었다면 [이 영상](https://www.youtube.com/watch?v=5io81WLgXtg)도 마음에 드실겁니다!
+
+
