@@ -248,3 +248,97 @@ filterByLegCount(
 ```
 
 일반적인 유스 케이스를 해결하기 위해 여러분은 이러한 것들을 원하는 대로 조합할 수 있습니다.
+
+## 좋아요. 하지만 실제로는요? (Ok, but for real now?)
+
+앞서 살펴본 것은 간단한 유스 케이스에 대해선 잘 동작합니다. 하지만 이러한 개념들이 실세계에선 무슨 소용일까요?
+
+글쎄요, 아마 여러분은 제어가 역전된 API들을 무의식적으로 사용해오셨을 겁니다. 예를 들어, 실제 `Array.prototype.filter` 함수엔 제어의 역전이 적용되어 있습니다. `Array.prototype.map`도 마찬가지구요.
+
+여러분께 익숙한 패턴 중 본질적으론 일종의 제어의 역전 형태가 적용된 것들도 존재합니다. 이러한 예시 중에 제가 좋아하는 두 가지 패턴은 [Compound Components](https://kentcdodds.com/blog/compound-components-with-react-hooks)와 [State Reducers](https://kentcdodds.com/blog/the-state-reducer-pattern)입니다. 여기선 이것들의 간략한 예시를 소개해드리겠습니다.
+
+### 복합 컴포넌트
+
+메뉴를 여는 버튼과, 버튼이 눌렸을 때 메뉴 리스트가 표시되는 `Menu` 컴포넌트를 만든다고 해봅시다. 메뉴 항목이 선택되면 특정 액션을 수행하겠죠. 이러한 종류의 컴포넌트를 만드는 일반적인 방법은 각각의 액션에 대한 prop을 반드는 것입니다:
+
+```jsx
+function App() {
+  return (
+    <Menu
+      buttonContents={
+        <>
+          Actions <span aria-hidden>▾</span>
+        </>
+      }
+      items={[
+        { contents: 'Download', onSelect: () => alert('Download') },
+        { contents: 'Create a Copy', onSelect: () => alert('Create a Copy') },
+        { contents: 'Delete', onSelect: () => alert('Delete') },
+      ]}
+    />
+  );
+}
+```
+
+이를 통해 우리는 메뉴 항목을 다양하게 커스터마이징 할 수 있습니다. 하지만 이때 "Delete" 메뉴 이전에 줄을 추가하고 싶다면 어떻게 해야 할까요? `precedeWithLine` 같은 옵션(prop)을 추가해야 할까요? 글쎄요..🤔 `{ contents: <hr /> }` 같은 특별한 메뉴 항목을 추가할 순 있을 것 같기도 한데요, 이렇게 하면 `onSelect`를 제공하지 않는 경우에 대해서도 처리를 해야 할 것 같네요. 이렇게 되면 API가 이상해질 것 같습니다.
+
+약간씩 다른 동작을 하고 싶은 사람을 위한 멋진 API를 만들 땐 `if` 문과 삼항 연산자 대신 제어의 역전을 적용할 수 있을지부터 따져보세요. 지금의 경우로 치자면, 메뉴를 렌더링 하는 책임을 유저에게 주면 어떨까요? React의 강력한 조합 기능을 사용해봅시다. 
+
+```jsx
+function App() {
+  return (
+    <Menu>
+      <MenuButton>
+        Actions <span aria-hidden>▾</span>
+      </MenuButton>
+      <MenuList>
+        <MenuItem onSelect={() => alert('Download')}>Download</MenuItem>
+        <MenuItem onSelect={() => alert('Copy')}>Create a Copy</MenuItem>
+        <MenuItem onSelect={() => alert('Delete')}>Delete</MenuItem>
+      </MenuList>
+    </Menu>
+  );
+}
+```
+
+여기서 주목해야 할 점은 컴포넌트 사용자에게 보이는 state가 없다는 점입니다. State 들은 컴포넌트들 간에 암묵적으로 공유되고 있습니다. 그리고 이것이 복합 컴포넌트 패턴의 주요 이점이지요. 이러한 기능을 사용함으로써 우리는 컴포넌트 사용자에게 렌더링 제어권을 넘겨주었고, 이에 따라 줄 (또는 무언가) 을 추가하기 쉽고 직관적이게 되었습니다. API 문서를 볼 필요도 없고, 부가적인 기능, 코드, 혹은 테스트를 추가할  필요가 사라졌습니다. 이제 모두가 승리자입니다. 🤗
+
+이 패턴에 대해선 [제 블로그](https://kentcdodds.com/blog/compound-components-with-react-hooks)에서 더욱 자세히 살펴보실 수 있습니다. 이 패턴을 제게 알려주신 [Ryan Florence](https://twitter.com/ryanflorence)께 경의를 표합니다.
+
+### State 리듀서
+
+이 패턴은 제가 컴포넌트 로직 커스터마이징 문제를 해결하기 위해 고안한 패턴입니다. 자세한 내용은 제 블로그의 ["The State Reducer Pattern"](https://kentcdodds.com/blog/the-state-reducer-pattern)에서 보실 수 있습니다. 요지를 말하자면, 누군가 검색 및 자동완성 기능을 제공하는 `Downshift` 라는 라이브러리에다 요소를 여러 개 선택할 수 있는 기능을 추가하고 싶어서 어떤 요소를 선택한 이후에도 메뉴가 계속해서 열려 있기를 원했습니다.
+
+`Downshift`엔 어떤 요소를 선택했을 때 메뉴를 닫는 로직이 존재했는데, 새 기능을 원하시던 분께서 `closeOnSelection` 이라는 prop을 추가하는 것이 어떻냐고 제안하셨습니다. 하지만 저는 이전에 [apropcalypse](https://twitter.com/gurlcode/status/1002110517094371328)를 겪어 봤기 때문에 그 제안을 거절했습니다. (apropcalypse란, 요약하자면 새 기능을 추가할 때 props를 마구잡이로 늘리게 되면 해당 컴포넌트를 유지보수 하기 힘들어지는 현상을 말합니다. [이 글](https://epicreact.dev/soul-crushing-components/)을 참고해보세요!)
+
+따라서 그 대신, state가 변하는 방식을 사람들이 제어할 수 있는 API를 생각해냈습니다. State 리듀서를 컴포넌트의 state가 바뀔 때마다 호출되는 함수라고 생각하시면 좋을 듯합니다. State 리듀서 함수는 개발자로 하여금 곧 발생할 state 변경을 수정할 기회를 제공합니다.
+
+`Downshift`를 사용할 때 요소를 여러 개 선택할 수 있게끔 하려면 아래와 같이 할 수 있을 것 같네요:
+
+```js
+function stateReducer(state, changes) {
+  switch (changes.type) {
+    case Downshift.stateChangeTypes.keyDownEnter:
+    case Downshift.stateChangeTypes.clickItem:
+      return {
+        ...changes,
+        // isOpen과 highlightedIndex만 그대로 둔다면 이외의 변경사항은 괜찮습니다.
+        isOpen: state.isOpen,
+        highlightedIndex: state.highlightedIndex,
+      }
+    default:
+      return changes;
+  }
+}
+
+// 이후, 컴포넌트를 렌더링할 때
+// <Downshift stateReducer={stateReducer} {...restOfTheProps} />
+```
+
+이 prop을 추가한 뒤로는 컴포넌트 커스터마이징에 대한 요청이 확연히 줄어들었습니다. 훨씬 유용해지고 간결해져서 사람들이 원하는 대로 기능을 추가할 수 있게 된 것이지요.
+
+### Render Props
+
+[Render Props](https://reactjs.org/docs/render-props.html) 또한 제어의 역전의 훌륭한 예시이지만, 이제는 더 이상 그렇게 필요한 기능은 아니므로 언급하지 않겠습니다.
+
+[왜 Render Props를 예전만큼 필요로 하지 않는지에 대한 이유는 여기서 살펴보세요!](https://kentcdodds.com/blog/react-hooks-whats-going-to-happen-to-render-props)
