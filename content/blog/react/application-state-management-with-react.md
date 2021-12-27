@@ -328,3 +328,17 @@ function UserSettings() {
 물론 여러분들만의 `useState`, `useReducer`를 이용하여 적재적소에 `useContext`를 사용함으로써 여러분 스스로 이것들을 관리할 수도 있습니다만, 캐싱은 정말 정말 어려운 문제이기 때문에 ([누군가](https://martinfowler.com/bliki/TwoHardThings.html)는 컴퓨터 공학에서 제일 어려운 것 중 하나가 캐싱이라고 할 정도니까요!) 거인의 어깨 위에 올라타는 것이 현명한 선택이라고 생각합니다.
 
 이 때문에 저는 캐싱과 관련된 상태에 대해선 [react-query](https://github.com/tannerlinsley/react-query)를 사용합니다. 아 그럼요, 물론 앞에서 상태관리 라이브러리가 필요 없을 것이라 얘기했지만 개인적으로 react-query가 상태관리 라이브러리라고 생각하지는 않습니다. 오히려 캐시를 다루는 라이브러리라고 생각하는 편이지요. 그리고 이건 정말 끝내주는 라이브러리입니다. [Tanner Linsley](https://twitter.com/tannerlinsley) (react-query 개발자)는 정말 똑똑한 사람입니다.
+
+## 성능은요? (What about performance?)
+
+위 조언들을 따를 때 성능 이슈를 겪을 가능성은 희박하다고 봅니다. 특히 [colocation에 관한 추천사항](https://kentcdodds.com/blog/state-colocation-will-make-your-react-app-faster)을 따르는 경우엔 더더욱이요. 하지만 예외는 항상 존재하듯 성능 문제를 겪을 수도 있을 텐데, 상태와 관련된 성능 문제를 겪는 경우엔 우선 상태의 변경으로 인해 얼마나 많은 컴포넌트가 리렌더링 되는지 체크해보고 이러한 컴포넌트들이 정말로 리렌더링 되는 게 맞는지 살펴보는 것이 중요합니다. 만약 그렇다면 (즉, 정말 리렌더링 되어야 한다면) 성능 문제는 상태관리로 인한 것이 아니라 렌더링 되는 속도에 관한 것이라는 의미가 됩니다. 이 경우 [렌더링 속도를 높이는 방법](https://kentcdodds.com/blog/fix-the-slow-render-before-you-fix-the-re-render)을 찾아보는 것이 좋을 겁니다.
+
+하지만 DOM이 변경되지 않거나 side effect가 필요한 컴포넌트들의 많은 경우 이러한 컴포넌트들은 불필요하게 리렌더링 되고 있다는 소리입니다. 이는 React를 사용할 때 항상 일어나는 문제이며 일반적으로는 그 자체로 문제가 되지는 않습니다만 (물론 [불필요하게 리렌더링 되는 컴포넌트도 빠르게 리렌더링 되도록 만드는 것이 좋습니다](https://kentcdodds.com/blog/fix-the-slow-render-before-you-fix-the-re-render)), 만약 이 문제가 정말로 병목이라면 React 컨텍스트에서의 상태 문제로 인한 성능 이슈를 해결하는 몇 가지 접근법을 적용해보세요:
+
+1. 상태를 하나의 거대한 스토어로 관리하기 보다 논리적인 기준에 따라 분할하여 관리하는 것이 좋습니다. 이렇게 하면 상태의 일부가 바뀌게 되어도 앱에 있는 모든 컴포넌트의 리렌더링을 유발하지는 않게 됩니다.
+2. [컨텍스트를 최적화 하세요](https://kentcdodds.com/blog/how-to-use-react-context-effectively).
+3. [jotai](https://github.com/pmndrs/jotai)를 사용해 보세요.
+
+아, 라이브러리를 또 추천하고 말았군요. 맞습니다. React의 기본 상태관리 방법이 잘 맞지 않는 유스 케이스가 있을 수 있습니다. 이러한 모든 유스 케이스에 사용 가능한 라이브러리 중엔 jotai가 가장 적합하다고 봅니다. 만약 이러한 유스 케이스들이 무엇이고, jotai가 잘 해결하는 문제들이 어느 것인지는 [Recoil: State Management for Today's React - Dave McCabe aka @mcc_abe at @ReactEurope 2020](https://www.youtube.com/watch?v=_ISAA_Jt9kI)를 참고하세요. 리코일과 jotai는 매우 비슷할 뿐더러 같은 종류의 문제를 해결하고 있습니다. 하지만 (제한적인) 저의 경험으로 비추어 봤을땐 jotai가 좀 더 나은 것 같습니다.
+
+하지만 리코일이나 jotai와 같이 atomic한 상태 관리 툴을 필요로 하는 앱은 거의 없다고 봅니다.
