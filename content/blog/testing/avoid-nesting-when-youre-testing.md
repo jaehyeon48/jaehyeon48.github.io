@@ -349,3 +349,146 @@ test('shows an error message when password is not provided', () => {
 주로 `describe` 함수는 큰 테스트 파일 내에서 여러 개의 연관된 테스트들을 함께 묶어 시각적으로 서로 다른 테스트들을 분리하기 위해 사용됩니다. 하지만 개인적으로 테스트 파일이 커졌을 때 `describe`를 사용하는 것을 좋아하지는 않습니다. 대신 저는 연관된 테스트들을 파일로 분리합니다. 같은 "단위"의 코드에 대해 논리적으로 서로 다른 테스트들의 그룹이 있다면 저는 이들을 각기 다른 파일로 분리할 것입니다. 행여나 정말로 공유되어야 할 코드가 있다면 `__test__/helpers/login.js`와 같은 파일을 만들어서 관리할 것입니다.
 
 이렇게 하면 테스트를 논리적으로 분리할 수 있고, 각 테스트 그룹에만 국한된 셋업을 분리할 수 있어서 현재 작업하고 있는 코드 부분에 대한 인지 부하가 줄어들게 됩니다. 또한 여러분의 테스팅 프레임워크에서 여러 개의 테스트를 병렬로 동시에 수행할 수 있다면 테스트를 더욱 빨리 돌릴 수도 있게 됩니다.
+
+## 클린업은요? (What about cleanup?)
+
+이 포스트는 `beforeEach`, `afterEach`와 같은 유틸리티를 비난하려고 쓴 것이 아닙니다. 그 보단 테스트 내에서 변경되는 변수들과, 여러분들이 더욱 신경 써서 추상화를 하도록 주의를 주는 것에 더 가깝습니다.
+
+클린업에 대해 말하자면, 때로는 여러분의 테스트가 글로벌 환경을 변화시킬 수도 있기 때문에 테스트 이후에 이를 원상복구 해야 하는 경우가 있을 수 있습니다. 만약 클린업 코드를 테스트 내에 인라인화 하여 작성해둔다면 테스트가 실패했을 때 클린업 코드가 실행되지 않을 수 있고, 그로 인해 다른 테스트들까지 실패하여 궁극적으로는 디버깅하기 힘든 많은 에러가 발생할 수 있습니다.
+
+> 💡 아래 예시는 자동으로 클린업을 수행해주는 `testing-library/react@9`가 개발되기 이전에 작성되었습니다. 하지만 개념은 여전히 유효합니다. (예시를 다시 만들고 싶진 않습니다 😅)
+
+예를 들어, React Testing Library는 여러분의 컴포넌트를 문서 내에 삽입하기 때문에, 만약 각 테스트가 끝난 뒤에 클린업을 하지 않으면 여러분의 테스트가 자체적으로 실행될 수 있습니다:
+
+```jsx
+import {render} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+
+import Login from '../Login';
+
+test('example 1', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  userEvent.type(getByLabelText(/password/i), 'ilovetwix');
+  // more test here
+});
+
+test('example 2', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  // 💣 여기서 `getByLabelText`가 실제로는 문서 전체를 훑어보고 있고, 이전 테스트 이후에 클린업을
+  // 하지 않았기 때문에 RTL에서 label이 "username"인 입력 필드를 하나 이상 찾았다는 에러 메시지를
+  // 띄울 것입니다.
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  // more test here
+});
+```
+
+이 문제는 `@testing-library/react`의 `cleanup` 함수를 각 테스트가 끝날 때마다 실행시켜 줌으로써 해결할 수 있습니다:
+
+```jsx{1,13,21}
+import { cleanup, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+
+import Login from '../Login';
+
+test('example 1', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  userEvent.type(getByLabelText(/password/i), 'ilovetwix');
+  // more test here
+  cleanup();
+});
+
+test('example 2', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  // more test here
+  cleanup();
+});
+```
+
+하지만 이 경우에서, `afterEach`를 사용하여 클린업을 하지 않는다면 테스트가 실패했을 때 클린업 함수가 실행되지 않을 것입니다:
+
+```jsx
+test('example 1', () => {
+  const handleSubmit = jest.fn();
+  const {getByLabelText} = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  // 💣 아래의 오타로 인해 다음의 에러가 발생하게 됩니다:
+  //   "no field with the label matching passssword"
+  userEvent.type(getByLabelText(/passssword/i), 'ilovetwix');
+  // more test here
+  cleanup();
+});
+```
+
+이로 인해 "example 1" 테스트의 `cleanup` 함수가 실행되지 않아 "example 2" 테스트가 정상적으로 동작하지 않게 됩니다. 따라서 테스트 결과로 첫 번째 테스트만 실패했다고 뜨는 것이 아니라 전체 테스트가 실패했다고 뜨게 되고, 이렇게 되면 디버깅이 훨씬 힘들어질 수 있습니다.
+
+따라서 이 경우엔 테스트가 실패해도 클린업을 할 수 있도록 `afterEach`를 사용하는 것이 좋습니다:
+
+```jsx
+import {cleanup, render} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+
+import Login from '../Login'
+
+afterEach(() => cleanup());
+
+test('example 1', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  userEvent.type(getByLabelText(/password/i), 'ilovetwix');
+  // more test here
+});
+
+test('example 2', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText } = render(<Login onSubmit={handleSubmit} />);
+  userEvent.type(getByLabelText(/username/i), 'kentcdodds');
+  // more test here
+});
+```
+
+어떤 경우엔 서버를 켜고 끄는 것과 같이 `before*`를 사용하는 것이 좋은 경우가 존재합니다. 일반적으로 이들은 `after*`에 존재하는 클린업과 같이 사용됩니다:
+
+```js
+let server;
+beforeAll(async () => {
+  server = await startServer();
+});
+afterAll(() => server.close());
+```
+
+위와 같은 동작을 수행하는 데엔 이보다 더 신뢰할만한 방법은 없습니다. 제가 생각해낼 수 있는 또 다른 유스 케이스는 `console.error` 호출을 테스팅하는 경우입니다:
+
+```js
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  console.error.mockClear();
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+});
+```
+
+**이를 통해, `before*`, `after*` 유틸리티를 사용해야 할 유스 케이스가 따로 존재함을 알 수 있습니다. 따라서 단순히 코드 재사용을 위해 이러한 유틸리티를 사용하지는 마세요. 우리에겐 함수가 있으니까요!**
+
+## 결론
+
+제가 [트윗](https://twitter.com/kentcdodds/status/1154468901121482753?lang=en)에서 의도한 바를 명확히 하는 데에 이 포스트가 도움이 되었으면 좋겠네요.
+
+여태껏 서로 다른 프레임워크와 코드 스타일을 사용하여 수만 개의 테스트를 작성해본 결과, 변수가 변이(mutation)되는 빈도를 줄일수록 테스트를 유지 보수하기 훨씬 쉬워진다는 것을 경험했습니다. 행운을 빕니다!
+
+추신: 예제의 데모는 [여기](https://codesandbox.io/s/react-codesandbox-ni9fk)서 보실 수 있습니다.
