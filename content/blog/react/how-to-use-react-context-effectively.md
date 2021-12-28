@@ -203,3 +203,57 @@ class CounterThing extends React.Component {
 ```
 
 이는 제가 훅 이전에 사용했던 방식입니다. 물론 잘 동작하구요. 하지만 훅을 사용할 수 있는 상황이라면 훅을 사용하세요. 훨씬 낫습니다 😂
+
+## 타입스크립트
+
+앞서 약속한대로 `defaultValue`를 제공하지 않을 때 타입스크립트에서 발생하는 이슈들을 해결하는 방법을 보여드리겠습니다. 제가 권하는 방식을 사용하면 이러한 문제를 기본적으로 피하실 수 있게 되실겁니다. 사실 문제라고 하기에도 애매한데요, 봅시다:
+
+```tsx{36-40}
+import * as React from 'react';
+
+type Action = { type: 'increment' } | { type: 'decrement' };
+type Dispatch = (action: Action) => void;
+type State = { count: number };
+type CountProviderProps = { children: React.ReactNode };
+
+const CountStateContext = React.createContext<
+  { state: State; dispatch: Dispatch } | undefined
+>(undefined)
+
+function countReducer(state: State, action: Action) {
+  switch (action.type) {
+    case 'increment': {
+      return { count: state.count + 1 };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
+function CountProvider({ children }: CountProviderProps) {
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  // 이 값을 memoize 해야할 지도 모릅니다
+  // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
+  const value = { state, dispatch };
+  return (
+    <CountStateContext.Provider value={value}>
+      {children}
+    </CountStateContext.Provider>
+  )
+}
+
+function useCount() {
+  const context = React.useContext(CountStateContext);
+  if (context === undefined) {
+    throw new Error('useCount must be used within a CountProvider');
+  }
+  return context;
+}
+
+export { CountProvider, useCount };
+```
+
+([데모](https://codesandbox.io/s/bitter-night-i5mhj))
+
+이렇게 하면 누구든 `useCount`를 쓸 때 `undefined` 체킹을 하지 않아도 됩니다. 왜냐면 우리가 미리 했기 때문이죠!
