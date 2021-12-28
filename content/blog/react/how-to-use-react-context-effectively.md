@@ -310,3 +310,57 @@ function UserSettings() {
   // more code...
 }
 ```
+
+## 결론
+
+코드의 최종 버전은 아래와 같습니다:
+
+```jsx
+import * as React from 'react';
+
+const CountContext = React.createContext();
+
+function countReducer(state, action) {
+  switch (action.type) {
+    case 'increment': {
+      return { count: state.count + 1 };
+    }
+    case 'decrement': {
+      return { count: state.count - 1 };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
+function CountProvider({ children }) {
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  // 이 값을 memoize 해야할 지도 모릅니다
+  // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
+  const value = { state, dispatch };
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+}
+
+function useCount() {
+  const context = React.useContext(CountContext);
+  if (context === undefined) {
+    throw new Error('useCount must be used within a CountProvider');
+  }
+  return context;
+}
+
+export { CountProvider, useCount };
+```
+
+([데모](https://codesandbox.io/s/react-codesandbox-je6cc))
+
+이때, `CountContext`는 export 하고 있지 않다는 점을 주목해주세요. 컨텍스트 값을 제공하고 사용하는 방법을 오직 하나로 제한하고자 일부러 그런 것입니다. 이렇게 하면 사람들이 컨텍스트 값을 올바른 방법으로 사용할 수 있게 되고, consumer를 위한 유용한 유틸리티들을 제공할 수 있게 됩니다.
+
+이 포스트가 도움이 되었으면 좋겠네요. 기억하세요:
+
+1. 마주하는 모든 상태 공유 문제를 컨텍스트로 해결하려고 해서는 안 됩니다.
+2. 컨텍스트를 전역으로 둘 필요가 전혀 없습니다. 트리에 부분적으로 적용하려고 해보세요.
+3. 논리적으로 분할된 여러 개의 컨텍스트를 사용하려고 해보세요.
+
+🤞
