@@ -92,3 +92,69 @@ export { CountProvider };
 ```
 
 > 위 예시는 실제 세계에서 어떻게 사용되는지 보여주기 위해 인위로 만들어낸 것입니다. **항상 이렇게 복잡한 것은 아닙니다!** `useState`가 적합한 경우라면 마음껏 사용하세요. 어떤 provider들은 위와 같이 간단할 수도 있지만, 더욱더 많은 훅을 사용하여 훨씬 복잡한 provider들도 존재할 수 있습니다.
+
+## 커스텀 Consumer 훅 (The Custom Consumer Hook)
+
+실제 현업에서 제가 본 컨텍스트 사용 방법은 다음과 같은 형태들이 많았습니다:
+
+```jsx
+import * as React from 'react';
+import { SomethingContext } from 'some-context-package';
+
+function YourComponent() {
+  const something = React.useContext(SomethingContext);
+}
+```
+
+하지만 제 생각엔 아래처럼 하면 더욱 나은 사용자 경험을 만들어낼 수 있을 것 같습니다:
+
+```jsx
+import * as React from 'react';
+import { useSomething } from 'some-context-package';
+
+function YourComponent() {
+  const something = useSomething();
+}
+```
+
+방금 보여드린 예시는 아래에 제가 보여드릴 예시처럼 몇 가지의 작업을 수행할 수 있다는 장점이 있습니다:
+
+```jsx{28-32}
+import * as React from 'react';
+
+const CountContext = React.createContext();
+
+function countReducer(state, action) {
+  switch (action.type) {
+    case 'increment': {
+      return { count: state.count + 1 };
+    }
+    case 'decrement': {
+      return { count: state.count - 1 };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
+function CountProvider({ children }) {
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  // 이 값을 memoize 해야할 지도 모릅니다
+  // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
+  const value = { state, dispatch };
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+}
+
+function useCount() {
+  const context = React.useContext(CountContext);
+  if (context === undefined) {
+    throw new Error('useCount must be used within a CountProvider');
+  }
+  return context;
+}
+
+export { CountProvider, useCount };
+```
+
+우선, `useCount` 커스텀 훅은 (React 트리에서) 가장 가까운 `CountProvider`가 제공하는 컨텍스트 값을 얻기 위해 `React.useContext`를 사용하고 있습니다. 하지만 어떠한 값도 없는 경우, `CountProvider` 내에서 렌더링된 함수 컴포넌트에서 사용되고 있지 않다는 에러를 띄웁니다. 아마도 실수인 게 분명하므로 이렇게 에러 메시지를 띄우는 것은 중요합니다. [#FailFast](https://www.martinfowler.com/ieeeSoftware/failFast.pdf)
