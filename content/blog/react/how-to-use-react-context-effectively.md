@@ -257,3 +257,19 @@ export { CountProvider, useCount };
 ([데모](https://codesandbox.io/s/bitter-night-i5mhj))
 
 이렇게 하면 누구든 `useCount`를 쓸 때 `undefined` 체킹을 하지 않아도 됩니다. 왜냐면 우리가 미리 했기 때문이죠!
+
+## Dispatch "type" 오타는 어떡하죠? (What about dispatch "type" typos?)
+
+이 시점에서 여러분의 리덕스는 "이봐, 액션 creator는 어디 갔어?" 하고 소리치고 있을 겁니다. 만약 액션 creator를 구현하고 싶으시면 하셔도 괜찮지만, 사실 개인적으로 액션 creator를 좋아해 본 적은 없습니다. 왜냐면 불필요한 추상화라고 생각했거든요. 또한, 타입스크립트를 통해 액션들의 타입을 잘 만들게 되면 액션 creator가 필요 없을 겁니다. 자동 완성도 있고, 인라인 타입 에러를 띄워주기 때문이죠!
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/how-to-use-react-context-effectively/auto-complete.png" alt="Dispatch type getting autocompleted" />
+</figure>
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/how-to-use-react-context-effectively/type-error.png" alt="Type error on a misspelled dispatch type" />
+</figure>
+
+저는 `dispatch`를 이러한 방식으로 사용하는 걸 정말 좋아합니다. 추가로, `dispatch`는 해당 `dispatch`를 사용하는 컴포넌트의 일생동안 안정적인 상태를 유지하기 때문에 (즉, 바뀌지 않기 때문에) `useEffect`의 의존성 배열에 `dispatch`를 추가할 필요가 없습니다 (추가할 건 말건 차이가 없습니다).
+
+만약 타입스크립트를 사용하지 않으신다면 (사용하는 것을 추천합니다), 잘못된 액션 타입에 대한 에러는 일종의 안전장치의 역할을 합니다. 또한, 다음 섹션도 읽어보세요. 도움이 될 겁니다.
