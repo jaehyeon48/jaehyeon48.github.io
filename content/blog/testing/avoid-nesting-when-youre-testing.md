@@ -196,3 +196,63 @@ beforeEach(() => {
 그러고 나서 이후에 더욱 중첩된 `beforeEach`에서 다른 값으로 할당되고 있지는 않은지 또한 살펴봐야 합니다. 이렇게 코드를 추적하면서 변수와 변수의 값을 기억해야 한다는 점이 제가 중첩된 테스트를 극히 반대하는 이유 중 하나입니다. 이렇게 여러분의 머릿속에 기억해야 할 것들이 많아질수록 정작 중요한 일을 제대로 처리하기가 힘들어지게 됩니다.
 
 물론 여러분은 변수 재할당이 "안티 패턴"이라서 피해야 하는 것이지 않느냐고 하실 수 있는데, 물론 동의합니다만 이미 많은 린트 규칙을 적용하고 있는 테스트 셋에 계속해서 규칙을 추가하는 것은 멋진 해결책이 아닙니다. 변수 재할당을 걱정할 필요 없이 공통적인 셋업을 공유할 방법이 있다면 어떨까요?
+
+## 인라인 하세요! (Inline it!)
+
+여기서 살펴보고 있는 것과 같은 간단한 컴포넌트의 경우, 추상화를 최대한 제거하는 것이 최고의 해결책이라고 생각합니다. 확인해봅시다:
+
+```jsx
+// __tests__/Login.js
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+
+import Login from '../Login';
+
+test('calls onSubmit with the username and password when submit is clicked', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText, getByText } = render(<Login onSubmit={handleSubmit} />);
+  const user = { username: 'michelle', password: 'smith' };
+
+  userEvent.type(getByLabelText(/username/i), user.username);
+  userEvent.type(getByLabelText(/password/i), user.password);
+  userEvent.click(getByText(/submit/i));
+
+  expect(handleSubmit).toHaveBeenCalledTimes(1);
+  expect(handleSubmit).toHaveBeenCalledWith(user);
+});
+
+test('shows an error message when submit is clicked and no username is provided', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText, getByText, getByRole } = render(
+    <Login onSubmit={handleSubmit} />,
+  );
+
+  userEvent.type(getByLabelText(/password/i), 'anything');
+  userEvent.click(getByText(/submit/i));
+
+  const errorMessage = getByRole('alert');
+  expect(errorMessage).toHaveTextContent(/username is required/i);
+  expect(handleSubmit).not.toHaveBeenCalled();
+});
+
+test('shows an error message when submit is clicked and no password is provided', () => {
+  const handleSubmit = jest.fn();
+  const { getByLabelText, getByText, getByRole } = render(
+    <Login onSubmit={handleSubmit} />,
+  );
+
+  userEvent.type(getByLabelText(/username/i), 'anything');
+  userEvent.click(getByText(/submit/i));
+
+  const errorMessage = getByRole('alert');
+  expect(errorMessage).toHaveTextContent(/password is required/i);
+  expect(handleSubmit).not.toHaveBeenCalled();
+});
+```
+
+> 💡 여기서 `test`는 `it`과 동일합니다. 개인적으로 `describe` 안에 중첩하는 것이 아니라면 `it` 대신 `test`를 선호하는 편입니다.
+
+중복이 조금 발생하긴 했지만 (좀 있다 해결할 것입니다), 테스트 코드가 얼마나 간결해졌는지를 보세요. 몇몇 테스트 유틸리티와 로그인 컴포넌트를 제외하곤 모든 테스트가 독립적(self-contained)입니다. 이렇게 하면 스크롤 해서 왔다 갔다 할 필요 없이 테스트에서 어떤 일이 일어나고 있는지 이해하기 쉬워집니다. 만약 이 컴포넌트에 대한 테스트가 좀 더 있었다면 이러한 장점이 더욱 잘 드러났을 것입니다.
+
+또한 굳이 모든 것을 `describe` 블록 안에 중첩하고 있지 않은 점을 봐주세요. 테스트 파일 내에 있는 모든 것은 분명 `Login` 컴포넌트를 테스트하는 것임을 명백히 알 수 있기 때문에 굳이 중첩을 추가할 필요가 없습니다.
