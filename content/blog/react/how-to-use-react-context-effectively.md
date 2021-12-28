@@ -41,3 +41,54 @@ ReactDOM.render(<CountDisplay />, document.getElementById('⚛️'));
 [React 공식 문서](https://reactjs.org/docs/context.html#reactcreatecontext)에선 컨텍스트의 기본값을 제공하면 "컴포넌트를 wrapping하지 않고 테스트하기에 유용하다"라고 하고 있습니다. 물론 맞는 말이긴 합니다만 컴포넌트를 컨텍스트로 wrapping 하지 않는 것이 좋은 것인지는 잘 모르겠습니다. 애플리케이션에서 실제로는 하지 않는 동작을 테스트하는 것은 테스트를 통해 얻을 수 있는 (코드에 대한) 자신감을 저하하는 행위임을 기억하세요. [이렇게 하는 경우](https://kentcdodds.com/blog/the-merits-of-mocking)가 있기는 하지만 지금의 상황은 맞지 않습니다.
 
 > ⚠️ 만일 타입스크립트를 사용하고 계신다면, 기본값을 제공하지 않을 경우 `useContext`를 사용하는 것이 매우 귀찮아질 수 있습니다. 이에 대한 해결책은 뒤에서 알려드릴게요!
+
+## 커스텀 Provider 컴포넌트 (The Custom Provider Component)
+
+좋아요, 계속해봅시다. 앞서 만든 컨텍스트 모듈을 유용하게 사용하기 위해선 provider를 사용하고 값을 제공하는 컴포넌트를 노출할 필요가 있습니다. 해당 컴포넌트들은 아래와 같습니다:
+
+```jsx{3,6}
+function App() {
+  return (
+    <CountProvider>
+      <CountDisplay />
+      <Counter />
+    </CountProvider>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('⚛️'));
+```
+
+그렇다면 위와 같이 사용할 수 있는 컴포넌트를 만들어 봅시다:
+
+```jsx
+import * as React from 'react';
+
+const CountContext = React.createContext();
+
+function countReducer(state, action) {
+  switch (action.type) {
+    case 'increment': {
+      return { count: state.count + 1 };
+    }
+    case 'decrement': {
+      return { count: state.count - 1 };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
+function CountProvider({ children }) {
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  // 이 값을 memoize 해야할 지도 모릅니다
+  // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
+  const value = { state, dispatch };
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+}
+
+export { CountProvider };
+```
+
+> 위 예시는 실제 세계에서 어떻게 사용되는지 보여주기 위해 인위로 만들어낸 것입니다. **항상 이렇게 복잡한 것은 아닙니다!** `useState`가 적합한 경우라면 마음껏 사용하세요. 어떤 provider들은 위와 같이 간단할 수도 있지만, 더욱더 많은 훅을 사용하여 훨씬 복잡한 provider들도 존재할 수 있습니다.
