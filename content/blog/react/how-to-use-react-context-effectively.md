@@ -273,3 +273,40 @@ export { CountProvider, useCount };
 저는 `dispatch`를 이러한 방식으로 사용하는 걸 정말 좋아합니다. 추가로, `dispatch`는 해당 `dispatch`를 사용하는 컴포넌트의 일생동안 안정적인 상태를 유지하기 때문에 (즉, 바뀌지 않기 때문에) `useEffect`의 의존성 배열에 `dispatch`를 추가할 필요가 없습니다 (추가할 건 말건 차이가 없습니다).
 
 만약 타입스크립트를 사용하지 않으신다면 (사용하는 것을 추천합니다), 잘못된 액션 타입에 대한 에러는 일종의 안전장치의 역할을 합니다. 또한, 다음 섹션도 읽어보세요. 도움이 될 겁니다.
+
+## 비동기 액션은요? (What About Async Actions?)
+
+훌륭한 질문입니다. 만약 비동기 요청을 수행하는 과정에서 여러 번 dispatch 해야 하는 경우는 어떨까요? 물론 컴포넌트에서 이를 처리하도록 할 수는 있지만, 이러한 로직들을 일일이 (이와 같은 동작을 요구하는) 컴포넌트와 연결시키는 것은 짜증나는 일입니다.
+
+이에 대해 제가 권유하고 싶은 방식은 컨텍스트 모듈 내에 `dispatch`를 인자로 받는 헬퍼 함수를 만들어 해당 헬퍼 함수가 이러한 요청들을 처리하도록 하는 것입니다. 아래 코드는 저의 [심화 React 패턴 워크숍](https://kentcdodds.com/workshops/advanced-react-patterns)에서 소개한 예시입니다:
+
+```jsx
+async function updateUser(dispatch, user, updates) {
+  dispatch({ type: 'start update', updates });
+  try {
+    const updatedUser = await userClient.updateUser(user, updates);
+    dispatch({ type: 'finish update', updatedUser });
+  } catch (error) {
+    dispatch({ type: 'fail update', error });
+  }
+}
+
+export { UserProvider, useUser, updateUser }
+```
+
+이를 아래와 같이 사용할 수 있습니다:
+
+```jsx
+import { useUser, updateUser } from './user-context';
+
+function UserSettings() {
+  const [{ user, status, error }, userDispatch] = useUser();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    updateUser(userDispatch, user, formState);
+  }
+
+  // more code...
+}
+```
