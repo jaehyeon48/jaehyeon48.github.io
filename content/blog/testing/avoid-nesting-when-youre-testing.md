@@ -256,3 +256,90 @@ test('shows an error message when submit is clicked and no password is provided'
 중복이 조금 발생하긴 했지만 (좀 있다 해결할 것입니다), 테스트 코드가 얼마나 간결해졌는지를 보세요. 몇몇 테스트 유틸리티와 로그인 컴포넌트를 제외하곤 모든 테스트가 독립적(self-contained)입니다. 이렇게 하면 스크롤 해서 왔다 갔다 할 필요 없이 테스트에서 어떤 일이 일어나고 있는지 이해하기 쉬워집니다. 만약 이 컴포넌트에 대한 테스트가 좀 더 있었다면 이러한 장점이 더욱 잘 드러났을 것입니다.
 
 또한 굳이 모든 것을 `describe` 블록 안에 중첩하고 있지 않은 점을 봐주세요. 테스트 파일 내에 있는 모든 것은 분명 `Login` 컴포넌트를 테스트하는 것임을 명백히 알 수 있기 때문에 굳이 중첩을 추가할 필요가 없습니다.
+
+## AHA (Avoid Hasty Abstractions) 적용하기
+
+[AHA 원칙](https://kentcdodds.com/blog/aha-programming)에 따르면 여러분은:
+
+> 잘못된 추상화보단 중복을 선호하시고, 변경에 대한 최적화를 먼저 하려고 하셔야 합니다.
+
+우리가 살펴보고 있는 간단한 로그인 컴포넌트의 경우라면 테스트를 지금 상태 그대로 두어도 별문제 없지만, 상황이 좀 더 복잡해지고 코드 중복으로 인해 문제들이 발생하기 시작해서 중복을 줄이려고 한다고 해봅시다. `beforeEach`를 써야 할까요? 그래도 되는 걸까요?
+
+글쎄요, 그럴 수는 있겠다만 그렇게 된다면 우리가 피해야 할 변수 재할당 문제가 생기게 될 겁니다. 그럼 어떻게 테스트 간에 코드를 공유할 수 있을까요? 아하! 함수를 쓰면 되겠군요!
+
+```jsx
+import {render} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+
+import Login from '../Login';
+
+// 여기에 테스트 케이스들을 위해 서로 조합하여 사용되는 셋업 함수들이 있습니다.
+// 같은 일을 반복하는 테스트가 많이 있는 경우에만 이러한 방식을 사용하세요.
+// 여기선 예시를 위해 작성해놨지만 실제로 예시 수준의 테스트에선 이 정도의 추상화는 필요 없습니다.
+// https://kentcdodds.com/blog/aha-testing 에서 더 많이 알아보세요!
+function setup() {
+  const handleSubmit = jest.fn();
+  const utils = render(<Login onSubmit={handleSubmit} />);
+  const user = { username: 'michelle', password: 'smith' };
+  const changeUsernameInput = value =>
+    userEvent.type(utils.getByLabelText(/username/i), value);
+  const changePasswordInput = value =>
+    userEvent.type(utils.getByLabelText(/password/i), value);
+  const clickSubmit = () => userEvent.click(utils.getByText(/submit/i));
+  return {
+    ...utils,
+    handleSubmit,
+    user,
+    changeUsernameInput,
+    changePasswordInput,
+    clickSubmit,
+  };
+}
+
+function setupSuccessCase() {
+  const utils = setup();
+  utils.changeUsernameInput(utils.user.username);
+  utils.changePasswordInput(utils.user.password);
+  utils.clickSubmit();
+  return utils;
+}
+
+function setupWithNoPassword() {
+  const utils = setup();
+  utils.changeUsernameInput(utils.user.username);
+  utils.clickSubmit();
+  const errorMessage = utils.getByRole('alert');
+  return { ...utils, errorMessage };
+}
+
+function setupWithNoUsername() {
+  const utils = setup();
+  utils.changePasswordInput(utils.user.password);
+  utils.clickSubmit();
+  const errorMessage = utils.getByRole('alert');
+  return { ...utils, errorMessage };
+}
+
+test('calls onSubmit with the username and password', () => {
+  const { handleSubmit, user } = setupSuccessCase();
+  expect(handleSubmit).toHaveBeenCalledTimes(1);
+  expect(handleSubmit).toHaveBeenCalledWith(user);
+});
+
+test('shows an error message when submit is clicked and no username is provided', () => {
+  const { handleSubmit, errorMessage } = setupWithNoUsername();
+  expect(errorMessage).toHaveTextContent(/username is required/i);
+  expect(handleSubmit).not.toHaveBeenCalled();
+});
+
+test('shows an error message when password is not provided', () => {
+  const { handleSubmit, errorMessage } = setupWithNoPassword();
+  expect(errorMessage).toHaveTextContent(/password is required/i);
+  expect(handleSubmit).not.toHaveBeenCalled();
+});
+```
+
+이제 우리는 간단한 `setup` 함수를 사용하여 테스트 할 수 있게 되었습니다. 또, 셋업 함수들을 조합하여 사용함으로써 우리가 이전에 `beforeEach`를 사용하여 했던 동작을 비슷하게 재현할 수 있음을 눈여겨 봐주세요. 하지만 더 이상 변수를 계속해서 재할당하여 사용하지 않기 때문에 이전과 같이 머릿속에서 그 흐름을 추적해나갈 필요가 없게 되었습니다.
+
+[AHA 테스팅 포스트](https://kentcdodds.com/blog/aha-testing)에서 테스팅에 AHA 원칙을 적용했을 때의 이점에 대해 더 알아보세요. 
