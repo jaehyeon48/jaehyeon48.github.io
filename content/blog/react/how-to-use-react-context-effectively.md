@@ -158,3 +158,48 @@ export { CountProvider, useCount };
 ```
 
 우선, `useCount` 커스텀 훅은 (React 트리에서) 가장 가까운 `CountProvider`가 제공하는 컨텍스트 값을 얻기 위해 `React.useContext`를 사용하고 있습니다. 하지만 어떠한 값도 없는 경우, `CountProvider` 내에서 렌더링된 함수 컴포넌트에서 사용되고 있지 않다는 에러를 띄웁니다. 아마도 실수인 게 분명하므로 이렇게 에러 메시지를 띄우는 것은 중요합니다. [#FailFast](https://www.martinfowler.com/ieeeSoftware/failFast.pdf)
+
+## 커스텀 Consumer 컴포넌트 (The Custom Consumer Component)
+
+만약 훅을 사용할 수 있는 환경이라면 이 섹션을 건너뛰셔도 좋습니다. 하지만 React 16.8.0 이전 버전을 지원하셔야 한다거나, 혹은 클래스 컴포넌트에서 컨텍스트를 사용해야 하는 경우 render-prop을 기반으로 한 API로 비슷하게 흉내 내는 방법을 알려드리겠습니다:
+
+```jsx
+function CountConsumer({ children }) {
+  return (
+    <CountContext.Consumer>
+      {context => {
+        if (context === undefined) {
+          throw new Error('CountConsumer must be used within a CountProvider');
+        }
+        return children(context);
+      }}
+    </CountContext.Consumer>
+  )
+}
+```
+
+클래스 컴포넌트에서 사용하는 방법은 다음과 같습니다:
+
+```jsx
+class CounterThing extends React.Component {
+  render() {
+    return (
+      <CountConsumer>
+        {({ state, dispatch }) => (
+          <div>
+            <div>{state.count}</div>
+            <button onClick={() => dispatch({ type: 'decrement' })}>
+              Decrement
+            </button>
+            <button onClick={() => dispatch({ type: 'increment' })}>
+              Increment
+            </button>
+          </div>
+        )}
+      </CountConsumer>
+    );
+  }
+}
+```
+
+이는 제가 훅 이전에 사용했던 방식입니다. 물론 잘 동작하구요. 하지만 훅을 사용할 수 있는 상황이라면 훅을 사용하세요. 훨씬 낫습니다 😂
