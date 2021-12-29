@@ -127,48 +127,55 @@ domContainer.appendChild(domNode);
 
 ## 재조정 (Reconciliation)
 
-- 동일한 컨테이너에 대해 `ReactDOM.render()`를 두 번 호출하면 어떻게 될까?
+- 동일한 컨테이너에 대해 `ReactDOM.render()`를 두 번 호출하면 어떻게 될까요?
 
 ```jsx{2, 11}
 ReactDOM.render(
   <button className="blue" />,
   document.getElementById('container')
-)
+);
 
 // ... 이후
 
-// 현재의 "버튼" 호스트 객체를 대체해야할 까, 아니면
-// 단순히 기존 호스트 객체의 프로퍼티를 업데이트 해야할까?
+// 현재의 "버튼" 호스트 객체를 대체해야할 까요, 아니면
+// 단순히 기존 호스트 객체의 프로퍼티를 업데이트 해야할까요?
 ReactDOM.render(
   <button className="red" />,
   document.getElementById('container')
-)
+);
 ```
 
-- 다시 말하자면, React의 역할은 호스트 트리와 현재 주어진 React 요소 트리를 같게 만드는 것이다. 새로운 정보를 바탕으로 호스트 객체에 어떤 작업을 해야 하는지를 알아내는 과정을 [reconciliation](https://reactjs.org/docs/reconciliation.html) 이라고 한다.
-- 재조정에는 두 가지 방법이 존재한다. 단순히 기존의 트리를 날려버리고 새로운 트리를 처음부터 다시 만드는 방법이 있을 수 있다:
+다시 말하지만, React의 역할은 호스트 트리와 현재 주어진 React 요소 트리를 매치시키는 것입니다. 새로운 정보를 바탕으로 호스트 객체 트리에 어떤 작업을 해야 하는가를 알아내는 과정을 [reconciliation](https://reactjs.org/docs/reconciliation.html) 이라고 합니다.
+
+재조정을 하는 방법에는 두 가지가 있을 수 있습니다. 우선, 아래와 같이 단순히 기존의 트리를 날려버리고 새로운 트리를 처음부터 다시 만드는 방법이 있을 수 있습니다:
 
 ```js
-let domContainer = document.getElementById('container')
+let domContainer = document.getElementById('container');
 // 트리 초기화
-domContainer.innerHTML = ''
+domContainer.innerHTML = '';
 // 새로운 호스트 트리를 생성
-let domNode = document.createElement('button')
-domNode.className = 'red'
-domContainer.appendChild(domNode)
+let domNode = document.createElement('button');
+domNode.className = 'red';
+domContainer.appendChild(domNode);
 ```
 
-- 하지만 DOM의 경우 위 방법은 느리다. 또한, 포커스, 선택, 스크롤 상태와 같은 정보들도 다 날아간다. 따라서 위 방법 대신 다음과 같은 방법을 사용할 수 있다:
+하지만 DOM에서 위와 같은 방법은 느립니다. 또한, 포커스, 선택, 스크롤 상태와 같은 정보들도 다 날아가 버립니다. 따라서 위 방법 대신 다음과 같은 방법은 어떨까요?
 
 ```js
-let domNode = domContainer.firstChild
+let domNode = domContainer.firstChild;
 // 기존에 존재하는 호스트 객체를 업데이트
-domNode.className = 'red'
+domNode.className = 'red';
 ```
 
-- 즉, React는 _언제_ 기존의 호스트 객체를 업데이트 할지, 그리고 언제 새로운 객체를 생성할지 결정해야 한다. 하지만 이때, React 요소들은 매번 다른데 어떻게 같은 호스트 객체를 나타낸다는 것을 어떻게 알 수 있을까?
-- 위 예제에서는 간단하다. `<button>`을 첫 번째 자식으로 렌더링 했고, 똑같은 위치에 `<button>`을 다시 렌더링 하고 싶어 하므로, 기존에 존재하는 `<button>` 호스트 객체를 재사용하면 된다. 이는 React가 생각하는 방식과 흡사하다.
-- **직전 렌더링과 다음 렌더링 사이에, 트리상에서 같은 위치에 있는 요소들의 타입이 같으면 React는 기존에 존재하는 호스트 객체를 재사용한다**. 다음 예제를 살펴보자:
+즉, 이 방법은 *언제* 기존의 호스트 객체를 새로운 React 요소에 맞춰 업데이트할지, 그리고 언제 새로운 호스트 객체를 생성해야 할지 React가 결정을 내려야 한다는 뜻입니다.
+
+하지만 이렇게 하면 신원(identity)와 관련된 문제가 생깁니다. React 요소들은 매번 다를 텐데 어떻게 같은 호스트 객체를 나타낸다는 것을 알 수 있을까요?
+
+우리가 살펴보고 있는 예제에서는 간단합니다. 위 예제에선 `<button>`을 첫 번째 자식으로 렌더링했고, 똑같은 위치에 `<button>`을 다시 렌더링하고 싶어 하므로, 기존에 존재하는 `<button>` 호스트 객체를 재사용하면 됩니다. 굳이 재생성할 필요는 없잖아요?
+
+이는 React가 생각하는 방식과 흡사합니다.
+
+**직전 렌더링과 다음 렌더링 사이에, 트리 상에서 같은 위치에 있는 요소들의 타입이 같으면 React는 기존에 존재하는 호스트 객체를 재사용합니다**. 다음 예제를 살펴봅시다:
 
 ```jsx{9-10,16,26-27}
 // let domNode = document.createElement('button');
@@ -177,28 +184,28 @@ domNode.className = 'red'
 ReactDOM.render(
   <button className="blue" />,
   document.getElementById('container')
-)
+);
 
-// 호스트 객체를 재사용할 수 있다! (button → button)
+// 호스트 객체를 재사용할 수 있습니다! (button → button)
 // domNode.className = 'red';
 ReactDOM.render(
   <button className="red" />,
   document.getElementById('container')
-)
+);
 
-// 호스트 객체를 재사용할 수 없다.. (button → p)
+// 호스트 객체를 재사용할 수 없습니다.. (button → p)
 // domContainer.removeChild(domNode);
 // domNode = document.createElement('p');
 // domNode.textContent = 'Hello';
 // domContainer.appendChild(domNode);
-ReactDOM.render(<p>Hello</p>, document.getElementById('container'))
+ReactDOM.render(<p>Hello</p>, document.getElementById('container'));
 
-// 호스트 객체를 재사용할 수 있다! (p → p)
+// 호스트 객체를 재사용할 수 있습니다! (p → p)
 // domNode.textContent = 'Goodbye';
-ReactDOM.render(<p>Goodbye</p>, document.getElementById('container'))
+ReactDOM.render(<p>Goodbye</p>, document.getElementById('container'));
 ```
 
-- 자식 트리에도 동일한 휴리스틱 알고리즘이 적용된다. 예를 들어, 두 개의 `<button>` 요소를 자식으로 가지는 `<dialog>` 요소를 업데이트할 때, React는 우선 부모 요소인 `<dialog>`를 재사용할 수 있는지 따져보고 그다음 이러한 과정을 자식 요소인 `<button>`에 대해서도 동일하게 진행한다.
+자식 트리에도 동일한 휴리스틱 알고리즘이 적용됩니다. 예를 들어, 두 개의 `<button>` 요소를 자식으로 가지는 `<dialog>` 요소를 업데이트할 때, React는 우선 부모 요소인 `<dialog>`를 재사용할 수 있는지 따져보고, (만약 부모 요소를 재사용할 수 있으면) 그 다음 이와 동일한 과정을 자식 요소인 `<button>`에 대해서도  진행하게 됩니다.
 
 ## 조건 (Conditions)
 
