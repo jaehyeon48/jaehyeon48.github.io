@@ -450,36 +450,40 @@ function ExpenseForm() {
 
 ## 재귀 (Recursion)
 
-- 컴포넌트는 그냥 "함수"이므로, 해당 함수 컴포넌트를 호출함으로써 한 컴포넌트들 다른 컴포넌트에서 사용할 수 있다:
+컴포넌트를 다른 컴포넌트에서 어떻게 쓸 수 있을까요? 컴포넌트는 단순히 "함수"이므로, 그냥 호출하면 됩니다:
 
 ```js
-let reactElement = Form({ showMessage: true })
-ReactDOM.render(reactElement, domContainer)
+let reactElement = Form({ showMessage: true });
+ReactDOM.render(reactElement, domContainer);
 ```
 
-- 하지만 이는 React 런타임에서 자연스러운 방법이 아니다. 대신 우리가 여태껏 본 것과 같이, 컴포넌트를 React 요소를 사용하는 방법처럼 사용하는 것이 더 자연스러운 방법이다. 다시 말해 **함수 (컴포넌트)를 직접 호출하지 않고, React가 알아서 대신 호출하도록 하는 것이다**:
+하지만 이와 같은 방식은 React 런타임에서 자연스러운 방법이 아닙니다.
+
+대신, 컴포넌트를 자연스럽게 사용하는 방식은 우리가 앞서 본 React 요소의 방식과 동일합니다. 즉, **함수 (컴포넌트)를 직접 호출하지 말고, React가 여러분 대신 호출하도록 하세요:**
 
 ```jsx
 // { type: Form, props: { showMessage: true } }
-let reactElement = <Form showMessage={true} />
-ReactDOM.render(reactElement, domContainer)
+let reactElement = <Form showMessage={true} />;
+ReactDOM.render(reactElement, domContainer);
 
-// React 어딘가에서 해당 컴포넌트가 호출될 것이다
-let type = reactElement.type // Form
-let props = reactElement.props // { showMessage: true }
-let result = type(props) // Whatever Form returns
+// React 어딘가에서 해당 컴포넌트가 호출될 것입니다
+let type = reactElement.type; // Form
+let props = reactElement.props; // { showMessage: true }
+let result = type(props); // Whatever Form returns
 ```
 
-- 함수 컴포넌트의 이름은 항상 대문자로 시작한다. JSX를 번역할 때, `<form>` 대신 `<Form>`을 보게 되면 해당 객체의 타입을 문자열이 아니라 식별자로 본다:
+함수 컴포넌트의 이름은 항상 대문자로 시작해야 합니다. JSX를 번역할 때, `<form>` 대신 `<Form>`을 보게 되면 해당 객체의 타입을 문자열이 아니라 식별자로 봅니다:
 
 ```jsx
-console.log((<form />).type) // 'form' string
-console.log((<Form />).type) // Form function
+console.log((<form />).type); // 'form' string
+console.log((<Form />).type); // Form function
 ```
 
-- (컴포넌트가) 전역으로 등록되는 메커니즘 같은 건 없다. 단순히 컴포넌트의 이름을 통해 참조하는 것이다. 만약 컴포넌트가 로컬 스코프에 없다면 일반적인 자바스크립트에서 변수를 잘못 참조한 경우와 같이 에러를 보게 될 것이다.
-- 그렇다면 요소의 타입이 함수일 때 React는 어떤 일을 할까? **React 요소의 타입이 함수인 경우, React는 해당 컴포넌트를 호출하여 컴포넌트가 렌더링하고자 하는 요소들이 무엇인지 알아낸다.**
-- 이러한 과정은 재귀적으로 이어지며, [여기](https://reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html)에 더 자세히 나와있다. 요약하자면 다음과 비슷하다:
+(컴포넌트가) 전역으로 등록되는 메커니즘 같은 건 없습니다. 단순히 컴포넌트의 이름을 통해 참조하는 것입니다. 만약 컴포넌트가 로컬 스코프에 없다면 일반적인 자바스크립트에서 변수 이름을 잘못 참조한 경우와 같이 에러를 보게 될 것입니다.
+
+그렇다면 요소의 타입이 함수일 때 React는 어떤 일을 할까요? **React 요소의 타입이 함수인 경우, React는 해당 컴포넌트를 호출하여 이 컴포넌트가 렌더링하고자 하는 요소들이 무엇인지 알아냅니다.**
+
+- 이러한 과정은 재귀적으로 이어지며, [여기](https://reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html)에 더 자세히 나와있습니다. 요약하자면 다음과 비슷합니다:
 
   - **나**: `ReactDOM.render(<App />, domContainer)`
   - **React**: 안녕 `App`! 무엇을 렌더링하고 싶니?
@@ -492,7 +496,7 @@ console.log((<Form />).type) // Form function
     - `Footer`: 나는 `<footer>` 안에 텍스트를 적고 싶어.
   - **React**: 좋아. 여기있어:
 
-```html
+```jsx
 // 결과:
 <div>
   <article>
@@ -502,7 +506,9 @@ console.log((<Form />).type) // Form function
 </div>
 ```
 
-- 이것이 우리가 앞에서 재조정(reconciliation) 과정이 재귀적이라고 했던 이유이다. React가 요소 트리를 순회하는 과정에서 타입이 컴포넌트인 요소를 만나게 되면 해당 컴포넌트를 호출하고, 컴포넌트에서 반환된 요소들을 타고 내려가 계속해서 순회를 이어나간다. 결국 더 이상 순회할 요소가 없게 되면 React는 호스트 트리를 어떻게 변경해야 할지 알게 된다.
+이것이 우리가 앞에서 재조정(reconciliation) 과정이 재귀적이라고 했던 이유입니다. React가 요소 트리를 순회하는 과정에서 타입이 컴포넌트인 요소를 만나게 되면 해당 컴포넌트를 호출하고, 컴포넌트에서 반환된 요소들을 타고 내려가면서 순회를 계속 이어나갑니다. 그러고 나서 결국 더 이상 순회할 요소가 없게 되면 React는 호스트 트리에서 무엇을 변경해야 할지 알게 되는 것이죠.
+
+여기에서도 이와 같은 규칙이 적용됩니다. 만약 (인덱스 혹은 `key`로 판별된) 같은 위치의 `type`이 바뀌면 React는 해당 호스트 객체를 버리고 새로 생성합니다.
 
 ## 제어의 역전 (Inversion of Control)
 
