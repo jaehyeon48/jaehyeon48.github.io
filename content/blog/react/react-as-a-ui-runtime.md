@@ -26,9 +26,15 @@ React 프로그램들은 주로 시간에 따라 변경될 수도 있는 **트�
 
 ## 호스트 객체 (Host Instances)
 
-- 호스트 트리는 **호스트 객체**라고 불리는 노드들로 구성된다. DOM 환경에서 `document.createElement('div')`를 했을 때 생성되는 객체(DOM 노드)와 흡사하다고 할 수 있다.
-- 호스트 객체는 `domNode.className` 혹은 `view.tintColor`와 같은 고유한 프로퍼티를 가지고 있으며, 다른 호스트 객체를 자식으로 가질 수도 있다.
-- 또한 DOM의 `appendChild`, `removeChild`와 같이, 호스트 객체를 조작할 수 있는 API도 존재한다. 일반적인 React 앱에선 (React가 대신 처리해 주기 때문에) 이러한 API를 호출할 일이 없을 것이다.
+호스트 트리는 **호스트 객체**라고 불리는 노드들로 구성됩니다.
+
+DOM 환경에서 호스트 객체는 `document.createElement('div')`를 했을 때 생성되는 객체(DOM 노드)입니다. iOS에선 자바스크립트에서 네이티브 뷰를 식별하는 값일 수도 있구요.
+
+호스트 객체는 `domNode.className` 혹은 `view.tintColor`와 같은 고유한 프로퍼티를 가지고 있으며, 다른 호스트 객체를 자식으로 가질 수도 있습니다.
+
+(이는 React와는 전혀 관계없습니다. 저는 현재 호스트 환경을 설명하는 중이에요!)
+
+DOM의 `appendChild`, `removeChild`와 같이, 호스트 객체를 조작할 수 있는 API도 존재합니다. 하지만 일반적으로 이러한 작업들은 React가 대신 처리해 주기 때문에, 여러분이 직접 이와 같은 API를 호출하는 경우는 거의 없을 것입니다.
 
 ## 렌더러 (Renderers)
 
