@@ -406,43 +406,47 @@ function Form({ showMessage }) {
 
 ## 순수성(Purity)
 
-- React 컴포넌트는 전달받은 `prop`에 대해 *순수*하다고 여겨진다:
+- React 컴포넌트는 전달받은 `props`에 대해 **순수**하다고 여겨집니다:
 
 ```js
 function Button(props) {
   // 🔴 동작하지 않음!
-  props.isActive = true
+  props.isActive = true;
 }
 ```
 
-- 일반적으로 React에선 mutation이 자연스럽지 않다 (이벤트에 반응하여 UI를 자연스럽게 바꾸는 방법은 추후에 살펴보자).
-- 하지만 local mutation은 괜찮다:
+일반적으로 React에선 mutation이 자연스럽지 않습니다 (이벤트에 반응하여 UI를 자연스럽게 바꾸는 방법은 추후에 살펴봅시다).
+하지만 local mutation은 사용해도 괜찮습니다:
 
 ```jsx{2,5}
 function FriendList({ friends }) {
-  let items = []
+  let items = [];
   for (let i = 0; i < friends.length; i++) {
-    let friend = friends[i]
-    items.push(<Friend key={friend.id} friend={friend} />)
+    let friend = friends[i];
+    items.push(
+      <Friend key={friend.id} friend={friend} />
+    );
   }
-  return <section>{items}</section>
+  return <section>{items}</section>;
 }
 ```
 
-- 여기선 렌더링 중에 `items`를 만들었지만 다른 어떠한 컴포넌트도 이 변수를 참조하지 않고 있기 때문에 렌더링 결과를 만들기 전까지 처리하는 과정에서 얼마든지 변형시킬 수 있다. Local mutation을 굳이 피할 이유는 없다.
-- 비슷한 맥락으로, lazy initialization 또한 (완전히 "순수" 하지는 않지만) 괜찮다:
+여기선 렌더링 중에 `items`를 만들었지만 다른 어떠한 컴포넌트도 이 변수를 참조하지 않고 있기 때문에 렌더링 결과를 만들기 전까지 처리하는 과정에서 얼마든지 변형시킬 수 있습니다. Local mutation을 굳이 기피할 필요는 없습니다.
+
+비슷한 맥락으로, lazy initialization 또한 (완전히 "순수" 하지는 않지만) 괜찮습니다:
 
 ```js
 function ExpenseForm() {
-  // 다른 컴포넌트에 영향을 주지 않는다면 괜찮다:
-  SuperCalculator.initializeIfNotReady()
+  // 다른 컴포넌트에 영향을 주지 않는다면 괜찮습니다
+  SuperCalculator.initializeIfNotReady();
 
   // 계속해서 렌더링...
 }
 ```
 
-- 한 컴포넌트를 여러 번 호출하는 것이 안전하고 다른 컴포넌트의 렌더링에 영향을 미치지 않는 한, 해당 컴포넌트가 엄격한 FP의 관점에서 100% "순수" 하지는 않더라도 React는 별다른 신경을 쓰지 않는다. React에선 [멱등성(Idempotent)](https://stackoverflow.com/questions/1077412/what-is-an-idempotent-operation)이 순수성 보다 더 중요하다.
-- 다시 말해, 사용자에게 직접적으로 보여지는 side effect는 React 컴포넌트에서 허용되지 않는다. 즉, 함수 컴포넌트를 단순히 호출만 했을 때 화면에 어떤 변화가 발생하면 안 된다는 뜻이다.
+ 한 컴포넌트를 여러 번 호출하는 것이 안전하고 다른 컴포넌트의 렌더링에 영향을 미치지 않는 한, 해당 컴포넌트가 엄격한 FP의 관점에서 100% "순수" 하지 않아도 React는 딱히 신경 쓰지 않습니다. React에선 [멱등성(Idempotent)](https://stackoverflow.com/questions/1077412/what-is-an-idempotent-operation)이 순수성보다 더 중요합니다.
+
+즉, 사용자에게 직접적으로 보이는 side effect는 React 컴포넌트에서 허용되지 않습니다. 다시 말해, 함수 컴포넌트를 단순히 호출만 했을 때 화면에 어떤 변화가 발생하면 안 된다는 뜻입니다.
 
 ## 재귀 (Recursion)
 
