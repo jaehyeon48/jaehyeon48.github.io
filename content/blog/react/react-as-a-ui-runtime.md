@@ -46,13 +46,14 @@ React 렌더러에는 두 가지 동작 모드가 존재합니다:
   - **변경(mutating) 모드**: 대부분의 렌더러들은 변경 모드를 사용하도록 만들어졌습니다. 이 모드에선 노드를 만들 수 있고, 프로퍼티를 설정할 수 있으며, 추후에 자식을 추가하거나 제거할 수도 있는 등 DOM이 동작하는 방식과 동일하게 동작합니다. 이때, 호스트 객체들은 가변(mutable)입니다.
   - **[지속(persistent) 모드](https://en.wikipedia.org/wiki/Persistent_data_structure):** 지속 모드는 `appendChild()`와 같은 메소드를 제공하지 않는 호스트 환경에서 동작하는 모드입니다. 이 모드에선 부모의 트리를 복제하여 항상 최상위 자식을 대체하는 방식으로 동작합니다. 이러한 호스트 트리 레벨에서의 불변성 덕분에 멀티 스레딩이 쉬워집니다. [React Fabric](https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018)은 이를 활용합니다.
 
-## React 요소 (React Element)
+## React 요소 (React Elements)
 
-- (DOM 노드와 같은) 호스트 객체는 호스트 환경에서 가장 작은 구성 요소이다. React에선 React 요소가 가장 작은 구성 요소이다.
-- React 요소는 호스트 객체를 묘사할 수 있는 일반적인 자바스크립트 객체이다:
+호스트 환경에서 호스트 객체(e.g. DOM 노드)는 가장 작은 구성 요소(building block)입니다. React에서는 React 요소가 가장 작은 구성 요소이구요.
+
+React 요소는 호스트 객체를 묘사하는 평범한 자바스크립트 객체입니다:
 
 ```js
-// JSX는 아래의 객체를 만들기 위한 syntax sugar이다.
+// JSX는 아래의 객체를 만들기 위한 syntax sugar 입니다.
 // <button className="blue" />
 {
   type: 'button',
@@ -60,12 +61,12 @@ React 렌더러에는 두 가지 동작 모드가 존재합니다:
 }
 ```
 
-- React 요소는 어떠한 호스트 객체와도 연관되지 않는다. 다시 말하지만, React 요소는 단순히 어떤 것이 화면에 그려졌으면 하는지에 대한 정보에 불과하다.
-- 또한 호스트 객체와 같이 React 요소도 트리 구조를 형성할 수 있다 (여기선 [몇몇 프로퍼티](https://overreacted.io/why-do-react-elements-have-typeof-property/)들이 생략되어 있다):
+React 요소는 가벼우면서도, 특정 호스트 객체와 연관되지 않는 것이 특징입니다. 다시 말씀드리지만, React 요소는 여러분이 화면에 그리고자 하는 것을 설명하는 객체에 불과합니다.
+
+호스트 객체와 같이, React 요소들도 트리 구조를 형성할 수 있습니다:
 
 ```js
-
-// JSX는 아래의 객체를 만들기 위한 syntax sugar이다.
+// JSX는 아래의 객체를 만들기 위한 syntax sugar 입니다.
 // <dialog>
 //   <button className="blue" />
 //   <button className="red" />
@@ -84,9 +85,13 @@ React 렌더러에는 두 가지 동작 모드가 존재합니다:
 }
 ```
 
-- 하지만, React 요소에는 영구적인 고유 ID가 존재하지 않는다. 이들은 매번 새로 만들어지고 버려진다.
-- 또, React 요소들은 불변(immutable)이기 때문에, 요소의 자식이나 프로퍼티 등을 변경할 수 없다. 만약 무언가 다른 것을 (화면에) 렌더링 하고 싶다면 새로운 React 요소를 생성해야 한다.
-- React 요소를 영화의 프레임으로 생각하면 쉽다. 각 요소들은 특정 순간에 UI가 어떠한 모습이어야 하는지를 나타내고 있고, 변하지 않는다.
+(여기선 [몇몇 프로퍼티](https://overreacted.io/why-do-react-elements-have-typeof-property/)들을 생략했습니다.)
+
+하지만 **React 요소에는 영구적인 고유 ID가 존재하지 않는다**는 점을 기억해주세요. React 요소는 애초에 매번 새로 만들어지고 버려지도록 설계되었습니다.
+
+또, React 요소들은 불변(immutable)이기 때문에, React 요소의 자식이나 프로퍼티 등을 변경할 수 없습니다. 만약 무언가 다른 것을 렌더링하고 싶다면 새로운 React 요소를 이용하여 트리를 새로 생성해야 합니다.
+
+React 요소를 영화의 프레임으로 생각하면 쉽습니다. 각 요소들은 프레임처럼 변하지 않는 채로 특정 순간에 UI가 어떠한 모습이어야 하는지를 나타냅니다.
 
 ## 진입점 (Entry Point)
 
