@@ -512,31 +512,36 @@ console.log((<Form />).type); // Form function
 
 ## 제어의 역전 (Inversion of Control)
 
-- `Form()` 대신 `<Form/>`이라고 쓰는 것처럼, 왜 컴포넌트를 직접 호출하지 않는지에 대해 궁금할 수도 있을 것이다. 그 이유는, **재귀적으로 (직접) 호출한 React 요소를 보는 것보다 React 스스로가 컴포넌트들에 대해 알고 있으면 React가 해야 할 작업을 더 잘 수행할 수 있기 때문이다.**
+- `Form()` 대신 `<Form/>`이라고 쓰는 것과 같이, 왜 컴포넌트를 직접 호출하지 않는 걸까요? 그 이유는, **React 입장에선 우리가 재귀적으로 직접 호출한 React 요소를 보는 것보다, React 스스로가 컴포넌트들에 대해 알고 있으면 React가 해야 할 작업을 더 잘 수행할 수 있기 때문입니다.**
 
 ```jsx
 // 🔴 (사용자가) 컴포넌트를 직접 호출하게되면 React로선
-// "Layout"과 "Article"이 존재하는지 알 수 없다.
-ReactDOM.render(Layout({ children: Article() }), domContainer)
+// "Layout"과 "Article"이 존재하는지 알 수 없습니다.
+ReactDOM.render(Layout({ children: Article() }), domContainer);
 
 // ✅ 반면, React가 컴포넌트를 호출하면
-// "Layout"과 "Article"이 존재하는지 알 수 있다!
+// "Layout"과 "Article"이 존재하는지 알 수 있습니다!
 ReactDOM.render(
   <Layout>
     <Article />
   </Layout>,
   domContainer
-)
+);
 ```
 
-- 이는 [제어의 역전](https://en.wikipedia.org/wiki/Inversion_of_control)의 대표적인 예시이다. 또한, React가 컴포넌트 호출 제어권을 가지게 함으로써 생기는 몇 가지 흥미로운 이점들이 있다:
+이는 [제어의 역전](https://en.wikipedia.org/wiki/Inversion_of_control)의 대표적인 예시입니다. 또한, React가 컴포넌트 호출 제어권을 가지게 함으로써 생기는 몇 가지 흥미로운 이점들이 있습니다:
 
-  - **컴포넌트는 함수 이상의 역할을 하게 된다**: React는 지역 상태와 같은 기능들을 컴포넌트와 묶을 수 있게 된다. 앞서 살펴본 것처럼 React는 이벤트에 응답하는 UI 트리를 생성하는데, 컴포넌트를 (React 대신) 직접 호출하면 부가적인 기능들을 직접 구현해야 한다.
-  - **컴포넌트 타입으로 재조정을 한다**: React가 컴포넌트를 호출하게 되면 React는 트리의 구조를 더욱 많이 알게 된다. 예를 들어 `<Feed>` 페이지에서 `<Profile>` 페이지로 이동하면 React는 (`<button>`을 `<p>`로 바꾸는 것처럼) 해당 요소의 호스트 객체를 재사용하지 않는다. 이렇듯 다른 view를 렌더링 하는 경우엔 이와 같이 (기존의) 모든 상태를 날려버리는 것이 바람직하다. `<input>` 요소가 우연히 트리상에서 같은 위치에 존재한다고 하더라도 `<PasswordFrom>`과 `<MessengerChat>`간에 입력 상태를 유지하고 싶지는 않을 것이다.
-  - **React가 재조정을 지연할 수 있다**: React가 컴포넌트 호출 제어권을 가지면 여러 가지 흥미로운 것들을 할 수 있다. 예를 들면, 거대한 컴포넌트를 리렌더링 하는 것이 [메인 스레드를 blocking 하지 않도록](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 컴포넌트 호출 사이에 브라우저로 하여금 일부 작업을 더 하도록 할 수 있다. React를 뜯어고치지 않고선 이 작업을 수동으로 하는 것은 쉽지 않을 것이다.
-  - **더 나은 디버깅**: 컴포넌트가 React가 인지하고 있는 일급 객체라면 [풍부한 디버깅 도구](https://github.com/facebook/react-devtools)들을 만들 수 있게 된다.
+  - **컴포넌트가 함수 이상의 역할을 하게 됩니다**: React는 지역 상태와 같은 기능들을 컴포넌트와 묶을 수 있게 됩니다. 좋은 런타임은 직면한 문제에 알맞는 기초적인 추상화를 제공합니다. 앞서 언급한 것처럼 React는 이벤트에 응답하는 UI 트리를 생성하는 데 초점이 맞춰져 있습니다. 컴포넌트를 React 대신 직접 호출하면 이와 같은 부가적인 기능들을 여러분이 직접 구현해야 합니다.
 
-- 마지막 이점은 **지연 평가(lazy evaluation)**에 관한 것이다. 다음 섹션에서 살펴보자.
+  - **컴포넌트 타입으로 재조정을 한다**: React가 컴포넌트를 호출하게 되면 React는 트리의 구조에 대해 더욱 많이 알게 됩니다. 예를 들어, `<Feed>` 페이지에서 `<Profile>` 페이지로 이동하면 React는 마치 `<button>`을 `<p>`로 바꾸는 것처럼 해당 요소의 호스트 객체를 재사용하지 않습니다. 이렇듯 다른 view를 렌더링하는 경우엔 이처럼 기존의 모든 상태를 날려버리는 것이 바람직합니다. `<input>` 요소가 우연히 트리 상에서 같은 위치에 존재하게 된다고 하더라도 `<PasswordFrom>`과 `<MessengerChat>`간에 입력 상태를 유지하고 싶지는 않을 것입니다.
+
+  - **React가 재조정을 지연할 수 있다**: React가 컴포넌트 호출 제어권을 가지면 여러 가지 흥미로운 것들을 할 수 있게 됩니다. 예를 들면, 거대한 컴포넌트를 리렌더링 하는 것이 [메인 스레드를 blocking 하지 않도록](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 컴포넌트 호출 사이에 브라우저가 일부 작업을 더 하도록 할 수 있습니다. React를 뜯어고치지 않고선 이 작업을 수동으로 하기는 쉽지 않을 것입니다.
+
+  - **더 나은 디버깅**: 컴포넌트가 React가 인지하고 있는 일급 객체라면 [풍부한 디버깅 도구](https://github.com/facebook/react-devtools)들을 만들 수 있게 됩니다.
+
+<br/>
+
+마지막 이점은 **지연 평가(lazy evaluation)**에 관한 것인데, 이는 다음 섹션에서 살펴봅시다.
 
 ## 지연 평가 (Lazy Evaluation)
 
