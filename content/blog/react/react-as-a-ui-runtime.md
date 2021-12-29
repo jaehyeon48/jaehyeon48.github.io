@@ -38,11 +38,13 @@ DOM의 `appendChild`, `removeChild`와 같이, 호스트 객체를 조작할 수
 
 ## 렌더러 (Renderers)
 
-- **렌더러**는 React로 하여금 특정 호스트 환경과 소통하고, (해당 환경에 있는) 호스트 객체들을 관리하도록 한다. React DOM, React Native와 같은 것들이 렌더러이다. 또한 [나만의 렌더러를 직접 만들 수도 있다.](https://github.com/facebook/react/tree/main/packages/react-reconciler)
-- React 렌더러에는 두 가지 동작 모드가 존재한다:
+**렌더러**는 React가 특정 호스트 환경과 소통하고, 해당 환경에 있는 호스트 객체들을 관리할 수 있도록 합니다. React DOM, React Native와 같은 것들이 렌더러입니다. 또한 [나만의 렌더러를 직접 만들 수도 있다.](https://github.com/facebook/react/tree/main/packages/react-reconciler)
 
-  - **변경(mutating) 모드**: 대부분의 렌더러들은 변경 모드를 사용하도록 만들어졌다. 이 모드는 DOM이 동작하는 방식인데, 노드를 만들 수 있고, 프로퍼티를 설정할 수 있고, 추후에 자식을 추가하거나 제거할 수도 있다. 호스트 객체들은 가변(mutable)이다.
-  - **지속(persistent) 모드:**: 지속 모드는 `appendChild()`와 같은 메소드를 제공하지 않는 호스트 환경에서 동작하는 모드이다. 이 모드에선 부모의 트리를 복제하여 최상위 자식을 대체하는 방식으로 동작한다. 호스트 트리의 불변성 덕분에 멀티 스레딩을 쉽게할 수 있다. [React Fabric](https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018)은 이를 활용한다.
+
+React 렌더러에는 두 가지 동작 모드가 존재합니다:
+
+  - **변경(mutating) 모드**: 대부분의 렌더러들은 변경 모드를 사용하도록 만들어졌습니다. 이 모드에선 노드를 만들 수 있고, 프로퍼티를 설정할 수 있으며, 추후에 자식을 추가하거나 제거할 수도 있는 등 DOM이 동작하는 방식과 동일하게 동작합니다. 이때, 호스트 객체들은 가변(mutable)입니다.
+  - **[지속(persistent) 모드](https://en.wikipedia.org/wiki/Persistent_data_structure):** 지속 모드는 `appendChild()`와 같은 메소드를 제공하지 않는 호스트 환경에서 동작하는 모드입니다. 이 모드에선 부모의 트리를 복제하여 항상 최상위 자식을 대체하는 방식으로 동작합니다. 이러한 호스트 트리 레벨에서의 불변성 덕분에 멀티 스레딩이 쉬워집니다. [React Fabric](https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018)은 이를 활용합니다.
 
 ## React 요소 (React Element)
 
