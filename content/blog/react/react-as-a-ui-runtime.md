@@ -381,25 +381,28 @@ React가 `<form>` 내부에 있는 `<p key="42">` 요소를 보게 되면 직전
 
 ## 컴포넌트 (Components)
 
-- 이미 우리는 React 요소를 반환하는 함수를 본 적이 있다:
+- 이미 우리는 React 요소를 반환하는 함수를 본 적이 있습니다:
 
 ```jsx
 function Form({ showMessage }) {
-  let message = null
+  let message = null;
+
   if (showMessage) {
-    message = <p>I was just added here!</p>
+    message = <p>I was just added here!</p>;
   }
+
   return (
     <dialog>
       {message}
       <input />
     </dialog>
-  )
+  );
 }
 ```
 
-- 이러한 함수를 **컴포넌트**라고 부르는데, 컴포넌트는 우리만의 버튼, 아바타, 댓글 등을 관리하는 도구 상자(toolbox)를 만들 수 있게 해준다.
-- 컴포넌트는 "해쉬 객체" 하나만을 인자로 갖는다. 이 해쉬 객체에는 `prop`이 존재한다. 위 예제에서 `showMessage`가 prop인데, 여기선 [Object destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#object_destructuring)이 사용되었다.
+이러한 함수를 **컴포넌트**라고 부르는데, 컴포넌트는 우리만의 버튼, 아바타, 댓글 등을 관리하는 도구 상자(toolbox)를 만들 수 있게 해줍니다.
+
+컴포넌트는 "해시 객체" 하나만을 인자로 갖는다. 이 해시 객체에는 `props`가 존재합니다. 위 예제에서 `showMessage`가 prop인데, 여기선 [Object destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#object_destructuring)을 사용하여 prop을 사용했습니다.
 
 ## 순수성(Purity)
 
