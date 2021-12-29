@@ -19,8 +19,8 @@ React 프로그램들은 주로 시간에 따라 변경될 수도 있는 **트�
 
 특정 조건을 만족하는 경우엔 특성화된 도구가 범용적인 도구보다 더욱 유용한데, React는 다음의 두 원칙에 근거하고 있습니다:
 
-  - **안정성**: 호스트 트리는 비교적 안정적이며, 트리 전체의 구조를 뜯어고치는 업데이트는 거의 없습니다. 만약 모든 상호작용하는 요소들이 매 순간 완전히 바뀌게 된다면 앱을 사용하기 어려울 것입니다. 유저들은 "아니, 버튼이 어디로 간 거야?" 혹은, "화면이 왜 이래?"와 같이 반응할테구요.
-  - **규칙성**: 호스트 트리는 무작위 형태가 아닌, 일관된 모습과 동작을 지닌 (버튼, 리스트, 아바타와 같은) UI 패턴으로 나눌 수 있습니다.
+- **안정성**: 호스트 트리는 비교적 안정적이며, 트리 전체의 구조를 뜯어고치는 업데이트는 거의 없습니다. 만약 모든 상호작용하는 요소들이 매 순간 완전히 바뀌게 된다면 앱을 사용하기 어려울 것입니다. 유저들은 "아니, 버튼이 어디로 간 거야?" 혹은, "화면이 왜 이래?"와 같이 반응할테구요.
+- **규칙성**: 호스트 트리는 무작위 형태가 아닌, 일관된 모습과 동작을 지닌 (버튼, 리스트, 아바타와 같은) UI 패턴으로 나눌 수 있습니다.
 
 이러한 원칙들은 대부분의 UI에 적용되지만, 어떤 일정한 "패턴"이 없는 결과물에는 별 도움이 안 될 수 있습니다. 예를 들면, 트위터 페이지를 만드는 경우엔 도움이 되겠지만 [3D 파이프 스크린 세이버](https://www.youtube.com/watch?v=Uzx9ArZ7MUU)와 같이 일정한 "패턴"이 없는 경우엔 크게 도움이 되진 않을 겁니다.
 
@@ -40,11 +40,10 @@ DOM의 `appendChild`, `removeChild`와 같이, 호스트 객체를 조작할 수
 
 **렌더러**는 React가 특정 호스트 환경과 소통하고, 해당 환경에 있는 호스트 객체들을 관리할 수 있도록 합니다. React DOM, React Native와 같은 것들이 렌더러입니다. 또한 [나만의 렌더러를 직접 만들 수도 있다.](https://github.com/facebook/react/tree/main/packages/react-reconciler)
 
-
 React 렌더러에는 두 가지 동작 모드가 존재합니다:
 
-  - **변경(mutating) 모드**: 대부분의 렌더러들은 변경 모드를 사용하도록 만들어졌습니다. 이 모드에선 노드를 만들 수 있고, 프로퍼티를 설정할 수 있으며, 추후에 자식을 추가하거나 제거할 수도 있는 등 DOM이 동작하는 방식과 동일하게 동작합니다. 이때, 호스트 객체들은 가변(mutable)입니다.
-  - **[지속(persistent) 모드](https://en.wikipedia.org/wiki/Persistent_data_structure):** 지속 모드는 `appendChild()`와 같은 메소드를 제공하지 않는 호스트 환경에서 동작하는 모드입니다. 이 모드에선 부모의 트리를 복제하여 항상 최상위 자식을 대체하는 방식으로 동작합니다. 이러한 호스트 트리 레벨에서의 불변성 덕분에 멀티 스레딩이 쉬워집니다. [React Fabric](https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018)은 이를 활용합니다.
+- **변경(mutating) 모드**: 대부분의 렌더러들은 변경 모드를 사용하도록 만들어졌습니다. 이 모드에선 노드를 만들 수 있고, 프로퍼티를 설정할 수 있으며, 추후에 자식을 추가하거나 제거할 수도 있는 등 DOM이 동작하는 방식과 동일하게 동작합니다. 이때, 호스트 객체들은 가변(mutable)입니다.
+- **[지속(persistent) 모드](https://en.wikipedia.org/wiki/Persistent_data_structure):** 지속 모드는 `appendChild()`와 같은 메소드를 제공하지 않는 호스트 환경에서 동작하는 모드입니다. 이 모드에선 부모의 트리를 복제하여 항상 최상위 자식을 대체하는 방식으로 동작합니다. 이러한 호스트 트리 레벨에서의 불변성 덕분에 멀티 스레딩이 쉬워집니다. [React Fabric](https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018)은 이를 활용합니다.
 
 ## React 요소 (React Elements)
 
@@ -95,36 +94,36 @@ React 요소를 영화의 프레임으로 생각하면 쉽습니다. 각 요소�
 
 ## 진입점 (Entry Point)
 
-- 각 React 렌더러에는 "진입점"이 존재한다. 진입점은 우리가 React로 하여금 어떤 React 요소 트리를 컨테이너 호스트 객체 내부에 렌더링 할 수 있게 해주는 API라고 할 수 있다.
-- 예를 들면, React DOM의 진입점은 `ReactDOM.render` 이다:
+각 React 렌더러에는 "진입점"이 존재합니다. 진입점은 우리가 React에게 컨테이너 호스트 객체 안에 어떤 React 요소 트리를 렌더링해야 하는지 알려줄 수 있게 해주는 API라고 할 수 있습니다. 예를 들면 React DOM의 진입점은 `ReactDOM.render` 입니다:
 
 ```jsx
 ReactDOM.render(
-  // 아래의 JSX는 {type: 'button', props: {className: 'blue'}}를 나타낸 것이라 할 수 있다.
+  // 아래의 JSX는 { type: 'button', props: { className: 'blue' } }를 나타낸 것이라 할 수 있습니다.
   <button className="blue" />,
   document.getElementById('container')
-)
+);
 ```
 
-- `ReactDOM.render(reactElement, domContainer)`라고 하는 것은 "React님, `domContainer` 호스트 트리를 `reactElement`와 같게 해주세요"라고 하는 것과 같다.
-- React는 요소의 타입 (`reactElement.type`, 위 예시에서는 `'button'`)을 보고, ReactDOM 렌더러에게 해당 타입에 맞는 호스트 객체를 생성하고 프로퍼티를 설정하도록 요청한다:
+`ReactDOM.render(reactElement, domContainer)`라고 하는 것은 "React 님, `domContainer` 호스트 트리를 `reactElement`에 매칭시켜주세요"라고 하는 것과 같습니다.
+
+React는 요소의 타입인 `reactElement.type` (위 예시에서는 `'button'`)를 보고, ReactDOM 렌더러에게 해당 타입에 맞는 호스트 객체를 생성하고 프로퍼티를 설정하도록 요청합니다:
 
 ```js{3-4,9-10}
 // ReactDOM 렌더러 어딘가 (간략한 버전)
 function createHostInstance(reactElement) {
-  let domNode = document.createElement(reactElement.type)
-  domNode.className = reactElement.props.className
-  return domNode
+  let domNode = document.createElement(reactElement.type);
+  domNode.className = reactElement.props.className;
+  return domNode;
 }
 
-// 현재 예시에 대해 React가 실질적으로 하는 동작은 다음과 같다:
-let domNode = document.createElement('button')
-domNode.className = 'blue'
+// 현재 예시에 대해 React가 실질적으로 하는 동작은 다음과 같습니다:
+let domNode = document.createElement('button');
+domNode.className = 'blue';
 
-domContainer.appendChild(domNode)
+domContainer.appendChild(domNode);
 ```
 
-- 만약 React 요소에 자식 요소가 존재한다면 (`reactElement.props.children`), React는 첫 번째 렌더링 때 재귀적으로 해당 자식 요소들을 생성한다.
+만약 React 요소의 `reactElement.props.children`에 자식 요소가 존재한다면, React는 첫 렌더링 때 재귀적으로 해당 자식 요소들을 생성합니다.
 
 ## 재조정 (Reconciliation)
 
@@ -477,12 +476,9 @@ console.log((<Form />).type) // Form function
 ```jsx
 // 🔴 (사용자가) 컴포넌트를 직접 호출하게되면 React로선
 // "Layout"과 "Article"이 존재하는지 알 수 없다.
-ReactDOM.render(
-  Layout({ children: Article() }),
-  domContainer
-)
+ReactDOM.render(Layout({ children: Article() }), domContainer)
 
-// ✅ 반면, React가 컴포넌트를 호출하면 
+// ✅ 반면, React가 컴포넌트를 호출하면
 // "Layout"과 "Article"이 존재하는지 알 수 있다!
 ReactDOM.render(
   <Layout>
@@ -530,7 +526,7 @@ function Story({ currentUser }) {
     <Page user={currentUser}>
       <Comments />
     </Page>
-  );
+  )
 }
 ```
 
@@ -538,15 +534,11 @@ function Story({ currentUser }) {
 
 ```jsx{4}
 function Page({ user, children }) {
-  return (
-    <Layout>
-      {children}
-    </Layout>
-  );
+  return <Layout>{children}</Layout>
 }
 ```
 
-(JSX에서 `<A><B /></A>`와 `<A children={<B /} />`는 
+(JSX에서 `<A><B /></A>`와 `<A children={<B /} />`는
 똑같다.)
 
 - 하지만 특정 조건에 의해 일찍 반환된다면 어떨까?
@@ -554,14 +546,10 @@ function Page({ user, children }) {
 ```jsx{2-4}
 function Page({ user, children }) {
   if (!user.isLoggedIn) {
-    return <h1>Please log in</h1>;
+    return <h1>Please log in</h1>
   }
 
-  return (
-    <Layout>
-      {children}
-    </Layout>
-  );
+  return <Layout>{children}</Layout>
 }
 ```
 
@@ -574,9 +562,7 @@ function Page({ user, children }) {
 //     children: Comments() // 무조건 실행된다!
 //   }
 // }
-<Page>
-  {Comments()}
-</Page>
+<Page>{Comments()}</Page>
 ```
 
 - 하지만 `<Comments />`와 같이 React 요소를 넘기게 되면 `Comments`를 실행하지 않는다:
@@ -604,16 +590,14 @@ function Page({ user, children }) {
 
 ```jsx{2,6-7}
 function Example() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -635,7 +619,7 @@ function Row({ item }) {
   // ...
 }
 
-export default React.memo(Row);
+export default React.memo(Row)
 ```
 
 - 이렇게 하면 부모 컴포넌트인 `<Table>`에 있는 `setState`는 직전에 렌더링한 `item`과 현재의 `item`이 (참조 비교를 통해) 같은 `Row` 컴포넌트에 대한 재조정은 건너뛰게 된다.
@@ -658,22 +642,22 @@ export default React.memo(Row);
 
 ```jsx{4, 14}
 function Parent() {
-  let [count, setCount] = useState(0);
+  let [count, setCount] = useState(0)
   return (
     <div onClick={() => setCount(count + 1)}>
       Parent clicked {count} times
       <Child />
     </div>
-  );
+  )
 }
 
 function Child() {
-  let [count, setCount] = useState(0);
+  let [count, setCount] = useState(0)
   return (
     <button onClick={() => setCount(count + 1)}>
       Child clicked {count} times
     </button>
-  );
+  )
 }
 ```
 
@@ -682,27 +666,27 @@ function Child() {
 ```js{4, 8}
 /* React의 브라우저 클릭 이벤트 핸들러 내부 진입 */
 Child(onClick)
-  // setState
-  // "Child 리렌더링" // 😞 불필요하다!
+// setState
+// "Child 리렌더링" // 😞 불필요하다!
 Parent(onClick)
-  // setState
-  // "Parent 리렌더링"
-  // "Child 리렌더링"
+// setState
+// "Parent 리렌더링"
+// "Child 리렌더링"
 /* React의 브라우저 클릭 이벤트 핸들러를 빠져나감 */
 ```
 
-- 여기서 `Child` 첫 번째 렌더링은 불필요한 낭비이다. 그리고  `Parent`의 상태 변경으로 인해 `Child`가 다시 렌더링 되는 것이므로 React 보고 `Child`의 두 번째 렌더링을 건너뛰라고 할 수도 없다.
+- 여기서 `Child` 첫 번째 렌더링은 불필요한 낭비이다. 그리고 `Parent`의 상태 변경으로 인해 `Child`가 다시 렌더링 되는 것이므로 React 보고 `Child`의 두 번째 렌더링을 건너뛰라고 할 수도 없다.
 - 이러한 이유로 React가 이벤트 핸들러 내에서 업데이트를 일괄적으로 처리하는 이유이다:
 
 ```js
 /* React의 브라우저 클릭 이벤트 핸들러 내부 진입 */
 Child(onClick)
-  // setState
+// setState
 Parent(onClick)
-  // setState
-  // 상태 업데이트 처리
-  // "Parent 리렌더링"
-  // "Child 리렌더링"
+// setState
+// 상태 업데이트 처리
+// "Parent 리렌더링"
+// "Child 리렌더링"
 /* React의 브라우저 클릭 이벤트 핸들러를 빠져나감 */
 ```
 
@@ -710,16 +694,16 @@ Parent(onClick)
 - 일괄 처리는 성능 측면에선 좋지만, 다음과 같이 코드를 작성한다면 문제가 될 수도 있다 [예제](https://codesandbox.io/s/react-batch-wrong-example-rzvkz?file=/src/App.js):
 
 ```js
-const [count, setCount] = useState(0);
+const [count, setCount] = useState(0)
 
 function increment() {
-  setCount(count + 1);
+  setCount(count + 1)
 }
 
 function handleClick() {
-  increment();
-  increment();
-  increment();
+  increment()
+  increment()
+  increment()
 }
 ```
 
@@ -727,16 +711,16 @@ function handleClick() {
 - 이 문제를 해결하려면 다음과 같이 `setState`에서 제공하는 "updater" 함수를 사용하면 된다 [예제](https://codesandbox.io/s/react-batch-proper-example-gy9de?file=/src/App.js):
 
 ```js
-const [count, setCount] = useState(0);
+const [count, setCount] = useState(0)
 
 function increment() {
-  setCount(c => c + 1);
+  setCount(c => c + 1)
 }
 
 function handleClick() {
-  increment();
-  increment();
-  increment();
+  increment()
+  increment()
+  increment()
 }
 ```
 
@@ -747,16 +731,16 @@ function handleClick() {
 // "action" 인자는 무엇이든 될 수 있지만 일반적으로 객체가 많이 사용된다.
 const [counter, dispatch] = useReducer((state, action) => {
   if (action === 'increment') {
-    return state + 1;
+    return state + 1
   } else {
-    return state;
+    return state
   }
-}, 0);
+}, 0)
 
 function handleClick() {
-  dispatch('increment');
-  dispatch('increment');
-  dispatch('increment');
+  dispatch('increment')
+  dispatch('increment')
+  dispatch('increment')
 }
 ```
 
@@ -766,7 +750,7 @@ function handleClick() {
 - 물론 React는 자바스크립트로 동작하므로 (애초에 React는 "자바스크립트 라이브러리"다!) 자바스크립트의 규칙을 따른다. 하지만 React는 예를 들어 `[App, Page, Layout, Article(→ 현재 렌더링 하는 부분!)]`와 같이 현재 어떤 컴포넌트를 렌더링 하고 있는지 추적하기 위해 내부적으로 자체적인 호출 스택을 가지고 있다.
 - React는 UI 트리를 렌더링 하는 것이 주 목적임을 다시 한번 상기하자. 이 트리들은 상호 작용을 위해 계속해서 "살아 있어야 한다". 우리가 처음으로 `ReactDOM.render()`를 호출한 이후에도 DOM은 사라지지 않는다.
 - 다소 은유적인 표현이지만, 나는 React 컴포넌트들이 "호출 스택"이 아니라 "호출 트리" 내부에 있다고 생각한다. `Article` 컴포넌트의 렌더링이 끝나도 `Article`의 React "호출 트리" 프레임은 파괴되지 않고 남아있다. 우리는 해당 호스트 객체의 지역 상태와 참조를 [어딘가](https://medium.com/react-in-depth/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-67f1014d0eb7)에 저장해 두어야 한다.
-- 재조정 규칙에 의에 필요한 경우에만 지역 상태, 호스트 객체와 함께 "호출 트리" 프레임이 제거된다. 이때, 이러한 호출 트리 프레임을 흔히 [Fiber](https://en.wikipedia.org/wiki/Fiber_(computer_science))라고 부른다.
+- 재조정 규칙에 의에 필요한 경우에만 지역 상태, 호스트 객체와 함께 "호출 트리" 프레임이 제거된다. 이때, 이러한 호출 트리 프레임을 흔히 [Fiber](<https://en.wikipedia.org/wiki/Fiber_(computer_science)>)라고 부른다.
 - Fiber는 지역 상태들이 실제로 "살아 있는" 곳이다. 상태가 업데이트되면 React는 해당 Fiber와 그 자식들을 "재조정 대상"으로 표시해놓고, 해당 Fiber와 연관된 컴포넌트들을 호출한다.
 
 ## 컨텍스트 (Context)
@@ -777,18 +761,18 @@ function handleClick() {
 ```jsx
 const ThemeContext = React.createContext(
   'light' // Default value
-);
+)
 
 function DarkApp() {
   return (
     <ThemeContext.Provider value="dark">
       <MyComponents />
     </ThemeContext.Provider>
-  );
+  )
 }
 
 function SomeDeeplyNestedChild() {
-  const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext)
 }
 ```
 
@@ -802,20 +786,18 @@ function SomeDeeplyNestedChild() {
 
 ```jsx{4-6}
 function Example() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  });
+    document.title = `You clicked ${count} times`
+  })
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -825,9 +807,9 @@ function Example() {
 
 ```js
 useEffect(() => {
-  DataSource.addSubscription(handleChange);
-  return () => DataSource.removeSubscription(handleChange);
-});
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+})
 ```
 
 - 이렇게 cleanup을 위해 effect가 함수를 반환하게 되면 React는 반환된 함수를 다음번 effect를 실행하기 직전, 그리고 컴포넌트가 제거될 때 실행한다.
@@ -835,24 +817,24 @@ useEffect(() => {
 
 ```js
 useEffect(() => {
-  document.title = `You clicked ${count} times`;
-}, [count]);
+  document.title = `You clicked ${count} times`
+}, [count])
 ```
 
 - 하지만 만약 자바스크립트 클로저에 익숙하지 않다면 성급한 최적화 문제가 발생할 수 있다. 예를 들면 다음의 코드는 버그가 발생할 가능성이 높다:
 
 ```js
 useEffect(() => {
-  DataSource.addSubscription(handleChange);
-  return () => DataSource.removeSubscription(handleChange);
-}, []);
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+}, [])
 ```
 
 - 위 코드에서 `[]`는 "이 effect를 다시 실행하지 마"라고 하는 것과 같다. 하지만 effect에선 effect 외부에 선언된 `handleChange`를 (클로저를 이용하여) 사용(close over)하고 있고, `handleChange`에선 다음과 같이 특정 prop 혹은 상태를 참조하고 있을 수 있다:
 
 ```js
 function handleChange() {
-  console.log(count);
+  console.log(count)
 }
 ```
 
@@ -861,9 +843,9 @@ function handleChange() {
 
 ```js{4}
 useEffect(() => {
-  DataSource.addSubscription(handleChange);
-  return () => DataSource.removeSubscription(handleChange);
-}, [handleChange]);
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+}, [handleChange])
 ```
 
 - 코드에 따라서 `handleChange`가 매번 렌더링 될 때마다 달라지므로 불필요한 재구독(resubscription)이 발생할 수도 있다. 이 경우 [useCallback hook](https://reactjs.org/docs/hooks-reference.html#usecallback)을 사용할 수도 있고, 혹은 그냥 재구독되게끔 내버려 둘 수도 있다. 예를 들어 브라우저가 제공하는 `addEventListener` API는 엄청 빠르기 때문에, (불필요한 호출을 줄이려고) 성급하게 최적화했다가 오히려 성능이 더욱 나빠질 수 있다.
@@ -874,22 +856,20 @@ useEffect(() => {
 
 ```jsx{2, 8}
 function MyResponsiveComponent() {
-  const width = useWindowWidth(); // 우리가 만든 커스텀 hook
-  return (
-    <p>Window width is {width}</p>
-  );
+  const width = useWindowWidth() // 우리가 만든 커스텀 hook
+  return <p>Window width is {width}</p>
 }
 
 function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(window.innerWidth)
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
+    const handleResize = () => setWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
     return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
-  return width;
+      window.removeEventListener('resize', handleResize)
+    }
+  })
+  return width
 }
 ```
 
