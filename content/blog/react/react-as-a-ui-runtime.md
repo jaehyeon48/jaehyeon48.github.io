@@ -209,10 +209,10 @@ ReactDOM.render(<p>Goodbye</p>, document.getElementById('container'));
 
 ## 조건 (Conditions)
 
-- 업데이트할 때, React가 같은 타입의 호스트 객체들만 재사용한다면 조건부 컨텐츠(특정 조건을 만족하는 경우 나타나는 컨텐츠?)에 대해선 어떻게 해야할까? 다음 예제와 같이, 처음에는 input만 보여줬다가 이후 메세지도 함께 보여준다고 하자:
+업데이트할 때 React가 같은 타입의 호스트 객체들만 재사용한다면, 조건부 컨텐츠(특정 조건에 따라 렌더링 여부가 결정되는 요소)에 대해선 어떻게 해야 할까요? 다음 예제와 같이, 처음에는 input만 보여줬다가 이후 메시지도 함께 보여주고 싶다고 해봅시다:
 
-```js{12}
-// First render
+```jsx{12}
+// 첫 번째 렌더링
 ReactDOM.render(
   <dialog>
     <input />
@@ -220,7 +220,7 @@ ReactDOM.render(
   domContainer
 )
 
-// Next render
+// 그 다음 렌더링
 ReactDOM.render(
   <dialog>
     <p>I was just added here!</p>
@@ -230,79 +230,90 @@ ReactDOM.render(
 )
 ```
 
-- 위 예제에서 `<input>` 호스트 객체는 다시 생성될 것이다. React가 이전 버전의 트리와 비교하는 과정을 다음처럼 나타낼 수 있다:
+위 예제에서 `<input>` 호스트 객체는 다시 생성될 것입니다. React가 현재 버전의 트리를 이전 버전의 트리와 비교하는 과정은 다음과 비슷합니다:
 
+  - (위에서부터 아래로)
   - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
-    - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야함.
-    - `(noting) → input`: 새로운 `input` 객체를 생성해야함.
+    - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야 함.
+    - `(noting) → input`: 새로운 `input` 객체를 생성해야 함.
 
-- 따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 같을 것이다:
+따라서, React는 실질적으로 아래와 같은 코드를 실행할 것입니다:
 
 ```js{1-2,8-9}
-let oldInputNode = dialogNode.firstChild
-dialogNode.removeChild(oldInputNode)
+let oldInputNode = dialogNode.firstChild;
+dialogNode.removeChild(oldInputNode);
 
-let pNode = document.createElement('p')
-pNode.textContent = 'I was just added here!'
-dialogNode.appendChild(pNode)
+let pNode = document.createElement('p');
+pNode.textContent = 'I was just added here!';
+dialogNode.appendChild(pNode);
 
-let newInputNode = document.createElement('input')
-dialogNode.appendChild(newInputNode)
+let newInputNode = document.createElement('input');
+dialogNode.appendChild(newInputNode);
 ```
 
-- 하지만 생각해 보면, `<input>`이 `<p>`로 바뀐 것이 아니라 단순히 이동된 것이므로 위와 같은 동작은 뭔가 아쉽다. 또, 이렇게 하면 포커스, 선택, 입력한 내용들도 다 날아가버린다.
-- 사실 이 문제엔 (곧 살펴볼) 간단한 해결책이 존재한다. 하지만 위와 같은 상황이 그리 자주 발생하지는 않는다. 왜냐면, 실제로는 `ReactDOM.render`를 직접 호출할 일이 거의 없기 때문이다. 대신, React 앱들은 주로 다음과 같이 함수들로 나뉘게 된다:
+하지만 생각해 보면 `<input>`은 `<p>`로 바뀐 것이 아니라 단순히 이동된 것이므로 위와 같은 동작은 그다지 좋아 보이진 않습니다. 또, 이렇게 하면 포커스, 선택, 입력한 내용들도 다 날아가 버립니다.
+
+사실 이 문제엔 (곧 살펴볼) 간단한 해결책이 존재합니다. 하지만 이러한 상황이 그리 자주 발생하지는 않습니다. 왜냐면, 실제로는 `ReactDOM.render`를 직접 호출할 일이 거의 없기 때문이죠. 대신, React 앱들은 주로 다음과 같이 함수들로 나뉘는 경향이 있습니다:
 
 ```jsx
 function Form({ showMessage }) {
-  let message = null
+  let message = null;
+
   if (showMessage) {
-    message = <p>I was just added here!</p>
+    message = <p>I was just added here!</p>;
   }
+
   return (
     <dialog>
       {message}
       <input />
     </dialog>
-  )
+  );
 }
 ```
 
-- 이 예제에선 방금 살펴본 문제가 발생하지 않는다. 왜 그런지는 다음과 같이 JSX를 객체 형태로 표시하면 더 쉽게 확인할 수 있다. `dialog`의 자식 트리를 살펴보자:
+이 예제에선 방금 살펴본 문제가 발생하지 않습니다. 다음과 같이 JSX를 객체 형태로 표시하면 그 이유를 더 쉽게 확인할 수 있습니다. `dialog`의 자식 트리를 살펴봅시다:
 
-```js{12-15}
+```js{14-16}
 function Form({ showMessage }) {
-  let message = null
+  let message = null;
+
   if (showMessage) {
     message = {
       type: 'p',
-      props: { children: 'I was just added here!' },
-    }
+      props: { children: 'I was just added here!' }
+    };
   }
+
   return {
     type: 'dialog',
     props: {
-      children: [message, { type: 'input', props: {} }],
-    },
-  }
+      children: [
+        message,
+        { type: 'input', props: {} }
+      ]
+    }
+  };
 }
 ```
 
-- 여기서, `showMessage`가 `true`이건 `false`이건 상관없이 `<input>`은 항상 `<dialog>`의 두 번째 자식이므로 그 위치가 변하지 않는다. `showMessage`가 `false`에서 `true`로 바뀌면 React는 다음과 같이 이전 버전과 비교할 것이다:
+여기서, `showMessage`가 `true`이건 `false`이건 상관없이 `<input>`은 항상 `<dialog>`의 두 번째 자식이므로 그 위치가 변하지 않습니다. `showMessage`가 `false`에서 `true`로 바뀌면 React는 다음과 같이 (현재 버전을) 이전 버전과 비교할 것입니다:
 
   - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
     - `(null) → p`: 새로운 `p` 호스트 객체를 추가해야함.
     - `input → input`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
 
-- 따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 같을 것이다:
+따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 흡사할 것입니다:
 
 ```js
-// "input"의 상태가 그대로 유지된다!
-let inputNode = dialogNode.firstChild
-let pNode = document.createElement('p')
-pNode.textContent = 'I was just added here!'
-dialogNode.insertBefore(pNode, inputNode)
+// "input"의 상태가 그대로 유지됩니다!
+let inputNode = dialogNode.firstChild;
+let pNode = document.createElement('p');
+pNode.textContent = 'I was just added here!';
+dialogNode.insertBefore(pNode, inputNode);
 ```
+
+이렇게 함으로써 입력 상태를 잃어버리지 않을 수 있게 되었습니다.
 
 ## 리스트 (Lists)
 
