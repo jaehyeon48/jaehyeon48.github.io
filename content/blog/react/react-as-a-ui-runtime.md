@@ -639,25 +639,30 @@ React가 컴포넌트를 호출함으로써, React는 컴포넌트를 호출할�
 
 ## 상태 (State)
 
-- 호스트 객체는 포커스, 선택, 입력과 같은 모든 종류의 지역 상태를 가질 수 있다. 우리는 동일한 UI를 업데이트할 때 이러한 지역 상태들을 유지하고자 하고, (`<SignupForm>`에서 `<MessengerChat>`으로 이동하는 것과 같이) 다른 UI로 변경할 때 상태들을 (예측대로) 날려버리길 원한다.
-- React 컴포넌트는 자체적으로 이렇게나 유용한 지역 상태를 가질 수 있다. 컴포넌트는 본질적으로 일반적인 함수이지만, React를 통해 UI에 유용한 상태들을 컴포넌트와 결합할 수 있다.
-- 우리는 이것을 **훅(Hooks)** 이라고 부른다. 예를 들면, `useState`는 hook이다.
+우리는 앞서 어떻게 요소의 "위치" 개념을 이용하여 호스트 객체를 재사용할지, 혹은 새로 생성해야 할지를 판단하는지에 대해 살펴봤었습니다. 호스트 객체는 포커스, 선택, 입력과 같은 모든 종류의 지역 상태를 가질 수 있습니다. 우리는 동일한 UI를 업데이트할 때 이러한 지역 상태들을 유지하고자 하고, `<SignupForm>`에서 `<MessengerChat>`으로 이동하는 것과 같이 다른 UI로 변경할 때 상태들을 (예측대로) 날려버리길 원합니다.
+
+React 컴포넌트는 이렇게나 유용한 지역 상태를 자체적으로 가질 수 있습니다. 컴포넌트는 본질적으로 일반적인 함수이지만, React를 통해 UI에 유용한 상태들을 컴포넌트와 결합할 수 있습니다.
+
+우리는 이것을 **훅(Hooks)** 이라고 부릅니다. 예를 들면, `useState`는 훅입니다.
 
 ```jsx{2,6-7}
 function Example() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
     </div>
-  )
+  );
 }
 ```
 
-- `useState`는 현재 상태와 상태를 업데이트 하는 함수로 구성된 쌍(pair)를 반환한다. [Array destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#array_destructuring)을 통해 `useState`가 반환하는 상태와 업데이트 함수의 이름을 지정할 수 있다.
-- `useState`를 비롯한 다른 여러가지 hook들은 [React 공식 문서](https://reactjs.org/docs/hooks-intro.html)에서 더 자세히 살펴볼 수 있다.
+`useState`는 현재 상태와 상태를 업데이트하는 함수로 구성된 쌍(pair)을 반환합니다. [Array destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#array_destructuring)을 통해 `useState`가 반환하는 상태와 업데이트 함수의 이름을 지정할 수 있습니다.
+
+`useState`를 비롯한 다른 여러 가지 훅들은 [React 공식 문서](https://reactjs.org/docs/hooks-intro.html)에서 더 자세히 살펴보실 수 있습니다.
 
 ## 일관성 (Consistency)
 
