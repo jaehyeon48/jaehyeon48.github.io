@@ -545,7 +545,7 @@ ReactDOM.render(
 
 ## 지연 평가 (Lazy Evaluation)
 
-- 자바스크립트에서 함수를 호출할 때, 함수에 전달되는 인자들은 호출 전에 평가된다:
+자바스크립트에서 함수를 호출할 때, 함수에 전달되는 인자들은 호출 전에 평가됩니다:
 
 ```js
 // (2) 나중에 계산됨
@@ -555,9 +555,9 @@ eat(
 );
 ```
 
-- 자바스크립트 함수가 암묵적으로 side effect를 가질 수 있기 때문에 이는 대개 자바스크립트 개발자들이 생각하는 방식이다. 함수를 직접 호출했다면 (예상치 못한 문제로) 놀랄 수도 있겠지만, 자바스크립트 어딘가에서 결과가 사용될 때까지 실행되지 않는다.
-- 하지만 React 컴포넌트는 상대적으로 순수하다. 컴포넌트의 (반환) 결과가 화면에 렌더링 되지 않는다는 것을 알고 있다면, 이를 실행할 필요가 없다.
-- 다음의 예제를 살펴보자:
+자바스크립트 함수는 암묵적으로 side effect를 가질 수 있기 때문에 이는 자바스크립트 개발자들이 일반적으로 생각하는 방식입니다.
+
+하지만 React 컴포넌트는 상대적으로 순수합니다. 컴포넌트의 반환 결과가 화면에 렌더링 되지 않는다는 것을 알고 있다면, 이를 실행할 필요가 없습니다. 다음의 예제를 살펴봅시다:
 
 ```jsx{11}
 function Story({ currentUser }) {
@@ -572,46 +572,54 @@ function Story({ currentUser }) {
     <Page user={currentUser}>
       <Comments />
     </Page>
-  )
+  );
 }
 ```
 
-- 여기서 `<Page>` 컴포넌트는 넘겨받은 `children`을 `Layout` 내부에 사용할 수 있다:
+여기서 `<Page>` 컴포넌트는 넘겨받은 `children`을 `Layout` 내부에서 사용할 수 있습니다:
 
 ```jsx{4}
 function Page({ user, children }) {
-  return <Layout>{children}</Layout>
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
 }
 ```
 
-(JSX에서 `<A><B /></A>`와 `<A children={<B /} />`는
-똑같다.)
+(JSX에서 `<A><B /></A>`와 `<A children={<B /} />`는 똑같습니다!)
 
-- 하지만 특정 조건에 의해 일찍 반환된다면 어떨까?
+하지만 특정 조건에 의해 일찍 반환된다면 어떨까요?
 
 ```jsx{2-4}
 function Page({ user, children }) {
   if (!user.isLoggedIn) {
-    return <h1>Please log in</h1>
+    return <h1>Please log in</h1>;
   }
-
-  return <Layout>{children}</Layout>
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
 }
 ```
 
-- 만약 `Comments()`와 같이 우리가 직접 `Comments`를 호출했다면 `Page`의 렌더링 여부에 관계없이 무조건 `Comments` 컴포넌트를 실행할 것이다:
+만약 `Comments()`와 같이 우리가 직접 `Comments`를 호출한다면 `Page`의 렌더링 여부에 관계없이 무조건 `Comments` 컴포넌트를 실행할 것입니다:
 
 ```jsx{4, 8}
 // {
 //   type: Page,
 //   props: {
-//     children: Comments() // 무조건 실행된다!
+//     children: Comments() // 항상 실행됩니다!
 //   }
 // }
-<Page>{Comments()}</Page>
+<Page>
+  {Comments()}
+</Page>
 ```
 
-- 하지만 `<Comments />`와 같이 React 요소를 넘기게 되면 `Comments`를 실행하지 않는다:
+하지만 `<Comments />`와 같이 React 요소를 넘기게 되면 `Comments`를 실행하지 않습니다:
 
 ```jsx{4, 8}
 // {
@@ -625,8 +633,9 @@ function Page({ user, children }) {
 </Page>
 ```
 
-- (React가 컴포넌트를 호출함으로써) React는 컴포넌트를 호출할지 말 지 결정할 수 있다. `Page` 컴포넌트가 `children` prop 대신 `<h1>Please log in</h1>`을 렌더링한다면 React는 (`children` prop으로 넘어온) `<Comments>` 함수를 실행하지 않는다.
-- 요점은, 이렇게 함으로써 불필요한 렌더링을 줄일 수 있게 되고 또한 코드의 취약성을 줄일 수 있게 된다는 것이다.
+React가 컴포넌트를 호출함으로써, React는 컴포넌트를 호출할지 말 지 결정할 수 있게 됩니다. `Page` 컴포넌트가 `children` prop 대신 `<h1>Please log in</h1>`을 렌더링한다면 React는 (`children` prop으로 넘어온) `<Comments>` 함수를 실행하지 않습니다.
+
+이렇게 함으로써 불필요한 렌더링을 줄일 수 있게 되고 또한 코드의 취약성을 줄일 수 있게 됩니다.
 
 ## 상태 (State)
 
