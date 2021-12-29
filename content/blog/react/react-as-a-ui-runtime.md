@@ -5,21 +5,24 @@ category: 'react'
 draft: false
 ---
 
-이 포스트는 [React as a UI Runtime](https://overreacted.io/react-as-a-ui-runtime/)를 번역/요약한 글입니다.
+이 포스트는 [React as a UI Runtime](https://overreacted.io/react-as-a-ui-runtime/)를 번역한 글입니다.
 
 <hr class="custom-hr">
 
 ## 호스트 트리 (Host Tree)
 
-- 각기 다른 프로그래밍 언어들과 이들의 런타임 환경은 특정 용도에 최적화되어있고, 이는 React도 예외가 아니다.
-- React 프로그램은 시간에 따라 변할 수도 있는 **트리**를 출력한다. 이 트리를 **"호스트 트리"** 라고 하는데, 이는 이 트리가 React의 일부가 아니라 DOM과 같이 *외부 호스트 환경*의 일부이기 때문이다. 호스트 트리는 자체적인 명령형(imperative) API가 있고, React는 그 위에 존재하는 레이어이다.
-- 매우 추상적으로 말하자면, React는 외부 상호작용·네트워크 응답·타이머와 같은 외부 이벤트에 대해 반응하는 복잡한 호스트 트리를 예측 가능한 방식으로 조작할 수 있는 프로그램을 만드는 데 도움을 준다.
-- React는 다음의 두 원칙에 근거하고 있다:
+어떤 프로그램은 숫자를 출력하고, 또 어떤 프로그램은 텍스트를 출력합니다. 이렇듯 각기 다른 프로그래밍 언어들과 이들의 런타임 환경은 특정 용도에 맞춰 최적화되는데, React도 예외는 아닙니다.
 
-  - **안정성**: 호스트 트리는 비교적 안정적이며, 대부분의 업데이트는 트리 전체의 구조를 뜯어고치진 않는다. 만약 모든 상호작용하는 요소들이 매 순간 완전히 바뀌게 된다면 "아니, 버튼이 어디로 간 거야?" 혹은, "화면이 왜 이래?"와 같이 앱을 사용하기 어려울 것이다.
-  - **규칙성**: 호스트 트리는 무작위 형태가 아닌, 일관된 모습과 동작을 지닌 (버튼, 리스트, 아바타와 같은) UI 패턴 으로 나눌 수 있다.
+React 프로그램들은 주로 시간에 따라 변경될 수도 있는 **트리**를 출력합니다. 이 트리는 [DOM 트리](https://www.npmjs.com/package/react-dom)가 될 수도, [iOS 계층](https://developer.apple.com/library/archive/documentation/General/Conceptual/Devpedia-CocoaApp/View%20Hierarchy.html)이 될 수도, 심지어 [PDF 요소](https://react-pdf.org/)들 혹은 [JSON 객체](https://reactjs.org/docs/test-renderer.html)들의 트리가 될 수도 있습니다. 하지만 우리는 일반적으로 React를 사용하여 UI를 표현합니다. 이를 **"호스트 트리"** 라고 하는데, 이는 이 트리가 React의 일부가 아니라 DOM 혹은 iOS와 같이 *외부 호스트 환경*의 일부이기 때문입니다. 일반적으로 호스트 트리에는 [자신만의](https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild) [자체적인](https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview) 명령형(imperative) API가 있는데, React는 이 API 위에 존재하게 됩니다.
 
-- 이러한 원칙들은 대부분의 UI에 해당하지만, [3D 파이프 스크린 세이버](https://www.youtube.com/watch?v=Uzx9ArZ7MUU)와 같이 일정한 "패턴"이 없는 경우엔 별 도움이 안 된다.
+그럼 React는 어떨 때 유용할까요? 매우 추상적으로 말하자면, React는 외부 상호작용·네트워크 응답·타이머와 같은 외부 이벤트에 대해 반응하는 복잡한 호스트 트리를 예측 가능한 방식으로 조작할 수 있는 프로그램을 만드는 데 도움을 줍니다.
+
+특정 조건을 만족하는 경우엔 특성화된 도구가 범용적인 도구보다 더욱 유용한데, React는 다음의 두 원칙에 근거하고 있습니다:
+
+  - **안정성**: 호스트 트리는 비교적 안정적이며, 트리 전체의 구조를 뜯어고치는 업데이트는 거의 없습니다. 만약 모든 상호작용하는 요소들이 매 순간 완전히 바뀌게 된다면 앱을 사용하기 어려울 것입니다. 유저들은 "아니, 버튼이 어디로 간 거야?" 혹은, "화면이 왜 이래?"와 같이 반응할테구요.
+  - **규칙성**: 호스트 트리는 무작위 형태가 아닌, 일관된 모습과 동작을 지닌 (버튼, 리스트, 아바타와 같은) UI 패턴으로 나눌 수 있습니다.
+
+이러한 원칙들은 대부분의 UI에 적용되지만, 어떤 일정한 "패턴"이 없는 결과물에는 별 도움이 안 될 수 있습니다. 예를 들면, 트위터 페이지를 만드는 경우엔 도움이 되겠지만 [3D 파이프 스크린 세이버](https://www.youtube.com/watch?v=Uzx9ArZ7MUU)와 같이 일정한 "패턴"이 없는 경우엔 크게 도움이 되진 않을 겁니다.
 
 ## 호스트 객체 (Host Instances)
 
