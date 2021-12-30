@@ -951,28 +951,30 @@ useEffect(() => {
 
 ## 커스텀 훅 (Custom Hooks)
 
-- `useState`, `useEffect`와 같은 hook들은 함수이기 때문에, 이들을 조합해서 직접 우리만의 hook을 만들 수 있다:
+`useState`, `useEffect`와 같은 훅들은 함수이기 때문에, 이들을 조합해서 직접 우리만의 훅을 만들 수 있습니다:
 
 ```jsx{2, 8}
 function MyResponsiveComponent() {
-  const width = useWindowWidth() // 우리가 만든 커스텀 hook
-  return <p>Window width is {width}</p>
+  const width = useWindowWidth(); // 커스텀 훅
+  return (
+    <p>Window width is {width}</p>
+  );
 }
 
 function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth)
+  const [width, setWidth] = useState(window.innerWidth);
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth)
-    window.addEventListener('resize', handleResize)
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  })
-  return width
+      window.removeEventListener('resize', handleResize);
+    };
+  });
+  return width;
 }
 ```
 
-- 이와 같이 커스텀 hook은 재사용 가능한 stateful 로직을 서로 다른 컴포넌트끼리 공유할 수 있게 해준다. 이때, 상태 자체는 공유되지 않으며, hook을 호출할 때마다 각자의 독립된 상태를 선언하게 된다. 커스텀 hook에 대해 더 자세히 알고 싶으면 [여기](https://reactjs.org/docs/hooks-custom.html)를 참조하라.
+이처럼 커스텀 훅은 재사용 가능한 stateful 로직을 서로 다른 컴포넌트끼리 공유할 수 있게 해준다. 이때, 상태 자체는 공유되지 않으며, 훅을 호출할 때마다 각자의 독립된 상태를 선언하게 된다. 커스텀 훅에 대해 더 자세히 알고 싶으면 [여기](https://reactjs.org/docs/hooks-custom.html)를 참조하세요!
 
 ## Hook의 규칙 (Static Use Order)
 
