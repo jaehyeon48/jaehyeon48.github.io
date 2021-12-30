@@ -38,7 +38,7 @@ DOM의 `appendChild`, `removeChild`와 같이, 호스트 객체를 조작할 수
 
 ## 렌더러 (Renderers)
 
-**렌더러**는 React가 특정 호스트 환경과 소통하고, 해당 환경에 있는 호스트 객체들을 관리할 수 있도록 합니다. React DOM, React Native와 같은 것들이 렌더러입니다. 또한 [나만의 렌더러를 직접 만들 수도 있다.](https://github.com/facebook/react/tree/main/packages/react-reconciler)
+**렌더러**는 React가 특정 호스트 환경과 소통하고, 해당 환경에 있는 호스트 객체들을 관리할 수 있도록 합니다. React DOM, React Native와 같은 것들이 렌더러입니다. 또한 [나만의 렌더러를 직접 만들 수도 있습니다.](https://github.com/facebook/react/tree/main/packages/react-reconciler)
 
 React 렌더러에는 두 가지 동작 모드가 존재합니다:
 
@@ -235,7 +235,7 @@ ReactDOM.render(
   - (위에서부터 아래로)
   - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
     - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야 함.
-    - `(noting) → input`: 새로운 `input` 객체를 생성해야 함.
+    - `(nothing) → input`: 새로운 `input` 객체를 생성해야 함.
 
 따라서, React는 실질적으로 아래와 같은 코드를 실행할 것입니다:
 
