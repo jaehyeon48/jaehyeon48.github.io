@@ -839,29 +839,35 @@ Fiber는 지역 상태들이 실제로 "살아 있는" 곳이다. 상태가 업�
 
 ## 컨텍스트 (Context)
 
-- React에선 데이터를 하위 컴포넌트로 전달할 때 props의 형태로 전달한다. 색상 테마와 같이, 때로는 대부분의 컴포넌트가 동일한 상태를 필요로 하는 경우가 있다. 이때 이러한 상태를 일일이 전달하는 것은 매우 번거로울 수 있다.
-- 하지만 이러한 문제를 [Context](https://reactjs.org/docs/context.html)로 해결할 수 있다. 이는 본질적으로 컴포넌트를 위한 [동적 스코핑](http://wiki.c2.com/?DynamicScoping)이라고 할 수 있다. 이는 마치 웜홀처럼 위에 데이터를 놓으면 그 아래에 있는 모든 자식들이 그 데이터를 참조할 수 있게 되고, 데이터가 변경되면 그에 따라 다시 리렌더링 된다.
+React에선 데이터를 하위 컴포넌트로 전달할 때 props의 형태로 전달합니다. 색상 테마와 같이, 때로는 대부분의 컴포넌트가 동일한 상태를 필요로 하는 경우가 있습니다. 이때 이러한 상태를 일일이 전달하는 것은 매우 번거로울 수 있습니다.
+
+하지만 이러한 문제를 [Context](https://reactjs.org/docs/context.html)로 해결할 수 있습니다. 이는 본질적으로 컴포넌트를 위한 [동적 스코핑](http://wiki.c2.com/?DynamicScoping)이라고 할 수 있습니다. 마치 웜홀처럼, 위에 데이터를 놓으면 그 아래에 있는 모든 자식들이 그 데이터를 참조할 수 있게 되고, 데이터가 변경되면 그에 따라 다시 리렌더링 됩니다.
 
 ```jsx
 const ThemeContext = React.createContext(
-  'light' // Default value
-)
+  'light' // 기본값
+);
 
 function DarkApp() {
   return (
     <ThemeContext.Provider value="dark">
       <MyComponents />
     </ThemeContext.Provider>
-  )
+  );
 }
 
 function SomeDeeplyNestedChild() {
-  const theme = useContext(ThemeContext)
+  // Depends on where the child is rendered
+  const theme = useContext(ThemeContext);
+  // ...
 }
 ```
 
-- 위 코드에서, `SomeDeeplyNestedChild`가 렌더링 될 때 `useContext(ThemeContext)`는 **트리 상에서 가장 가까운** `<ThemeContext.Provider>`를 찾아 해당 컨텍스트의 데이터를 사용하게 된다. (실제로는 React가 렌더링 하는 과정에서 context 스택을 관리한다.)
-- 만약 `ThemeContext.Provider`가 존재하지 않는다면 `useContext(ThemeContext)`의 값은 `createContext()`를 호출할 때 명시했던 기본 값이 된다 (여기서는 `light`가 될 것이다!)
+위 코드에서, `SomeDeeplyNestedChild`가 렌더링 될 때 `useContext(ThemeContext)`는 **트리 상에서 가장 가까운** `<ThemeContext.Provider>`를 찾아 해당 컨텍스트의 데이터를 사용하게 됩니다.
+
+(실제로는 React가 렌더링 하는 과정에서 context 스택을 관리합니다.)
+
+만약 `ThemeContext.Provider`가 존재하지 않는다면 `useContext(ThemeContext)`의 값은 `createContext()`를 호출할 때 명시했던 기본 값이 됩니다 (여기서는 `light`가 될 것이다!).
 
 ## 이펙트 (Effects)
 
