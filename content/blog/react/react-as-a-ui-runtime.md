@@ -1073,8 +1073,12 @@ fiber.hooks = hooks;
 
 ## 더 알아볼 것들 (What's Left Out)
 
-- 우리는 이 포스트에서 React 런타임 환경의 중요한 측면들을 거의 다 살펴보았다. 하지만 몇 가지 빠트린 것이 있는데, 이것들은 우리(React 개발 팀)에게 조차도 불명확한 것들이다.
-- 현재 React는 부모가 렌더링 할 때 자식 정보가 필요한 멀티 패스 렌더링을 지원하지 않는다. 또한 현재로썬 아직 [에러 핸들링 API](https://reactjs.org/docs/error-boundaries.html)의 hook 버전이 없다. 이 두 가지 문제를 함께 해결할 수는 있을 것 같다.
-- 현재 [동시성 모드](https://reactjs.org/docs/concurrent-mode-intro.html)는 실험 버전이고 [서스펜스](https://reactjs.org/docs/concurrent-mode-suspense.html)가 어떻게 이러한 큰 그림에 맞아 들어갈지에 대한 흥미로운 질문들도 많다. 아마 이러한 기능들이 더욱 견고해지고 서스펜스가 [지연 로딩](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) 이상의 기능을 하게 되면 이 포스트의 후속편을 작성할 것 같다.
-- **나는 React가 성공할 수 있었던 이유는 우리가 앞에서 살펴봤던 주제들을 몰라도 많은 것을 할 수 있기 때문이라고 본다.** 재조정에서 사용하는 휴리스틱은 대부분의 상황에서 올바르게 동작한다. `key` 경고와 같이 잠재된 위험을 알려주는 경고 또한 마찬가지다.
-- 만약 당신이 UI 라이브러리에 관심 있다면, 이 게시물을 통해 React가 어떻게 작동하는지 더 상세히 알게 되었길 바란다.
+우리는 이 포스트에서 React 런타임 환경의 중요한 측면들을 거의 다 살펴보았습니다. 하지만 몇 가지 빠트린 것이 있는데, 이것들은 우리(React 개발 팀)에게조차도 불명확한 것들입니다.
+
+현재 React는 부모가 렌더링할 때 자식 정보가 필요한 멀티 패스 렌더링을 지원하지 않습니다. 또한 현재로선 아직 [에러 핸들링 API](https://reactjs.org/docs/error-boundaries.html)의 훅 버전이 없다. 이 두 가지 문제를 함께 해결할 수는 있을 것 같습니다.
+
+현재 [동시성 모드](https://reactjs.org/docs/concurrent-mode-intro.html)는 실험 버전이고 [서스펜스](https://reactjs.org/docs/concurrent-mode-suspense.html)가 어떻게 이러한 큰 그림에 맞아 들어갈지에 대한 흥미로운 질문들도 많이 있습니다. 아마 이러한 기능들이 더욱 견고해지고 서스펜스가 [지연 로딩](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) 이상의 기능을 하게 되면 이 포스트의 후속편을 작성할 것 같네요.
+
+**저는 React가 성공할 수 있었던 이유는 우리가 앞에서 살펴봤던 주제들을 몰라도 많은 것을 할 수 있기 때문이라고 봅니다.** 재조정에서 사용하는 휴리스틱은 대부분의 상황에서 올바르게 동작합니다. `key` 경고와 같이 잠재된 위험을 알려주는 경고 또한 마찬가지입니다.
+
+만약 여러분이 UI 라이브러리에 관심 있다면, 이 게시물을 통해 React가 어떻게 작동하는지 더 상세히 알게 되었길 바랍니다!
