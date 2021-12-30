@@ -871,74 +871,83 @@ function SomeDeeplyNestedChild() {
 
 ## 이펙트 (Effects)
 
-- 앞서 React 컴포넌트는 관찰할 수 있는 side effect를 가지면 안된다고 하였다. 하지만 포커스를 관리하거나, 캔버스에 그리거나, 데이터를 구독하는 등 때로는 side effect가 필요한 경우가 있다.
-- React에서 이러한 일들은 effect를 이용하여 해결할 수 있다:
+앞서 React 컴포넌트는 렌더링 도중에 관찰할 수 있는 side effect를 가지면 안 된다고 했었습니다. 하지만 포커스를 관리하거나, 캔버스에 그리거나, 데이터를 구독하는 등 때로는 side effect가 필요한 경우가 있습니다.
+
+React에서 이러한 일들은 이펙트를 이용하여 해결할 수 있습니다:
 
 ```jsx{4-6}
 function Example() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    document.title = `You clicked ${count} times`
-  })
+    document.title = `You clicked ${count} times`;
+  });
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
     </div>
-  )
+  );
 }
 ```
 
-- React는 가능한 한 브라우저가 화면을 리페인트 할 때까지 effect 실행을 연기한다. 이러한 방식은 데이터 구독과 같은 일들이 TTI와 [FMP](https://web.dev/first-meaningful-paint/)에 영향을 주지 않기 때문에 좋다.
-- Effect는 단 한 번만 실행되는 것이 아니라, 컴포넌트가 제일 처음에 유저에게 보여졌을 때(즉 제일 처음으로 렌더링 되었을 때), 그리고 업데이트 때마다 실행된다. 또, effect는 클로저를 사용하여 (위 예제에서의 `count`와 같이) 현재의 props와 상태를 참조할 수 있다.
-- Effect에서 구독과 같은 작업을 수행하는 경우, cleanup 작업을 필요로 할 수도 있다. Cleanup 작업을 하기 위해 effect는 다음과 같이 함수를 반환할 수 있다:
+React는 가능한 한 브라우저가 화면을 리페인트 할 때까지 이펙트 실행을 연기합니다. 이렇게 하면 데이터 구독과 같은 작업이 TTI와 [FMP](https://web.dev/first-meaningful-paint/)에 영향을 주지 않기 때문에 좋습니다.
+
+이펙트는 단 한 번만 실행되는 것이 아니라, 컴포넌트가 제일 처음에 유저에게 표시될 때(즉, 제일 처음으로 렌더링 되었을 때), 그리고 업데이트 때마다 실행됩니다. 또, effect는 클로저를 사용하여 (위 예제에서의 `count`와 같이) 현재의 props와 상태를 참조할 수 있습니다.
+
+이펙트에서 구독과 같은 작업을 수행하는 경우, 클린업 작업을 필요로 할 수도 있습니다. 클린업 작업을 하기 위해선 다음과 같이 함수를 반환해야 합니다:
 
 ```js
-useEffect(() => {
-  DataSource.addSubscription(handleChange)
-  return () => DataSource.removeSubscription(handleChange)
-})
+  useEffect(() => {
+    DataSource.addSubscription(handleChange);
+    return () => DataSource.removeSubscription(handleChange);
+  });
 ```
 
-- 이렇게 cleanup을 위해 effect가 함수를 반환하게 되면 React는 반환된 함수를 다음번 effect를 실행하기 직전, 그리고 컴포넌트가 제거될 때 실행한다.
-- 때로는 매 렌더링마다 effect를 실행하는것이 좋지 않을때가 있다. 이 경우 다음과 같이 [특정 상태가 변한 경우에만](https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects) effect를 실행하도록 할 수 있다:
+이렇게 클린업을 위해 이펙트가 함수를 반환하면 React는 반환된 함수를 다음번 이펙트를 실행하기 직전에, 그리고 컴포넌트가 제거될 때 실행합니다.
+
+때로는 렌더링마다 이펙트를 실행할 필요가 없는 경우가 있습니다. 이 경우 다음과 같이 [특정 상태가 변한 경우에만](https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects) 이펙트를 실행하도록 할 수 있습니다:
+
+```js{3}
+  useEffect(() => {
+    document.title = `You clicked ${count} times`;
+  }, [count]);
+```
+
+하지만 만약 자바스크립트 클로저에 익숙하지 않다면 성급한 최적화 문제가 발생할 수 있습니다.
+
+예를 들면, 다음의 코드는 버그가 발생할 가능성이 높습니다:
 
 ```js
-useEffect(() => {
-  document.title = `You clicked ${count} times`
-}, [count])
+  useEffect(() => {
+    DataSource.addSubscription(handleChange);
+    return () => DataSource.removeSubscription(handleChange);
+  }, []);
 ```
 
-- 하지만 만약 자바스크립트 클로저에 익숙하지 않다면 성급한 최적화 문제가 발생할 수 있다. 예를 들면 다음의 코드는 버그가 발생할 가능성이 높다:
-
-```js
-useEffect(() => {
-  DataSource.addSubscription(handleChange)
-  return () => DataSource.removeSubscription(handleChange)
-}, [])
-```
-
-- 위 코드에서 `[]`는 "이 effect를 다시 실행하지 마"라고 하는 것과 같다. 하지만 effect에선 effect 외부에 선언된 `handleChange`를 (클로저를 이용하여) 사용(close over)하고 있고, `handleChange`에선 다음과 같이 특정 prop 혹은 상태를 참조하고 있을 수 있다:
+위 코드의 `[]`는 "이 이펙트를 다시 실행하지 마"라고 하는 것과 같습니다. 하지만 이펙트에선 이펙트 외부에 선언된 `handleChange`를 (클로저를 이용하여) 사용(close over)하고 있고, `handleChange`에선 다음과 같이 특정 prop 혹은 상태를 참조하고 있을 수 있습니다:
 
 ```js
 function handleChange() {
-  console.log(count)
+  console.log(count);
 }
 ```
 
-- 이 경우 effect가 다시 실행되지 않도록 한다면 effect 내의 `handleChange`는 컴포넌트가 처음 렌더링될 때의 `count` 변수를 참조하고 있는 `handleChange` 함수를 가리키게 되고, 결과적으로 `count`의 값이 항상 초기값(이를 테면 `0`)으로 출력되게 될 것이다.
-- 이 문제를 해결하기 위해선 함수를 포함하여 변할 수 있는 **모든** 것을 의존성 배열에 전부 포함해야 한다:
+이 경우 이펙트가 다시 실행되지 않도록 한다면 이펙트 내의 `handleChange`는 컴포넌트가 처음 렌더링 될 때의 `count` 변수를 참조하고 있는 `handleChange` 함수를 가리키게 되고, 결과적으로 `count`의 값이 항상 초기값(이를 테면 `0`)으로 출력되게 됩니다.
+
+이 문제를 해결하기 위해선 함수를 포함하여 변할 수 있는 **모든** 것을 의존성 배열에 전부 넣어야 합니다:
 
 ```js{4}
 useEffect(() => {
-  DataSource.addSubscription(handleChange)
-  return () => DataSource.removeSubscription(handleChange)
-}, [handleChange])
+  DataSource.addSubscription(handleChange);
+  return () => DataSource.removeSubscription(handleChange);
+}, [handleChange]);
 ```
 
-- 코드에 따라서 `handleChange`가 매번 렌더링 될 때마다 달라지므로 불필요한 재구독(resubscription)이 발생할 수도 있다. 이 경우 [useCallback hook](https://reactjs.org/docs/hooks-reference.html#usecallback)을 사용할 수도 있고, 혹은 그냥 재구독되게끔 내버려 둘 수도 있다. 예를 들어 브라우저가 제공하는 `addEventListener` API는 엄청 빠르기 때문에, (불필요한 호출을 줄이려고) 성급하게 최적화했다가 오히려 성능이 더욱 나빠질 수 있다.
+이때 `handleChange`가 매번 렌더링 될 때마다 달라지므로 불필요한 재구독(resubscription)이 발생할 수도 있다. 이 경우 [useCallback hook](https://reactjs.org/docs/hooks-reference.html#usecallback)을 사용할 수도 있고, 혹은 그냥 재구독 되게끔 내버려 둘 수도 있습니다. 예를 들어 브라우저가 제공하는 `addEventListener` API는 엄청 빠르기 때문에, (불필요한 호출을 줄이려고) 성급하게 최적화했다가 오히려 성능이 더욱 나빠질 수도 있습니다.
 
 ## 커스텀 훅 (Custom Hooks)
 
