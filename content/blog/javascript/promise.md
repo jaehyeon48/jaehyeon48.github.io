@@ -15,6 +15,74 @@ draft: false
 
 즉, 프로미스 객체는 (주로) 비동기 동작의 결과(🠖성공 or 실패)와 동작의 결과값을 나타내는 데에 흔히 사용됩니다. 어떤 동작의 중간 상태를 나타내는 객체라고 볼 수도 있는데, 프로미스의 이름이 "프로미스"인 이유는 미래의 어느 시점에 동작의 결과를 반환할 것이라고 "약속"하는 것이기 때문입니다. 정확히 어느 시점에 동작이 끝나서 결과를 반환할지는 확신할 수 없지만, (성공이든 실패든) 동작이 끝났을 때 여러분이 작성한 후속 처리 코드가 실행될 것임은 보장할 수 있습니다. 또한, (비동기) 연산이 수행되는 동안 다른 코드의 실행을 "block"하지 않는다는 점이 장점입니다.
 
+## 탄생 배경
+
+프로미스가 등장하게 된 배경을 알아보기 위해, 우선 기존에 비동기 동작을 처리할 때 사용된 콜백 스타일에 대해 간략히 살펴보겠습니다.
+
+예를 들어, 다음과 같이 현재 동작을 수행하기 위해선 이전의 (비동기) 동작의 결과값이 필요한 경우가 있을 수 있습니다:
+
+```js
+opA(resultA => {
+	opB(resultA, resultB => {
+		opC(resultB, resultC => {
+			opD(resultC, resultD => {
+				// ...
+			}, failureCallback);
+		}, failureCallback);
+	}, failureCallback);
+}, failureCallback);
+```
+
+([데모](https://codesandbox.io/s/callback-hell-example-gypy0?file=/src/index.js))
+
+물론, 예시를 위해 꾸며낸 코드이지만, 실제론 DB에 접근하여 데이터를 가져온 후 파일을 읽고서 다시 API를 호출하고, ... 와 같은 상황이 있을 수 있습니다.
+
+위와 같이 콜백 함수들이 계속해서 중첩되는 것을 [콜백 지옥](https://www.freecodecamp.org/news/how-to-deal-with-nested-callbacks-and-avoid-callback-hell-1bc8dc4a2012/)이라고 합니다. 지옥이라는 표현을 쓸 정도로 끔찍하죠 👿
+
+위 코드는 정말 간단한 예시이기 때문에 못느끼실수도 있겠습니다만 콜백 지옥으로 인해 인덴트가 계속해서 중첩되고, 그에 따라 코드의 가독성이 하락하는 문제가 발생할 수 있습니다.
+
+프로미스는 이와 같은 콜백 지옥을 해결하기 위해 등장했습니다. 프로미스를 이용하여 위 코드를 다음과 같이 바꿀 수 있습니다:
+
+```js
+opA()
+	.then(resultA => {
+		return opB(resultA);	
+	})
+	.then(resultB => {
+		return opC(resultB);
+	})
+	.then(resultC => {
+		return opD(resultC);
+	})
+	.catch(failureCallback);
+
+// 혹은
+
+opA()
+	.then(resultA => opB(resultA))
+	.then(resultB => opC(resultB))
+	.then(resultC => opD(resultC))
+	.catch(failureCallback);
+```
+
+([데모](https://codesandbox.io/s/resolve-callback-hell-with-promise-39sw2?file=/src/index.js))
+
+훨씬 나은것 같지 않나요? 여기서 각각의 `.then` 메서드는 이전 동작이 완료되고 나서야 수행됩니다. 이때, `.then` 메서드는 프로미스를 반환하기 때문에 위와 같이 여러 개를 연결하여 사용할 수도 있습니다. 또한, 에러를 처리하기 위해선 단 한개의 `.catch`만 사용하면 됩니다.
+
+물론 위 코드를 아래와 같이 단순화할 수 있습니다:
+
+```js
+opA().then(opB).then(opC).then(opB).catch(failureCallback);
+```
+
+([데모](https://codesandbox.io/s/resolve-callback-hell-with-promise-simpler-version-nl00u?file=/src/index.js))
+
+왜냐하면 `fn((arg) => func(arg))`는 `fn(func)`와 동일한 코드니까요!
+
+<br />
+ 
+📢 사실 async/await 문법을 이용하여 위 코드를 더욱 개선할 수 있습니다만, async/await는 다른 포스트에서 다룰게요!
+
 ## 프로미스의 상태
 
 프로미스는 다음의 상호 배타적인 세 가지 상태 중 하나에 속합니다:
