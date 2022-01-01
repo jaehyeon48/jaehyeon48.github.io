@@ -15,14 +15,16 @@ draft: false
 
 ```jsx{6}
 function Counter() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
     </div>
-  )
+  );
 }
 ```
 
@@ -33,9 +35,9 @@ function Counter() {
 여기서 `count`는 "데이터 바인딩", "watcher", "프록시" 와 같은 그 어느 것도 아닙니다. **이 예제에서 `count`는 단순히 숫자에 불과합니다.** 아래와 같이 말이죠:
 
 ```jsx
-const count = 42
+const count = 42;
 // ...
-;<p>You clicked {count} times </p>
+<p>You clicked {count} times</p>
 // ...
 ```
 
@@ -44,25 +46,25 @@ const count = 42
 ```jsx{3,11,19}
 // 첫 렌더링 시
 function Counter() {
-  const count = 0 // useState()에 의해 반환됨
+  const count = 0; // useState()에 의해 반환됨
   // ...
-  ;<p>You clicked {count} times</p>
-  // ...
-}
-
-// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨
-function Counter() {
-  const count = 1 // useState()에 의해 반환됨
-  // ...
-  ;<p>You clicked {count} times</p>
+  <p>You clicked {count} times</p>
   // ...
 }
 
 // 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨
 function Counter() {
-  const count = 2 // useState()에 의해 반환됨
+  const count = 1; // useState()에 의해 반환됨
   // ...
-  ;<p>You clicked {count} times</p>
+  <p>You clicked {count} times</p>
+  // ...
+}
+
+// 버튼을 클릭하면 (setCount가 호출됨에 따라) 함수 컴포넌트가 다시 호출됨
+function Counter() {
+  const count = 2; // useState()에 의해 반환됨
+  // ...
+  <p>You clicked {count} times</p>
   // ...
 }
 ```
@@ -87,21 +89,25 @@ function Counter() {
 
 ```jsx{4-8,16-18}
 function Counter() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count)
-    }, 3000)
+      alert('You clicked on: ' + count);
+    }, 3000);
   }
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
-      <button onClick={handleAlertClick}>Show alert</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+      <button onClick={handleAlertClick}>
+        Show alert
+      </button>
     </div>
-  )
+  );
 }
 ```
 
@@ -131,20 +137,20 @@ Alert는 제가 버튼을 눌렀을 때의 state를 "캡처" 한 것입니다.
 
 ```jsx{2}
 function sayHi(person) {
-  const name = person.name
+  const name = person.name;
   setTimeout(() => {
-    alert('Hello, ' + name)
-  }, 3000)
+    alert('Hello, ' + name);
+  }, 3000);
 }
 
-let someone = { name: 'Dan' }
-sayHi(someone)
+let someone = { name: 'Dan' };
+sayHi(someone);
 
-someone = { name: 'Yuzhi' }
-sayHi(someone)
+someone = { name: 'Yuzhi' };
+sayHi(someone);
 
-someone = { name: 'Dominic' }
-sayHi(someone)
+someone = { name: 'Dominic' };
+sayHi(someone);
 ```
 
 [이 예제](https://codesandbox.io/s/mm6ww11lk8)에서 (함수) 외부의 `someone` 변수는 React 어딘가에서 컴포넌트의 현재 state가 바뀌는 것처럼 여러 번 재할당 되고 있습니다. 하지만 `sayHi` 함수 내에는 특정 호출 시의 `person`과 연관된 `name` 이라는 지역 상수가 존재합니다. 이 상수는 지역 상수이므로 각각의 함수 호출과는 분리되어 있습니다. 이로 인해 타임아웃이 발생했을 때 각 alert가 해당 alert를 발생시킨 함수 호출 시의 `name`을 "기억"하는 것입니다. 만약 `name`이 각 함수 호출과 분리되어 있지 않다면 결과적으로 `Dominic`만 세 번 출력되겠죠?
@@ -154,36 +160,36 @@ sayHi(someone)
 ```jsx{3,15,27}
 // 첫 렌더링 시
 function Counter() {
-  const count = 0 // useState()에 의해 반환됨
+  const count = 0; // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count)
-    }, 3000)
+      alert('You clicked on: ' + count);
+    }, 3000);
   }
   // ...
 }
 
 // 버튼을 클릭하면 Counter가 다시 호출됨
 function Counter() {
-  const count = 1 // useState()에 의해 반환됨
+  const count = 1; // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count)
-    }, 3000)
+      alert('You clicked on: ' + count);
+    }, 3000);
   }
   // ...
 }
 
 // 버튼을 클릭하면 Counter가 다시 호출됨
 function Counter() {
-  const count = 2 // useState()에 의해 반환됨
+  const count = 2; // useState()에 의해 반환됨
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + count)
-    }, 3000)
+      alert('You clicked on: ' + count);
+    }, 3000);
   }
   // ...
 }
@@ -197,11 +203,11 @@ function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 0)
-    }, 3000)
+      alert('You clicked on: ' + 0);
+    }, 3000);
   }
   // ...
-  ;<button onClick={handleAlertClick} /> // "0"이 안에 들어있음
+  <button onClick={handleAlertClick} /> // "0"이 안에 들어있음
   // ...
 }
 
@@ -210,24 +216,24 @@ function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 1)
-    }, 3000)
+      alert('You clicked on: ' + 1);
+    }, 3000);
   }
   // ...
-  ;<button onClick={handleAlertClick} /> // "1"이 안에 들어있음
+  <button onClick={handleAlertClick} /> // "1"이 안에 들어있음
   // ...
 }
 
-// 버튼을 또 다시 클릭하면 Counter가 다시 호출됨
+// 버튼을 클릭하면 Counter가 다시 호출됨
 function Counter() {
   // ...
   function handleAlertClick() {
     setTimeout(() => {
-      alert('You clicked on: ' + 2)
-    }, 3000)
+      alert('You clicked on: ' + 2);
+    }, 3000);
   }
   // ...
-  ;<button onClick={handleAlertClick} /> // "2"가 안에 들어있음
+  <button onClick={handleAlertClick} /> // "2"가 안에 들어있음
   // ...
 }
 ```
@@ -244,18 +250,20 @@ function Counter() {
 
 ```jsx{4-6}
 function Counter() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    document.title = `You clicked ${count} times`
-  })
+    document.title = `You clicked ${count} times`;
+  });
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
     </div>
-  )
+  );
 }
 ```
 
@@ -276,9 +284,9 @@ function Counter() {
   useEffect(
     // 첫 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${0} times`
+      document.title = `You clicked ${0} times`;
     }
-  )
+  );
   // ...
 }
 
@@ -288,21 +296,21 @@ function Counter() {
   useEffect(
     // 두 번째 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${1} times`
+      document.title = `You clicked ${1} times`;
     }
-  )
+  );
   // ...
 }
 
-// 버튼을 또 다시 클릭하면 Counter가 다시 호출됨
+// 버튼을 다시 클릭하면 Counter가 다시 호출됨
 function Counter() {
   // ...
   useEffect(
     // 세 번째 렌더링 때의 이펙트 함수
     () => {
-      document.title = `You clicked ${2} times`
+      document.title = `You clicked ${2} times`;
     }
-  )
+  );
   // ..
 }
 ```
@@ -344,20 +352,22 @@ React는 여러분이 제공한 이펙트 함수를 기억해 두었다가, DOM�
 
 ```jsx{4-8}
 function Counter() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(`You clicked ${count} times`)
-    }, 3000)
-  })
+      console.log(`You clicked ${count} times`);
+    }, 3000);
+  });
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
     </div>
-  )
+  );
 }
 ```
 
@@ -372,11 +382,11 @@ function Counter() {
 혹은, "아니 당연히 저렇게 동작하겠지!" 라고 생각하셨을 수도 있겠습니다만... [클래스 컴포넌트](https://codesandbox.io/s/kkymzwjqz3)에서는 아닙니다 😂
 
 ```jsx
-componentDidUpdate() {
-  setTimeout(() => {
-    console.log(`You clicked ${this.state.count} times`);
-  }, 3000);
-}
+  componentDidUpdate() {
+    setTimeout(() => {
+      console.log(`You clicked ${this.state.count} times`);
+    }, 3000);
+  }
 ```
 
 여기서 `this.state.count`는 각 렌더링에 속하는 state 대신 항상 최신의 state를 참조합니다. 따라서 `5`가 다섯 번 출력되는 것을 보실 겁니다.
@@ -401,21 +411,21 @@ componentDidUpdate() {
 function Example(props) {
   useEffect(() => {
     setTimeout(() => {
-      console.log(props.counter)
-    }, 1000)
-  })
+      console.log(props.counter);
+    }, 1000);
+  });
   // ...
 }
 ```
 
 ```jsx{2,5}
 function Example(props) {
-  const counter = props.counter
+  const counter = props.counter;
   useEffect(() => {
     setTimeout(() => {
-      console.log(counter)
-    }, 1000)
-  })
+      console.log(counter);
+    }, 1000);
+  });
   // ...
 }
 ```
@@ -452,17 +462,17 @@ function Example() {
 
 React에서 무언가를 변이 시킨다는 것이 이상해 보일 수 있습니다. 하지만 이는 React가 클래스에서 `this.state`를 변경하는 방식과 동일합니다. 캡처된 props, state와는 달리 특정 콜백에서 `latestCount.current`를 읽을 때 언제나 같은 값을 읽을 거라는 보장은 없습니다. 정의된 바에 따라 언제든 그 값을 변경할 수 있습니다. 그렇기 때문에 이는 React에서 기본적인 동작이 아니며 여러분이 직접 가져다 사용해야 합니다.
 
-## 클린업이란 무엇인가? (So What About Cleanup?)
+## 클린업은 어떻게 하나요? (So What About Cleanup?)
 
 [공식 문서](https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup)에서 설명한 대로, 몇몇 effect들은 클린업 단계를 거칠 수도 있습니다. 본질적으로 클린업은 구독과 같은 effect를 "되돌리는(undo)" 것입니다. 다음의 코드를 살펴봅시다:
 
 ```jsx
-useEffect(() => {
-  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange)
-  return () => {
-    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange)
-  }
-})
+  useEffect(() => {
+    ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange);
+    return () => {
+      ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange);
+    };
+  });
 ```
 
 첫 번째 렌더링에서 `props`는 `{id: 10}`이고, 두 번째 렌더링에선 `{id: 20}`이라고 해봅시다. 아마 여러분은 다음과 같은 일이 일어날 것이라고 생각하실 겁니다:
@@ -499,13 +509,13 @@ function Example() {
   useEffect(
     // 첫 렌더링의 이펙트
     () => {
-      ChatAPI.subscribeToFriendStatus(10, handleStatusChange)
+      ChatAPI.subscribeToFriendStatus(10, handleStatusChange);
       // 첫 렌더링의 (이펙트의) 클린업
       return () => {
-        ChatAPI.unsubscribeFromFriendStatus(10, handleStatusChange)
-      }
+        ChatAPI.unsubscribeFromFriendStatus(10, handleStatusChange);
+      };
     }
-  )
+  );
   // ...
 }
 
@@ -515,13 +525,13 @@ function Example() {
   useEffect(
     // 두 번째 렌더링의 이펙트
     () => {
-      ChatAPI.subscribeToFriendStatus(20, handleStatusChange)
+      ChatAPI.subscribeToFriendStatus(20, handleStatusChange);
       // 두 번째 렌더링의 (이펙트의) 클린업
       return () => {
-        ChatAPI.unsubscribeFromFriendStatus(20, handleStatusChange)
-      }
+        ChatAPI.unsubscribeFromFriendStatus(20, handleStatusChange);
+      };
     }
-  )
+  );
   // ...
 }
 ```
@@ -555,7 +565,7 @@ React는 현재의 props와 state에 맞춰 DOM을 동기화합니다. 렌더링
 ```jsx{2-4}
 function Greeting({ name }) {
   useEffect(() => {
-    document.title = `Hello, ${name}`;
+    document.title = 'Hello, ' + name;
   });
 
   return (
@@ -597,8 +607,8 @@ function Greeting({ name }) {
 React는 다음의 두 객체를 비교하게 됩니다:
 
 ```jsx
-const oldProps = {className: 'Greeting', children: 'Hello, Dan'};
-const newProps = {className: 'Greeting', children: 'Hello, Yuzhi'};
+const oldProps = { className: 'Greeting', children: 'Hello, Dan' };
+const newProps = { className: 'Greeting', children: 'Hello, Yuzhi' };
 ```
 
 각각의 props를 살펴보고 `children`이 바뀌었기 때문에 DOM 업데이트가 필요하다는 것을 알았습니다. 하지만 `className`은 그대로이므로 React는 아래와 같이 행동할 것입니다:
@@ -1388,7 +1398,7 @@ class Parent extends Component {
   };
   fetchData = () => {
     const url = 'https://hn.algolia.com/api/v1/search?query=' + this.state.query;
-    // ... Fetch data and do something ...
+    // ... 데이터를 fetch해서 무언가를 한다 ...
   };
   render() {
     return <Child fetchData={this.fetchData} query={this.state.query} />;
