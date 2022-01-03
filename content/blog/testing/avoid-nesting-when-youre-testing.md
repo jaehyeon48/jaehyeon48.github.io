@@ -1,7 +1,7 @@
 ---
 title: '테스팅할 때 중첩은 피하세요'
 date: 2021-12-28
-category: 'testing'
+category: 'Testing'
 draft: false
 ---
 
