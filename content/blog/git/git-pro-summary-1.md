@@ -1,7 +1,7 @@
 ---
 title: 'Git Pro 2nd Edition 요약 Part1'
 date: 2020-08-27
-category: 'git'
+category: 'Git'
 draft: false
 ---
 
