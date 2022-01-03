@@ -1,24 +1,24 @@
 ---
 title: '리팩토링 방법들 Part.1'
 date: 2021-12-21
-category: 'architecture'
+category: 'Software Architecture'
 draft: false
 ---
 
 ## Inline Variable
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/refactoring/inline_variable.png" alt="Inline Variable" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/software-architecture/refactoring/inline_variable.png" alt="Inline Variable" />
     <figcaption>Inline Variable</figcaption>
 </figure>
 
 ```js
 /* Before */
-const basePrice = anOrder.basePrice;
-return basePrice > 1000;
+const basePrice = anOrder.basePrice
+return basePrice > 1000
 
 /* After */
-return anOrder.basePrice > 1000;
+return anOrder.basePrice > 1000
 ```
 
 ### Motivation

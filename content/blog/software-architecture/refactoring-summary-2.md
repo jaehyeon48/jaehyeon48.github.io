@@ -1,7 +1,7 @@
 ---
 title: '리팩토링 2판 요약 정리 Ch.2'
 date: 2021-12-10
-category: 'architecture'
+category: 'Software Architecture'
 draft: false
 ---
 
@@ -59,7 +59,7 @@ draft: false
 - 반대로, 코드 퀄리티가 좋으면 새로운 기능을 어디에 어떻게 추가해야 하는지 쉽게 찾을 수 있게 해주고, 모듈화가 잘되어있으면 변경하기 위해 이해해야 할 (기존의) 코드의 양을 줄여준다. 코드가 명확하면 버그를 만들어낼 가능성이 작아지고, 버그를 만들어낸다고 해도 디버깅을 더욱더 쉽게 할 수 있게 된다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/refactoring/time_vs_cumulative_functionality_graph.png" alt="시간에 따른 기능의 수 차이 그래프" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/software-architecture/refactoring/time_vs_cumulative_functionality_graph.png" alt="시간에 따른 기능의 수 차이 그래프" />
     <figcaption>시간에 따라 기능의 수를 나타낸 그래프. 나쁜 설계의 경우 시간이 지남에 따라 점점 더 기능을 추가하기 어려워진다.</figcaption>
 </figure>
 

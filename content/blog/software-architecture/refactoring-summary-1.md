@@ -1,7 +1,7 @@
 ---
 title: '리팩토링 2판 요약 정리 Ch.1'
 date: 2021-12-06
-category: 'architecture'
+category: 'Software Architecture'
 draft: false
 ---
 

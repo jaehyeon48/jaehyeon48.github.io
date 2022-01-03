@@ -1,7 +1,7 @@
 ---
 title: '프로그래밍 초식 요약 - Early return'
 date: 2021-12-08
-category: 'architecture'
+category: 'Software Architecture'
 draft: false
 ---
 
@@ -38,7 +38,7 @@ if (A) {
 하지만, 다음 그림과 같이 `if` 블록이 길어지게 되면 모니터 한 화면에 안 들어오게 되고 스크롤을 해야 `if` 블록의 끝을 알 수 있다. 또한, 코드를 분석할 때 `if` 블록의 실행 조건을 머릿속에 기억하면서 코드를 분석해 나가야 한다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/architecture/programming101/too_long_if_block.png" alt="너무 긴 if 블록" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/software-architecture/programming101/too_long_if_block.png" alt="너무 긴 if 블록" />
     <figcaption>출처: https://www.youtube.com/watch?v=z4qE_IfSrD4&list=PLwouWTPuIjUg0dmHoxgqNXyx3Acy7BNCz&index=7</figcaption>
 </figure>
 
@@ -51,7 +51,7 @@ function someFunc() {
   if (someCondition) {
     // 많은 코드
   }
-} 
+}
 ```
 
 ```js
@@ -59,7 +59,7 @@ function someFunc() {
   if (someCondition) {
     // 많은 코드
   } else {
-    logger.info('some message');
+    logger.info('some message')
   }
 }
 ```
@@ -83,10 +83,9 @@ function someFunc() {
   }
 }
 
-
 /* GOOD */
 function someFunc() {
-  if (!someCondition) return;
+  if (!someCondition) return
   // 많은 코드
 }
 ```
@@ -97,18 +96,17 @@ function someFunc() {
   if (someCondition) {
     // 많은 코드
   } else {
-    logger.info('some message');
+    logger.info('some message')
   }
 }
-
 
 /* GOOD */
 function someFunc() {
   if (!someCondition) {
-    logger.info('some message');
-    return;
+    logger.info('some message')
+    return
   }
-    // 많은 코드
+  // 많은 코드
 }
 ```
 
@@ -122,9 +120,9 @@ if (A) {
 }
 
 /* GOOD */
-if (!A) return;
+if (!A) return
 // B조건 구함
-if (!B) return;
+if (!B) return
 // E 실행
 ```
 
