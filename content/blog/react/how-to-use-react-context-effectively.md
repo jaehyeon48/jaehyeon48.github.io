@@ -1,7 +1,7 @@
 ---
 title: 'React 컨텍스트 효율적으로 사용하기'
 date: 2021-12-28
-category: 'react'
+category: 'React'
 draft: false
 ---
 
@@ -16,25 +16,25 @@ draft: false
 우선, `src/count-context.js` 파일을 생성하여 컨텍스트를 만들어 봅시다:
 
 ```jsx
-import * as React from 'react';
+import * as React from 'react'
 
-const CountContext = React.createContext();
+const CountContext = React.createContext()
 ```
 
 현재 `CountContext`에는 초기값이 없습니다. 만약 초기값을 추가하고 싶다면 `React.createContext({ count: 0 });`와 같이하면 됩니다. 하지만 이 예제에선 의도적으로 초기값을 넣지 않았습니다. 기본값은 다음과 같은 상황에서나 유용합니다:
 
 ```jsx{2}
 function CountDisplay() {
-  const { count } = React.useContext(CountContext);
-  return <div>{count}</div>;
+  const { count } = React.useContext(CountContext)
+  return <div>{count}</div>
 }
 
-ReactDOM.render(<CountDisplay />, document.getElementById('⚛️'));
+ReactDOM.render(<CountDisplay />, document.getElementById('⚛️'))
 ```
 
 `CountContext`에 초기값이 없기 때문에, 위 코드에서 하이라이트 된 부분에서 에러가 발생할 것입니다. 이 컨텍스트의 기본값은 `undefined`인데 `undefined`를 [구조 분해](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#object_destructuring)할 수는 없기 때문이죠!
 
-런타임 에러를 좋아하는 사람은 없기 때문에, 아마 여러분은 런타임 에러를 해결하기 위해 무의식적으로 기본값을 추가하실 겁니다. 하지만 한번  생각해봅시다. 컨텍스트에 실제 값이 없는데 컨텍스트를 왜 쓰는걸까요? 만약 단순히 기본값만을 쓰는 거라면 컨텍스트를 굳이 사용하는 이유가 없을 겁니다. 애플리케이션에서 컨텍스트를 생성하고 사용하는 대부분의 경우, 유용한 값을 제공해주는 provider 내에서 (`useContext`를 사용하는) consumer가 렌더링 되기를 원할 겁니다.
+런타임 에러를 좋아하는 사람은 없기 때문에, 아마 여러분은 런타임 에러를 해결하기 위해 무의식적으로 기본값을 추가하실 겁니다. 하지만 한번 생각해봅시다. 컨텍스트에 실제 값이 없는데 컨텍스트를 왜 쓰는걸까요? 만약 단순히 기본값만을 쓰는 거라면 컨텍스트를 굳이 사용하는 이유가 없을 겁니다. 애플리케이션에서 컨텍스트를 생성하고 사용하는 대부분의 경우, 유용한 값을 제공해주는 provider 내에서 (`useContext`를 사용하는) consumer가 렌더링 되기를 원할 겁니다.
 
 > 물론 기본값이 유용한 경우도 있지만, 기본값이 필요 없을 뿐 더러 그다지 유용하지 않은 경우가 대부분입니다.
 
@@ -53,42 +53,42 @@ function App() {
       <CountDisplay />
       <Counter />
     </CountProvider>
-  );
+  )
 }
 
-ReactDOM.render(<App />, document.getElementById('⚛️'));
+ReactDOM.render(<App />, document.getElementById('⚛️'))
 ```
 
 그렇다면 위와 같이 사용할 수 있는 컴포넌트를 만들어 봅시다:
 
 ```jsx
-import * as React from 'react';
+import * as React from 'react'
 
-const CountContext = React.createContext();
+const CountContext = React.createContext()
 
 function countReducer(state, action) {
   switch (action.type) {
     case 'increment': {
-      return { count: state.count + 1 };
+      return { count: state.count + 1 }
     }
     case 'decrement': {
-      return { count: state.count - 1 };
+      return { count: state.count - 1 }
     }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 }
 
 function CountProvider({ children }) {
-  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 })
   // 이 값을 memoize 해야할 지도 모릅니다
   // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
-  const value = { state, dispatch };
-  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+  const value = { state, dispatch }
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>
 }
 
-export { CountProvider };
+export { CountProvider }
 ```
 
 > 위 예시는 실제 세계에서 어떻게 사용되는지 보여주기 위해 인위로 만들어낸 것입니다. **항상 이렇게 복잡한 것은 아닙니다!** `useState`가 적합한 경우라면 마음껏 사용하세요. 어떤 provider들은 위와 같이 간단할 수도 있지만, 더욱더 많은 훅을 사용하여 훨씬 복잡한 provider들도 존재할 수 있습니다.
@@ -98,63 +98,63 @@ export { CountProvider };
 실제 현업에서 제가 본 컨텍스트 사용 방법은 다음과 같은 형태들이 많았습니다:
 
 ```jsx
-import * as React from 'react';
-import { SomethingContext } from 'some-context-package';
+import * as React from 'react'
+import { SomethingContext } from 'some-context-package'
 
 function YourComponent() {
-  const something = React.useContext(SomethingContext);
+  const something = React.useContext(SomethingContext)
 }
 ```
 
 하지만 제 생각엔 아래처럼 하면 더욱 나은 사용자 경험을 만들어낼 수 있을 것 같습니다:
 
 ```jsx
-import * as React from 'react';
-import { useSomething } from 'some-context-package';
+import * as React from 'react'
+import { useSomething } from 'some-context-package'
 
 function YourComponent() {
-  const something = useSomething();
+  const something = useSomething()
 }
 ```
 
 방금 보여드린 예시는 아래에 제가 보여드릴 예시처럼 몇 가지의 작업을 수행할 수 있다는 장점이 있습니다:
 
 ```jsx{28-32}
-import * as React from 'react';
+import * as React from 'react'
 
-const CountContext = React.createContext();
+const CountContext = React.createContext()
 
 function countReducer(state, action) {
   switch (action.type) {
     case 'increment': {
-      return { count: state.count + 1 };
+      return { count: state.count + 1 }
     }
     case 'decrement': {
-      return { count: state.count - 1 };
+      return { count: state.count - 1 }
     }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 }
 
 function CountProvider({ children }) {
-  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 })
   // 이 값을 memoize 해야할 지도 모릅니다
   // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
-  const value = { state, dispatch };
-  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+  const value = { state, dispatch }
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>
 }
 
 function useCount() {
-  const context = React.useContext(CountContext);
+  const context = React.useContext(CountContext)
   if (context === undefined) {
-    throw new Error('useCount must be used within a CountProvider');
+    throw new Error('useCount must be used within a CountProvider')
   }
-  return context;
+  return context
 }
 
-export { CountProvider, useCount };
+export { CountProvider, useCount }
 ```
 
 우선, `useCount` 커스텀 훅은 (React 트리에서) 가장 가까운 `CountProvider`가 제공하는 컨텍스트 값을 얻기 위해 `React.useContext`를 사용하고 있습니다. 하지만 어떠한 값도 없는 경우, `CountProvider` 내에서 렌더링된 함수 컴포넌트에서 사용되고 있지 않다는 에러를 띄웁니다. 아마도 실수인 게 분명하므로 이렇게 에러 메시지를 띄우는 것은 중요합니다. [#FailFast](https://www.martinfowler.com/ieeeSoftware/failFast.pdf)
@@ -169,9 +169,9 @@ function CountConsumer({ children }) {
     <CountContext.Consumer>
       {context => {
         if (context === undefined) {
-          throw new Error('CountConsumer must be used within a CountProvider');
+          throw new Error('CountConsumer must be used within a CountProvider')
         }
-        return children(context);
+        return children(context)
       }}
     </CountContext.Consumer>
   )
@@ -197,7 +197,7 @@ class CounterThing extends React.Component {
           </div>
         )}
       </CountConsumer>
-    );
+    )
   }
 }
 ```
@@ -209,12 +209,12 @@ class CounterThing extends React.Component {
 앞서 약속한대로 `defaultValue`를 제공하지 않을 때 타입스크립트에서 발생하는 이슈들을 해결하는 방법을 보여드리겠습니다. 제가 권하는 방식을 사용하면 이러한 문제를 기본적으로 피하실 수 있게 되실겁니다. 사실 문제라고 하기에도 애매한데요, 봅시다:
 
 ```tsx{36-40}
-import * as React from 'react';
+import * as React from 'react'
 
-type Action = { type: 'increment' } | { type: 'decrement' };
-type Dispatch = (action: Action) => void;
-type State = { count: number };
-type CountProviderProps = { children: React.ReactNode };
+type Action = { type: 'increment' } | { type: 'decrement' }
+type Dispatch = (action: Action) => void
+type State = { count: number }
+type CountProviderProps = { children: React.ReactNode }
 
 const CountStateContext = React.createContext<
   { state: State; dispatch: Dispatch } | undefined
@@ -223,19 +223,19 @@ const CountStateContext = React.createContext<
 function countReducer(state: State, action: Action) {
   switch (action.type) {
     case 'increment': {
-      return { count: state.count + 1 };
+      return { count: state.count + 1 }
     }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 }
 
 function CountProvider({ children }: CountProviderProps) {
-  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 })
   // 이 값을 memoize 해야할 지도 모릅니다
   // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
-  const value = { state, dispatch };
+  const value = { state, dispatch }
   return (
     <CountStateContext.Provider value={value}>
       {children}
@@ -244,14 +244,14 @@ function CountProvider({ children }: CountProviderProps) {
 }
 
 function useCount() {
-  const context = React.useContext(CountStateContext);
+  const context = React.useContext(CountStateContext)
   if (context === undefined) {
-    throw new Error('useCount must be used within a CountProvider');
+    throw new Error('useCount must be used within a CountProvider')
   }
-  return context;
+  return context
 }
 
-export { CountProvider, useCount };
+export { CountProvider, useCount }
 ```
 
 ([데모](https://codesandbox.io/s/bitter-night-i5mhj))
@@ -282,12 +282,12 @@ export { CountProvider, useCount };
 
 ```jsx
 async function updateUser(dispatch, user, updates) {
-  dispatch({ type: 'start update', updates });
+  dispatch({ type: 'start update', updates })
   try {
-    const updatedUser = await userClient.updateUser(user, updates);
-    dispatch({ type: 'finish update', updatedUser });
+    const updatedUser = await userClient.updateUser(user, updates)
+    dispatch({ type: 'finish update', updatedUser })
   } catch (error) {
-    dispatch({ type: 'fail update', error });
+    dispatch({ type: 'fail update', error })
   }
 }
 
@@ -297,14 +297,14 @@ export { UserProvider, useUser, updateUser }
 이를 아래와 같이 사용할 수 있습니다:
 
 ```jsx
-import { useUser, updateUser } from './user-context';
+import { useUser, updateUser } from './user-context'
 
 function UserSettings() {
-  const [{ user, status, error }, userDispatch] = useUser();
+  const [{ user, status, error }, userDispatch] = useUser()
 
   function handleSubmit(event) {
-    event.preventDefault();
-    updateUser(userDispatch, user, formState);
+    event.preventDefault()
+    updateUser(userDispatch, user, formState)
   }
 
   // more code...
@@ -316,41 +316,41 @@ function UserSettings() {
 코드의 최종 버전은 아래와 같습니다:
 
 ```jsx
-import * as React from 'react';
+import * as React from 'react'
 
-const CountContext = React.createContext();
+const CountContext = React.createContext()
 
 function countReducer(state, action) {
   switch (action.type) {
     case 'increment': {
-      return { count: state.count + 1 };
+      return { count: state.count + 1 }
     }
     case 'decrement': {
-      return { count: state.count - 1 };
+      return { count: state.count - 1 }
     }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 }
 
 function CountProvider({ children }) {
-  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 })
   // 이 값을 memoize 해야할 지도 모릅니다
   // https://kentcdodds.com/blog/how-to-optimize-your-context-value를 참고해주세요!
-  const value = { state, dispatch };
-  return <CountContext.Provider value={value}>{children}</CountContext.Provider>;
+  const value = { state, dispatch }
+  return <CountContext.Provider value={value}>{children}</CountContext.Provider>
 }
 
 function useCount() {
-  const context = React.useContext(CountContext);
+  const context = React.useContext(CountContext)
   if (context === undefined) {
-    throw new Error('useCount must be used within a CountProvider');
+    throw new Error('useCount must be used within a CountProvider')
   }
-  return context;
+  return context
 }
 
-export { CountProvider, useCount };
+export { CountProvider, useCount }
 ```
 
 ([데모](https://codesandbox.io/s/react-codesandbox-je6cc))

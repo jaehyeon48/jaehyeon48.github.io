@@ -1,7 +1,7 @@
 ---
 title: 'UI 런타임으로서의 React'
 date: 2021-12-22
-category: 'react'
+category: 'React'
 draft: false
 ---
 
@@ -101,7 +101,7 @@ ReactDOM.render(
   // 아래의 JSX는 { type: 'button', props: { className: 'blue' } }를 나타낸 것이라 할 수 있습니다.
   <button className="blue" />,
   document.getElementById('container')
-);
+)
 ```
 
 `ReactDOM.render(reactElement, domContainer)`라고 하는 것은 "React 님, `domContainer` 호스트 트리를 `reactElement`에 매칭시켜주세요"라고 하는 것과 같습니다.
@@ -111,16 +111,16 @@ React는 요소의 타입인 `reactElement.type` (위 예시에서는 `'button'`
 ```js{3-4,9-10}
 // ReactDOM 렌더러 어딘가 (간략한 버전)
 function createHostInstance(reactElement) {
-  let domNode = document.createElement(reactElement.type);
-  domNode.className = reactElement.props.className;
-  return domNode;
+  let domNode = document.createElement(reactElement.type)
+  domNode.className = reactElement.props.className
+  return domNode
 }
 
 // 현재 예시에 대해 React가 실질적으로 하는 동작은 다음과 같습니다:
-let domNode = document.createElement('button');
-domNode.className = 'blue';
+let domNode = document.createElement('button')
+domNode.className = 'blue'
 
-domContainer.appendChild(domNode);
+domContainer.appendChild(domNode)
 ```
 
 만약 React 요소의 `reactElement.props.children`에 자식 요소가 존재한다면, React는 첫 렌더링 때 재귀적으로 해당 자식 요소들을 생성합니다.
@@ -133,7 +133,7 @@ domContainer.appendChild(domNode);
 ReactDOM.render(
   <button className="blue" />,
   document.getElementById('container')
-);
+)
 
 // ... 이후
 
@@ -142,7 +142,7 @@ ReactDOM.render(
 ReactDOM.render(
   <button className="red" />,
   document.getElementById('container')
-);
+)
 ```
 
 다시 말하지만, React의 역할은 호스트 트리와 현재 주어진 React 요소 트리를 매치시키는 것입니다. 새로운 정보를 바탕으로 호스트 객체 트리에 어떤 작업을 해야 하는가를 알아내는 과정을 [reconciliation](https://reactjs.org/docs/reconciliation.html) 이라고 합니다.
@@ -150,24 +150,24 @@ ReactDOM.render(
 재조정을 하는 방법에는 두 가지가 있을 수 있습니다. 우선, 아래와 같이 단순히 기존의 트리를 날려버리고 새로운 트리를 처음부터 다시 만드는 방법이 있을 수 있습니다:
 
 ```js
-let domContainer = document.getElementById('container');
+let domContainer = document.getElementById('container')
 // 트리 초기화
-domContainer.innerHTML = '';
+domContainer.innerHTML = ''
 // 새로운 호스트 트리를 생성
-let domNode = document.createElement('button');
-domNode.className = 'red';
-domContainer.appendChild(domNode);
+let domNode = document.createElement('button')
+domNode.className = 'red'
+domContainer.appendChild(domNode)
 ```
 
 하지만 DOM에서 위와 같은 방법은 느립니다. 또한, 포커스, 선택, 스크롤 상태와 같은 정보들도 다 날아가 버립니다. 따라서 위 방법 대신 다음과 같은 방법은 어떨까요?
 
 ```js
-let domNode = domContainer.firstChild;
+let domNode = domContainer.firstChild
 // 기존에 존재하는 호스트 객체를 업데이트
-domNode.className = 'red';
+domNode.className = 'red'
 ```
 
-즉, 이 방법은 *언제* 기존의 호스트 객체를 새로운 React 요소에 맞춰 업데이트할지, 그리고 언제 새로운 호스트 객체를 생성해야 할지 React가 결정을 내려야 한다는 뜻입니다.
+즉, 이 방법은 _언제_ 기존의 호스트 객체를 새로운 React 요소에 맞춰 업데이트할지, 그리고 언제 새로운 호스트 객체를 생성해야 할지 React가 결정을 내려야 한다는 뜻입니다.
 
 하지만 이렇게 하면 신원(identity)와 관련된 문제가 생깁니다. React 요소들은 매번 다를 텐데 어떻게 같은 호스트 객체를 나타낸다는 것을 알 수 있을까요?
 
@@ -184,28 +184,28 @@ domNode.className = 'red';
 ReactDOM.render(
   <button className="blue" />,
   document.getElementById('container')
-);
+)
 
 // 호스트 객체를 재사용할 수 있습니다! (button → button)
 // domNode.className = 'red';
 ReactDOM.render(
   <button className="red" />,
   document.getElementById('container')
-);
+)
 
 // 호스트 객체를 재사용할 수 없습니다.. (button → p)
 // domContainer.removeChild(domNode);
 // domNode = document.createElement('p');
 // domNode.textContent = 'Hello';
 // domContainer.appendChild(domNode);
-ReactDOM.render(<p>Hello</p>, document.getElementById('container'));
+ReactDOM.render(<p>Hello</p>, document.getElementById('container'))
 
 // 호스트 객체를 재사용할 수 있습니다! (p → p)
 // domNode.textContent = 'Goodbye';
-ReactDOM.render(<p>Goodbye</p>, document.getElementById('container'));
+ReactDOM.render(<p>Goodbye</p>, document.getElementById('container'))
 ```
 
-자식 트리에도 동일한 휴리스틱 알고리즘이 적용됩니다. 예를 들어, 두 개의 `<button>` 요소를 자식으로 가지는 `<dialog>` 요소를 업데이트할 때, React는 우선 부모 요소인 `<dialog>`를 재사용할 수 있는지 따져보고, (만약 부모 요소를 재사용할 수 있으면) 그 다음 이와 동일한 과정을 자식 요소인 `<button>`에 대해서도  진행하게 됩니다.
+자식 트리에도 동일한 휴리스틱 알고리즘이 적용됩니다. 예를 들어, 두 개의 `<button>` 요소를 자식으로 가지는 `<dialog>` 요소를 업데이트할 때, React는 우선 부모 요소인 `<dialog>`를 재사용할 수 있는지 따져보고, (만약 부모 요소를 재사용할 수 있으면) 그 다음 이와 동일한 과정을 자식 요소인 `<button>`에 대해서도 진행하게 됩니다.
 
 ## 조건 (Conditions)
 
@@ -232,23 +232,23 @@ ReactDOM.render(
 
 위 예제에서 `<input>` 호스트 객체는 다시 생성될 것입니다. React가 현재 버전의 트리를 이전 버전의 트리와 비교하는 과정은 다음과 비슷합니다:
 
-  - (위에서부터 아래로)
-  - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
-    - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야 함.
-    - `(nothing) → input`: 새로운 `input` 객체를 생성해야 함.
+- (위에서부터 아래로)
+- `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+  - `input → p`: 요소의 타입이 변경되었으므로 재사용 불가능. 기존의 `input` 객체를 제거하고 새로운 `p` 호스트 객체를 생성해야 함.
+  - `(nothing) → input`: 새로운 `input` 객체를 생성해야 함.
 
 따라서, React는 실질적으로 아래와 같은 코드를 실행할 것입니다:
 
 ```js{1-2,8-9}
-let oldInputNode = dialogNode.firstChild;
-dialogNode.removeChild(oldInputNode);
+let oldInputNode = dialogNode.firstChild
+dialogNode.removeChild(oldInputNode)
 
-let pNode = document.createElement('p');
-pNode.textContent = 'I was just added here!';
-dialogNode.appendChild(pNode);
+let pNode = document.createElement('p')
+pNode.textContent = 'I was just added here!'
+dialogNode.appendChild(pNode)
 
-let newInputNode = document.createElement('input');
-dialogNode.appendChild(newInputNode);
+let newInputNode = document.createElement('input')
+dialogNode.appendChild(newInputNode)
 ```
 
 하지만 생각해 보면 `<input>`은 `<p>`로 바뀐 것이 아니라 단순히 이동된 것이므로 위와 같은 동작은 그다지 좋아 보이진 않습니다. 또, 이렇게 하면 포커스, 선택, 입력한 내용들도 다 날아가 버립니다.
@@ -257,10 +257,10 @@ dialogNode.appendChild(newInputNode);
 
 ```jsx
 function Form({ showMessage }) {
-  let message = null;
+  let message = null
 
   if (showMessage) {
-    message = <p>I was just added here!</p>;
+    message = <p>I was just added here!</p>
   }
 
   return (
@@ -268,7 +268,7 @@ function Form({ showMessage }) {
       {message}
       <input />
     </dialog>
-  );
+  )
 }
 ```
 
@@ -276,41 +276,38 @@ function Form({ showMessage }) {
 
 ```js{14-16}
 function Form({ showMessage }) {
-  let message = null;
+  let message = null
 
   if (showMessage) {
     message = {
       type: 'p',
-      props: { children: 'I was just added here!' }
-    };
+      props: { children: 'I was just added here!' },
+    }
   }
 
   return {
     type: 'dialog',
     props: {
-      children: [
-        message,
-        { type: 'input', props: {} }
-      ]
-    }
-  };
+      children: [message, { type: 'input', props: {} }],
+    },
+  }
 }
 ```
 
 여기서, `showMessage`가 `true`이건 `false`이건 상관없이 `<input>`은 항상 `<dialog>`의 두 번째 자식이므로 그 위치가 변하지 않습니다. `showMessage`가 `false`에서 `true`로 바뀌면 React는 다음과 같이 (현재 버전을) 이전 버전과 비교할 것입니다:
 
-  - `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
-    - `(null) → p`: 새로운 `p` 호스트 객체를 추가해야함.
-    - `input → input`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+- `dialog → dialog`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
+  - `(null) → p`: 새로운 `p` 호스트 객체를 추가해야함.
+  - `input → input`: 요소의 타입이 일치하므로 호스트 객체 재사용 가능.
 
 따라서, 실질적으로 React가 수행한 업데이트 코드는 다음과 흡사할 것입니다:
 
 ```js
 // "input"의 상태가 그대로 유지됩니다!
-let inputNode = dialogNode.firstChild;
-let pNode = document.createElement('p');
-pNode.textContent = 'I was just added here!';
-dialogNode.insertBefore(pNode, inputNode);
+let inputNode = dialogNode.firstChild
+let pNode = document.createElement('p')
+pNode.textContent = 'I was just added here!'
+dialogNode.insertBefore(pNode, inputNode)
 ```
 
 이렇게 함으로써 입력 상태를 잃어버리지 않을 수 있게 되었습니다.
@@ -335,7 +332,7 @@ function ShoppingList({ list }) {
         </p>
       ))}
     </form>
-  );
+  )
 }
 ```
 
@@ -367,7 +364,7 @@ function ShoppingList({ list }) {
         </p>
       ))}
     </form>
-  );
+  )
 }
 ```
 
@@ -385,10 +382,10 @@ React가 `<form>` 내부에 있는 `<p key="42">` 요소를 보게 되면 직전
 
 ```jsx
 function Form({ showMessage }) {
-  let message = null;
+  let message = null
 
   if (showMessage) {
-    message = <p>I was just added here!</p>;
+    message = <p>I was just added here!</p>
   }
 
   return (
@@ -396,7 +393,7 @@ function Form({ showMessage }) {
       {message}
       <input />
     </dialog>
-  );
+  )
 }
 ```
 
@@ -411,7 +408,7 @@ function Form({ showMessage }) {
 ```js
 function Button(props) {
   // 🔴 동작하지 않음!
-  props.isActive = true;
+  props.isActive = true
 }
 ```
 
@@ -420,14 +417,12 @@ function Button(props) {
 
 ```jsx{2,5}
 function FriendList({ friends }) {
-  let items = [];
+  let items = []
   for (let i = 0; i < friends.length; i++) {
-    let friend = friends[i];
-    items.push(
-      <Friend key={friend.id} friend={friend} />
-    );
+    let friend = friends[i]
+    items.push(<Friend key={friend.id} friend={friend} />)
   }
-  return <section>{items}</section>;
+  return <section>{items}</section>
 }
 ```
 
@@ -438,13 +433,13 @@ function FriendList({ friends }) {
 ```js
 function ExpenseForm() {
   // 다른 컴포넌트에 영향을 주지 않는다면 괜찮습니다
-  SuperCalculator.initializeIfNotReady();
+  SuperCalculator.initializeIfNotReady()
 
   // 계속해서 렌더링...
 }
 ```
 
- 한 컴포넌트를 여러 번 호출하는 것이 안전하고 다른 컴포넌트의 렌더링에 영향을 미치지 않는 한, 해당 컴포넌트가 엄격한 FP의 관점에서 100% "순수" 하지 않아도 React는 딱히 신경 쓰지 않습니다. React에선 [멱등성(Idempotent)](https://stackoverflow.com/questions/1077412/what-is-an-idempotent-operation)이 순수성보다 더 중요합니다.
+한 컴포넌트를 여러 번 호출하는 것이 안전하고 다른 컴포넌트의 렌더링에 영향을 미치지 않는 한, 해당 컴포넌트가 엄격한 FP의 관점에서 100% "순수" 하지 않아도 React는 딱히 신경 쓰지 않습니다. React에선 [멱등성(Idempotent)](https://stackoverflow.com/questions/1077412/what-is-an-idempotent-operation)이 순수성보다 더 중요합니다.
 
 즉, 사용자에게 직접적으로 보이는 side effect는 React 컴포넌트에서 허용되지 않습니다. 다시 말해, 함수 컴포넌트를 단순히 호출만 했을 때 화면에 어떤 변화가 발생하면 안 된다는 뜻입니다.
 
@@ -453,8 +448,8 @@ function ExpenseForm() {
 컴포넌트를 다른 컴포넌트에서 어떻게 쓸 수 있을까요? 컴포넌트는 단순히 "함수"이므로, 그냥 호출하면 됩니다:
 
 ```js
-let reactElement = Form({ showMessage: true });
-ReactDOM.render(reactElement, domContainer);
+let reactElement = Form({ showMessage: true })
+ReactDOM.render(reactElement, domContainer)
 ```
 
 하지만 이와 같은 방식은 React 런타임에서 자연스러운 방법이 아닙니다.
@@ -463,20 +458,20 @@ ReactDOM.render(reactElement, domContainer);
 
 ```jsx
 // { type: Form, props: { showMessage: true } }
-let reactElement = <Form showMessage={true} />;
-ReactDOM.render(reactElement, domContainer);
+let reactElement = <Form showMessage={true} />
+ReactDOM.render(reactElement, domContainer)
 
 // React 어딘가에서 해당 컴포넌트가 호출될 것입니다
-let type = reactElement.type; // Form
-let props = reactElement.props; // { showMessage: true }
-let result = type(props); // Whatever Form returns
+let type = reactElement.type // Form
+let props = reactElement.props // { showMessage: true }
+let result = type(props) // Whatever Form returns
 ```
 
 함수 컴포넌트의 이름은 항상 대문자로 시작해야 합니다. JSX를 번역할 때, `<form>` 대신 `<Form>`을 보게 되면 해당 객체의 타입을 문자열이 아니라 식별자로 봅니다:
 
 ```jsx
-console.log((<form />).type); // 'form' string
-console.log((<Form />).type); // Form function
+console.log((<form />).type) // 'form' string
+console.log((<Form />).type) // Form function
 ```
 
 (컴포넌트가) 전역으로 등록되는 메커니즘 같은 건 없습니다. 단순히 컴포넌트의 이름을 통해 참조하는 것입니다. 만약 컴포넌트가 로컬 스코프에 없다면 일반적인 자바스크립트에서 변수 이름을 잘못 참조한 경우와 같이 에러를 보게 될 것입니다.
@@ -517,7 +512,7 @@ console.log((<Form />).type); // Form function
 ```jsx
 // 🔴 (사용자가) 컴포넌트를 직접 호출하게되면 React로선
 // "Layout"과 "Article"이 존재하는지 알 수 없습니다.
-ReactDOM.render(Layout({ children: Article() }), domContainer);
+ReactDOM.render(Layout({ children: Article() }), domContainer)
 
 // ✅ 반면, React가 컴포넌트를 호출하면
 // "Layout"과 "Article"이 존재하는지 알 수 있습니다!
@@ -526,18 +521,18 @@ ReactDOM.render(
     <Article />
   </Layout>,
   domContainer
-);
+)
 ```
 
 이는 [제어의 역전](https://en.wikipedia.org/wiki/Inversion_of_control)의 대표적인 예시입니다. 또한, React가 컴포넌트 호출 제어권을 가지게 함으로써 생기는 몇 가지 흥미로운 이점들이 있습니다:
 
-  - **컴포넌트가 함수 이상의 역할을 하게 됩니다**: React는 지역 상태와 같은 기능들을 컴포넌트와 묶을 수 있게 됩니다. 좋은 런타임은 직면한 문제에 알맞는 기초적인 추상화를 제공합니다. 앞서 언급한 것처럼 React는 이벤트에 응답하는 UI 트리를 생성하는 데 초점이 맞춰져 있습니다. 컴포넌트를 React 대신 직접 호출하면 이와 같은 부가적인 기능들을 여러분이 직접 구현해야 합니다.
+- **컴포넌트가 함수 이상의 역할을 하게 됩니다**: React는 지역 상태와 같은 기능들을 컴포넌트와 묶을 수 있게 됩니다. 좋은 런타임은 직면한 문제에 알맞는 기초적인 추상화를 제공합니다. 앞서 언급한 것처럼 React는 이벤트에 응답하는 UI 트리를 생성하는 데 초점이 맞춰져 있습니다. 컴포넌트를 React 대신 직접 호출하면 이와 같은 부가적인 기능들을 여러분이 직접 구현해야 합니다.
 
-  - **컴포넌트 타입으로 재조정을 한다**: React가 컴포넌트를 호출하게 되면 React는 트리의 구조에 대해 더욱 많이 알게 됩니다. 예를 들어, `<Feed>` 페이지에서 `<Profile>` 페이지로 이동하면 React는 마치 `<button>`을 `<p>`로 바꾸는 것처럼 해당 요소의 호스트 객체를 재사용하지 않습니다. 이렇듯 다른 view를 렌더링하는 경우엔 이처럼 기존의 모든 상태를 날려버리는 것이 바람직합니다. `<input>` 요소가 우연히 트리 상에서 같은 위치에 존재하게 된다고 하더라도 `<PasswordFrom>`과 `<MessengerChat>`간에 입력 상태를 유지하고 싶지는 않을 것입니다.
+- **컴포넌트 타입으로 재조정을 한다**: React가 컴포넌트를 호출하게 되면 React는 트리의 구조에 대해 더욱 많이 알게 됩니다. 예를 들어, `<Feed>` 페이지에서 `<Profile>` 페이지로 이동하면 React는 마치 `<button>`을 `<p>`로 바꾸는 것처럼 해당 요소의 호스트 객체를 재사용하지 않습니다. 이렇듯 다른 view를 렌더링하는 경우엔 이처럼 기존의 모든 상태를 날려버리는 것이 바람직합니다. `<input>` 요소가 우연히 트리 상에서 같은 위치에 존재하게 된다고 하더라도 `<PasswordFrom>`과 `<MessengerChat>`간에 입력 상태를 유지하고 싶지는 않을 것입니다.
 
-  - **React가 재조정을 지연할 수 있다**: React가 컴포넌트 호출 제어권을 가지면 여러 가지 흥미로운 것들을 할 수 있게 됩니다. 예를 들면, 거대한 컴포넌트를 리렌더링 하는 것이 [메인 스레드를 blocking 하지 않도록](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 컴포넌트 호출 사이에 브라우저가 일부 작업을 더 하도록 할 수 있습니다. React를 뜯어고치지 않고선 이 작업을 수동으로 하기는 쉽지 않을 것입니다.
+- **React가 재조정을 지연할 수 있다**: React가 컴포넌트 호출 제어권을 가지면 여러 가지 흥미로운 것들을 할 수 있게 됩니다. 예를 들면, 거대한 컴포넌트를 리렌더링 하는 것이 [메인 스레드를 blocking 하지 않도록](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html) 컴포넌트 호출 사이에 브라우저가 일부 작업을 더 하도록 할 수 있습니다. React를 뜯어고치지 않고선 이 작업을 수동으로 하기는 쉽지 않을 것입니다.
 
-  - **더 나은 디버깅**: 컴포넌트가 React가 인지하고 있는 일급 객체라면 [풍부한 디버깅 도구](https://github.com/facebook/react-devtools)들을 만들 수 있게 됩니다.
+- **더 나은 디버깅**: 컴포넌트가 React가 인지하고 있는 일급 객체라면 [풍부한 디버깅 도구](https://github.com/facebook/react-devtools)들을 만들 수 있게 됩니다.
 
 <br/>
 
@@ -572,7 +567,7 @@ function Story({ currentUser }) {
     <Page user={currentUser}>
       <Comments />
     </Page>
-  );
+  )
 }
 ```
 
@@ -580,11 +575,7 @@ function Story({ currentUser }) {
 
 ```jsx{4}
 function Page({ user, children }) {
-  return (
-    <Layout>
-      {children}
-    </Layout>
-  );
+  return <Layout>{children}</Layout>
 }
 ```
 
@@ -595,13 +586,9 @@ function Page({ user, children }) {
 ```jsx{2-4}
 function Page({ user, children }) {
   if (!user.isLoggedIn) {
-    return <h1>Please log in</h1>;
+    return <h1>Please log in</h1>
   }
-  return (
-    <Layout>
-      {children}
-    </Layout>
-  );
+  return <Layout>{children}</Layout>
 }
 ```
 
@@ -614,9 +601,7 @@ function Page({ user, children }) {
 //     children: Comments() // 항상 실행됩니다!
 //   }
 // }
-<Page>
-  {Comments()}
-</Page>
+<Page>{Comments()}</Page>
 ```
 
 하지만 `<Comments />`와 같이 React 요소를 넘기게 되면 `Comments`를 실행하지 않습니다:
@@ -647,16 +632,14 @@ React 컴포넌트는 이렇게나 유용한 지역 상태를 자체적으로 �
 
 ```jsx{2,6-7}
 function Example() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -681,7 +664,7 @@ function Row({ item }) {
   // ...
 }
 
-export default React.memo(Row);
+export default React.memo(Row)
 ```
 
 이렇게 하면 부모 컴포넌트인 `<Table>`에 있는 `setState`는 직전에 렌더링한 `item`과 현재 `item`의 참조 비교를 통해, `item`이 같은 `Row` 컴포넌트에 대한 재조정은 건너뜁니다.
@@ -692,7 +675,7 @@ React는 기본적으로, 컴포넌트를 (의도적으로) 메모이제이션 �
 
 ## 가공되지 않은 모델 (Raw Models)
 
-아이러니하게도, "React"는 세밀한 업데이트를 위해 "reactive"한 시스템을 사용하지 않습니다. 다시 말해, 상위 요소가 업데이트되면 변경에 영향을 받은 컴포넌트들만 업데이트하는 것이 아니라 (즉, 변경에 "react" 하는 것이 아니라) 하위의 모든 컴포넌트에 대해 재조정을 발생시킨다는 것입니다. 
+아이러니하게도, "React"는 세밀한 업데이트를 위해 "reactive"한 시스템을 사용하지 않습니다. 다시 말해, 상위 요소가 업데이트되면 변경에 영향을 받은 컴포넌트들만 업데이트하는 것이 아니라 (즉, 변경에 "react" 하는 것이 아니라) 하위의 모든 컴포넌트에 대해 재조정을 발생시킨다는 것입니다.
 
 하지만 React는 일부러 이렇게 설계되었습니다. 웹 애플리케이션에서 [TTI](https://calibreapp.com/blog/time-to-interactive)는 중요한 측정 지표 중 하나이고, 모델을 순회하면서 변경에 대한 listener를 일일이 설정하게 되면 TTI가 커지게 됩니다. 게다가 많은 앱에서 상호작용은 작은 변화(버튼 hover)부터 큰 변화(페이지 이동)까지 많은 변화를 발생시키는 경향이 있는데, 이 경우 세세한 단위의 구독은 메모리를 낭비를 초래하게 될 것입니다.
 
@@ -710,26 +693,26 @@ React 렌더링은 `O(데이터의 크기)`가 아니라 `O(view의 크기)`의 
 
 ```jsx{4, 14}
 function Parent() {
-  let [count, setCount] = useState(0);
+  let [count, setCount] = useState(0)
   return (
     <div onClick={() => setCount(count + 1)}>
       Parent clicked {count} times
       <Child />
     </div>
-  );
+  )
 }
 
 function Child() {
-  let [count, setCount] = useState(0);
+  let [count, setCount] = useState(0)
   return (
     <button onClick={() => setCount(count + 1)}>
       Child clicked {count} times
     </button>
-  );
+  )
 }
 ```
 
-이벤트가 전파(dispatch)되면 `Child`의 `onClick`이 먼저 실행되고 (그에 따라 `Child`의 `setState` 실행), 그다음 `Parent`의 `onClick`이 실행됩니다. 
+이벤트가 전파(dispatch)되면 `Child`의 `onClick`이 먼저 실행되고 (그에 따라 `Child`의 `setState` 실행), 그다음 `Parent`의 `onClick`이 실행됩니다.
 
 만약 `setState`가 호출되는 즉시 컴포넌트를 리렌더링 하게 되면 다음과 같이 `Child`가 (불필요하게) 두 번 렌더링 되는 상황이 발생할 수 있습니다:
 
@@ -766,16 +749,16 @@ Parent(onClick)
 일괄 처리는 성능 측면에선 좋지만, 다음과 같이 코드를 작성한다면 문제가 될 수도 있습니다:
 
 ```js
-const [count, setCount] = useState(0);
+const [count, setCount] = useState(0)
 
 function increment() {
-  setCount(count + 1);
+  setCount(count + 1)
 }
 
 function handleClick() {
-  increment();
-  increment();
-  increment();
+  increment()
+  increment()
+  increment()
 }
 ```
 
@@ -786,39 +769,39 @@ function handleClick() {
 이 문제는 다음과 같이 `setState`에서 제공하는 "updater" 함수를 사용하여 해결할 수 있습니다:
 
 ```js
-const [count, setCount] = useState(0);
+const [count, setCount] = useState(0)
 
 function increment() {
-  setCount(c => c + 1);
+  setCount(c => c + 1)
 }
 
 function handleClick() {
-  increment();
-  increment();
-  increment();
+  increment()
+  increment()
+  increment()
 }
 ```
 
 ([데모](https://codesandbox.io/s/react-batch-proper-example-gy9de?file=/src/App.js))
 
-위와 같이 `setState`의 updater 함수를 사용하면 React는 updater 함수를 큐에 저장해놓고 이후에 차례로 하나씩 실행합니다. 그 결과,  정상적으로 `count`의 값이 `3`씩 증가함을 알 수 있습니다.
+위와 같이 `setState`의 updater 함수를 사용하면 React는 updater 함수를 큐에 저장해놓고 이후에 차례로 하나씩 실행합니다. 그 결과, 정상적으로 `count`의 값이 `3`씩 증가함을 알 수 있습니다.
 
 복잡한 상태 로직의 경우, `useState` 대신 [useReducer 훅](https://reactjs.org/docs/hooks-reference.html#usereducer)을 사용하는 것을 추천합니다:
 
 ```jsx
-  const [counter, dispatch] = useReducer((state, action) => {
-    if (action === 'increment') {
-      return state + 1;
-    } else {
-      return state;
-    }
-  }, 0);
-
-  function handleClick() {
-    dispatch('increment');
-    dispatch('increment');
-    dispatch('increment');
+const [counter, dispatch] = useReducer((state, action) => {
+  if (action === 'increment') {
+    return state + 1
+  } else {
+    return state
   }
+}, 0)
+
+function handleClick() {
+  dispatch('increment')
+  dispatch('increment')
+  dispatch('increment')
+}
 ```
 
 이때, `action` 인자엔 무엇이든 올 수 있지만, 일반적으로 객체가 많이 사용됩니다.
@@ -846,19 +829,19 @@ React에선 데이터를 하위 컴포넌트로 전달할 때 props의 형태로
 ```jsx
 const ThemeContext = React.createContext(
   'light' // 기본값
-);
+)
 
 function DarkApp() {
   return (
     <ThemeContext.Provider value="dark">
       <MyComponents />
     </ThemeContext.Provider>
-  );
+  )
 }
 
 function SomeDeeplyNestedChild() {
   // Depends on where the child is rendered
-  const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext)
   // ...
 }
 ```
@@ -877,20 +860,18 @@ React에서 이러한 일들은 이펙트를 이용하여 해결할 수 있습�
 
 ```jsx{4-6}
 function Example() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  });
+    document.title = `You clicked ${count} times`
+  })
 
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -901,10 +882,10 @@ React는 가능한 한 브라우저가 화면을 리페인트 할 때까지 이�
 이펙트에서 구독과 같은 작업을 수행하는 경우, 클린업 작업을 필요로 할 수도 있습니다. 클린업 작업을 하기 위해선 다음과 같이 함수를 반환해야 합니다:
 
 ```js
-  useEffect(() => {
-    DataSource.addSubscription(handleChange);
-    return () => DataSource.removeSubscription(handleChange);
-  });
+useEffect(() => {
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+})
 ```
 
 이렇게 클린업을 위해 이펙트가 함수를 반환하면 React는 반환된 함수를 다음번 이펙트를 실행하기 직전에, 그리고 컴포넌트가 제거될 때 실행합니다.
@@ -912,9 +893,9 @@ React는 가능한 한 브라우저가 화면을 리페인트 할 때까지 이�
 때로는 렌더링마다 이펙트를 실행할 필요가 없는 경우가 있습니다. 이 경우 다음과 같이 [특정 상태가 변한 경우에만](https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects) 이펙트를 실행하도록 할 수 있습니다:
 
 ```js{3}
-  useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  }, [count]);
+useEffect(() => {
+  document.title = `You clicked ${count} times`
+}, [count])
 ```
 
 하지만 만약 자바스크립트 클로저에 익숙하지 않다면 성급한 최적화 문제가 발생할 수 있습니다.
@@ -922,17 +903,17 @@ React는 가능한 한 브라우저가 화면을 리페인트 할 때까지 이�
 예를 들면, 다음의 코드는 버그가 발생할 가능성이 높습니다:
 
 ```js
-  useEffect(() => {
-    DataSource.addSubscription(handleChange);
-    return () => DataSource.removeSubscription(handleChange);
-  }, []);
+useEffect(() => {
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+}, [])
 ```
 
 위 코드의 `[]`는 "이 이펙트를 다시 실행하지 마"라고 하는 것과 같습니다. 하지만 이펙트에선 이펙트 외부에 선언된 `handleChange`를 (클로저를 이용하여) 사용(close over)하고 있고, `handleChange`에선 다음과 같이 특정 prop 혹은 상태를 참조하고 있을 수 있습니다:
 
 ```js
 function handleChange() {
-  console.log(count);
+  console.log(count)
 }
 ```
 
@@ -942,9 +923,9 @@ function handleChange() {
 
 ```js{4}
 useEffect(() => {
-  DataSource.addSubscription(handleChange);
-  return () => DataSource.removeSubscription(handleChange);
-}, [handleChange]);
+  DataSource.addSubscription(handleChange)
+  return () => DataSource.removeSubscription(handleChange)
+}, [handleChange])
 ```
 
 이때 `handleChange`가 매번 렌더링 될 때마다 달라지므로 불필요한 재구독(resubscription)이 발생할 수도 있다. 이 경우 [useCallback hook](https://reactjs.org/docs/hooks-reference.html#usecallback)을 사용할 수도 있고, 혹은 그냥 재구독 되게끔 내버려 둘 수도 있습니다. 예를 들어 브라우저가 제공하는 `addEventListener` API는 엄청 빠르기 때문에, (불필요한 호출을 줄이려고) 성급하게 최적화했다가 오히려 성능이 더욱 나빠질 수도 있습니다.
@@ -955,22 +936,20 @@ useEffect(() => {
 
 ```jsx{2, 8}
 function MyResponsiveComponent() {
-  const width = useWindowWidth(); // 커스텀 훅
-  return (
-    <p>Window width is {width}</p>
-  );
+  const width = useWindowWidth() // 커스텀 훅
+  return <p>Window width is {width}</p>
 }
 
 function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(window.innerWidth)
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
+    const handleResize = () => setWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
     return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
-  return width;
+      window.removeEventListener('resize', handleResize)
+    }
+  })
+  return width
 }
 ```
 

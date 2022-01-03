@@ -1,7 +1,7 @@
 ---
 title: 'React로 애플리케이션 상태관리 하기'
 date: 2021-12-27
-category: 'react'
+category: 'React'
 draft: false
 ---
 
@@ -9,7 +9,7 @@ draft: false
 
 <hr class="custom-hr">
 
-어느 애플리케이션에서나 상태를 관리하는 것은 아마도 가장 힘든 부분일 것입니다. 이것이 상태관리 라이브러리들이 그토록 많이 존재할 뿐만 아니라, 계속해서 새로 생겨나는 이유입니다. (심지어 몇몇 라이브러리는 상태관리 라이브러리의 라이브러리 이기도 합니다. 예를 들자면 npm에는  Redux 추상화 버전의 라이브러리가 수백 개 존재합니다). 제가 생각하기에 상태관리를 어렵게 만드는 요인 중 하나는 문제를 해결하기 위해 해결책을 너무 과용(over-engineer)한다는 것입니다.
+어느 애플리케이션에서나 상태를 관리하는 것은 아마도 가장 힘든 부분일 것입니다. 이것이 상태관리 라이브러리들이 그토록 많이 존재할 뿐만 아니라, 계속해서 새로 생겨나는 이유입니다. (심지어 몇몇 라이브러리는 상태관리 라이브러리의 라이브러리 이기도 합니다. 예를 들자면 npm에는 Redux 추상화 버전의 라이브러리가 수백 개 존재합니다). 제가 생각하기에 상태관리를 어렵게 만드는 요인 중 하나는 문제를 해결하기 위해 해결책을 너무 과용(over-engineer)한다는 것입니다.
 
 제가 React를 사용하는 동안 개인적으로 구현하려고 시도했던 상태관리 방법이 하나 있는데, React 훅의 등장과 React 컨텍스트의 발전으로 인해 이러한 방법이 크게 단순화되었습니다.
 
@@ -33,13 +33,13 @@ Redux가 크게 성공한 요인 중 하나는 [react-redux](https://www.npmjs.c
 
 ```jsx{2}
 function Counter() {
-  const [count, setCount] = React.useState(0);
-  const increment = () => setCount(c => c + 1);
+  const [count, setCount] = React.useState(0)
+  const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>{count}</button>
 }
 
 function App() {
-  return <Counter />;
+  return <Counter />
 }
 ```
 
@@ -49,10 +49,10 @@ function App() {
 
 ```jsx{2}
 class Counter extends React.Component {
-  state = { count: 0 };
-  increment = () => this.setState(({ count }) => ({ count: count + 1 }));
+  state = { count: 0 }
+  increment = () => this.setState(({ count }) => ({ count: count + 1 }))
   render() {
-    return <button onClick={this.increment}>{this.state.count}</button>;
+    return <button onClick={this.increment}>{this.state.count}</button>
   }
 }
 ```
@@ -62,7 +62,7 @@ class Counter extends React.Component {
 ```jsx{3}
 function CountDisplay() {
   // `count`는 어디서 오는걸까요?
-  return <div>The current counter count is {count}</div>;
+  return <div>The current counter count is {count}</div>
 }
 
 function App() {
@@ -71,7 +71,7 @@ function App() {
       <CountDisplay />
       <Counter />
     </div>
-  );
+  )
 }
 ```
 
@@ -83,22 +83,22 @@ function App() {
 
 ```jsx
 function Counter({ count, onIncrementClick }) {
-  return <button onClick={onIncrementClick}>{count}</button>;
+  return <button onClick={onIncrementClick}>{count}</button>
 }
 
 function CountDisplay({ count }) {
-  return <div>The current counter count is {count}</div>;
+  return <div>The current counter count is {count}</div>
 }
 
 function App() {
-  const [count, setCount] = React.useState(0);
-  const increment = () => setCount(c => c + 1);
+  const [count, setCount] = React.useState(0)
+  const increment = () => setCount(c => c + 1)
   return (
     <div>
       <CountDisplay count={count} />
       <Counter count={count} onIncrementClick={increment} />
     </div>
-  );
+  )
 }
 ```
 
@@ -113,19 +113,19 @@ function App() {
 ```jsx
 // 이것 대신
 function App() {
-  const [someState, setSomeState] = React.useState('some state');
+  const [someState, setSomeState] = React.useState('some state')
   return (
     <>
       <Header someState={someState} onStateChange={setSomeState} />
       <LeftNav someState={someState} onStateChange={setSomeState} />
       <MainContent someState={someState} onStateChange={setSomeState} />
     </>
-  );
+  )
 }
 
 // 이렇게
 function App() {
-  const [someState, setSomeState] = React.useState('some state');
+  const [someState, setSomeState] = React.useState('some state')
   return (
     <>
       <Header
@@ -142,7 +142,7 @@ function App() {
         <AndSoOn someState={someState} />
       </MainContent>
     </>
-  );
+  )
 }
 ```
 
@@ -151,40 +151,40 @@ function App() {
 하지만 결국 컴포넌트 합성으로도 문제가 해결되지 않을 수 있습니다. 이 경우엔 React의 컨텍스트 API를 사용할 수 있습니다. 사실 컨텍스트 API는 오랫동안 "비공식적인 해답"이었습니다. 제가 앞서 말한 것처럼 많은 사람들이 `react-redux`를 사용함으로써 React 공식 문서에 존재했던 경고에 구애받지 않고 위의 메커니즘을 이용하여 문제를 해결할 수 있었거든요. 하지만 이제 React가 `context`를 공식적으로 지원하기 때문에 아무 걱정 없이 이를 직접 사용할 수 있게 되었습니다:
 
 ```jsx
-import * as React from 'react';
+import * as React from 'react'
 
-const CountContext = React.createContext();
+const CountContext = React.createContext()
 
 function useCount() {
-  const context = React.useContext(CountContext);
+  const context = React.useContext(CountContext)
   if (!context) {
-    throw new Error(`useCount must be used within a CountProvider`);
+    throw new Error(`useCount must be used within a CountProvider`)
   }
-  return context;
+  return context
 }
 
 function CountProvider(props) {
-  const [count, setCount] = React.useState(0);
-  const value = React.useMemo(() => [count, setCount], [count]);
-  return <CountContext.Provider value={value} {...props} />;
+  const [count, setCount] = React.useState(0)
+  const value = React.useMemo(() => [count, setCount], [count])
+  return <CountContext.Provider value={value} {...props} />
 }
 
-export { CountProvider, useCount };
+export { CountProvider, useCount }
 ```
 
 ```jsx
-import * as React from 'react';
-import { CountProvider, useCount } from './count-context';
+import * as React from 'react'
+import { CountProvider, useCount } from './count-context'
 
 function Counter() {
-  const [count, setCount] = useCount();
-  const increment = () => setCount(c => c + 1);
-  return <button onClick={increment}>{count}</button>;
+  const [count, setCount] = useCount()
+  const increment = () => setCount(c => c + 1)
+  return <button onClick={increment}>{count}</button>
 }
 
 function CountDisplay() {
-  const [count] = useCount();
-  return <div>The current counter count is {count}</div>;
+  const [count] = useCount()
+  return <div>The current counter count is {count}</div>
 }
 
 function CountPage() {
@@ -195,7 +195,7 @@ function CountPage() {
         <Counter />
       </CountProvider>
     </div>
-  );
+  )
 }
 ```
 
@@ -207,18 +207,18 @@ function CountPage() {
 
 ```jsx
 function useCount() {
-  const context = React.useContext(CountContext);
+  const context = React.useContext(CountContext)
   if (!context) {
-    throw new Error(`useCount must be used within a CountProvider`);
+    throw new Error(`useCount must be used within a CountProvider`)
   }
-  const [count, setCount] = context;
+  const [count, setCount] = context
 
-  const increment = () => setCount(c => c + 1);
+  const increment = () => setCount(c => c + 1)
   return {
     count,
     setCount,
     increment,
-  };
+  }
 }
 ```
 
@@ -230,33 +230,33 @@ function useCount() {
 function countReducer(state, action) {
   switch (action.type) {
     case 'INCREMENT': {
-      return { count: state.count + 1 };
+      return { count: state.count + 1 }
     }
     default: {
-      throw new Error(`Unsupported action type: ${action.type}`);
+      throw new Error(`Unsupported action type: ${action.type}`)
     }
   }
 }
 
 function CountProvider(props) {
-  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
-  const value = React.useMemo(() => [state, dispatch], [state]);
-  return <CountContext.Provider value={value} {...props} />;
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 })
+  const value = React.useMemo(() => [state, dispatch], [state])
+  return <CountContext.Provider value={value} {...props} />
 }
 
 function useCount() {
-  const context = React.useContext(CountContext);
+  const context = React.useContext(CountContext)
   if (!context) {
-    throw new Error(`useCount must be used within a CountProvider`);
+    throw new Error(`useCount must be used within a CountProvider`)
   }
-  const [state, dispatch] = context;
+  const [state, dispatch] = context
 
-  const increment = () => dispatch({ type: 'INCREMENT' });
+  const increment = () => dispatch({ type: 'INCREMENT' })
   return {
     state,
     dispatch,
     increment,
-  };
+  }
 }
 ```
 
@@ -283,7 +283,7 @@ function App() {
         </Router>
       </AuthenticationProvider>
     </ThemeProvider>
-  );
+  )
 }
 
 function Notifications() {
@@ -293,7 +293,7 @@ function Notifications() {
       <NotificationsTypeList />
       <NotificationsList />
     </NotificationsProvider>
-  );
+  )
 }
 
 function UserPage({ username }) {
@@ -303,12 +303,12 @@ function UserPage({ username }) {
       <UserNav />
       <UserActivity />
     </UserProvider>
-  );
+  )
 }
 
 function UserSettings() {
   // 아마 `AuthenticationProvider`와 연관된 훅일겁니다
-  const { user } = useAuthenticatedUser();
+  const { user } = useAuthenticatedUser()
 }
 ```
 
