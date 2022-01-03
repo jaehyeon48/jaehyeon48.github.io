@@ -1,7 +1,7 @@
 ---
 title: 'SameSite 속성'
 date: 2021-12-07
-category: 'web'
+category: 'Web'
 draft: false
 ---
 

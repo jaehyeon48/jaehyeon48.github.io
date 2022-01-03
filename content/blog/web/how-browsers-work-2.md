@@ -1,7 +1,7 @@
 ---
 title: '브라우저는 어떻게 동작하는가? Part2'
 date: 2020-08-29
-category: 'web'
+category: 'Web'
 draft: false
 ---
 
@@ -158,9 +158,9 @@ CSSOM의 각 노드는 해당 노드가 타겟으로 삼고있는 DOM 요소의 
 
 ### 합성(Compositioning)
 
-|💡|
-|-|
-|페인트(paint)는 페인트 단계에서 페인트 작업을 수행하는 것을 의미하고, 그리기(draw)는 페인트 작업을 기반으로 비트맵 혹은 텍스처를 만들어 내는 것을 의미한다. 좀 더 정확히 말하자면, **합성 프레임(compositing frame)**을 만들어 내는 것을 의미한다.|
+| 💡                                                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 페인트(paint)는 페인트 단계에서 페인트 작업을 수행하는 것을 의미하고, 그리기(draw)는 페인트 작업을 기반으로 비트맵 혹은 텍스처를 만들어 내는 것을 의미한다. 좀 더 정확히 말하자면, **합성 프레임(compositing frame)**을 만들어 내는 것을 의미한다. |
 
 이제 브라우저는 문서의 구조, 각 요소의 스타일과 위치/크기 및 paint 순서를 알고있는 상태이다. 이제 이러한 정보들을 가지고 어떻게 페이지를 그릴까? 이러한 정보들을 화면의 픽셀로 변환하는 작업을 **래스터화(rasterization)** 라고 한다.
 
@@ -195,28 +195,28 @@ CSSOM의 각 노드는 해당 노드가 타겟으로 삼고있는 DOM 요소의 
     <figcaption>Raster threads creating the bitmap of tiles and sending to GPU: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-|💡|
-|-|
-|rasterize 역시 GPU의 도움을 받기 좋은 단계이다. 이와 관련한 더 자세한 내용은 [Software vs. GPU Rasterization in Chromium](https://software.intel.com/content/www/us/en/develop/articles/software-vs-gpu-rasterization-in-chromium.html)을 참고하라.|
+| 💡                                                                                                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rasterize 역시 GPU의 도움을 받기 좋은 단계이다. 이와 관련한 더 자세한 내용은 [Software vs. GPU Rasterization in Chromium](https://software.intel.com/content/www/us/en/develop/articles/software-vs-gpu-rasterization-in-chromium.html)을 참고하라. |
 
-|💡|
-|-|
-|compositor 쓰레드 내부에도 레이어 트리가 여러개 있다. 메인 쓰레드가 넘긴(commit) 레이어 트리는 compositor 쓰레드의 **pending tree**로 복사된다. Pending tree는 최신 프레임이지만 아직 화면에는 그려지지 않은 상태이다. 현재 화면에 그려지고 있는 이전 프레임은 **active tree**로 그린 프레임이다. 최신 정보로 화면을 갱신할 때는 pending tree와 active tree를 스왑한다. 이와 관련한 더 자세한 내용은 [Native One-copy Texture Uploads for Chrome OS...](https://software.intel.com/content/www/us/en/develop/articles/native-one-copy-texture-uploads-for-chrome-os-on-intel-architecture-enabled-by-default.html)을 참고하라.|
+| 💡                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| compositor 쓰레드 내부에도 레이어 트리가 여러개 있다. 메인 쓰레드가 넘긴(commit) 레이어 트리는 compositor 쓰레드의 **pending tree**로 복사된다. Pending tree는 최신 프레임이지만 아직 화면에는 그려지지 않은 상태이다. 현재 화면에 그려지고 있는 이전 프레임은 **active tree**로 그린 프레임이다. 최신 정보로 화면을 갱신할 때는 pending tree와 active tree를 스왑한다. 이와 관련한 더 자세한 내용은 [Native One-copy Texture Uploads for Chrome OS...](https://software.intel.com/content/www/us/en/develop/articles/native-one-copy-texture-uploads-for-chrome-os-on-intel-architecture-enabled-by-default.html)을 참고하라. |
 
 compositor 쓰레드는 서로 다른 raster 쓰레드들간의 우선순위를 결정할 수 있다. 따라서 viewport 근처의 것들이 먼저 rasterize 될 수 있다. 또한, 레이어는 줌인, 줌아웃과 같은 동작을 처리하기 위해 해상도가 다른 여러 타일들을 가지고 있다.
 
 타일이 rasterize 되면 compositor 쓰레드는 **합성 프레임(compositor frame)**을 만들기 위해 **draw quads**이라고 하는, 타일의 정보들을 모은다.
 
-- **Draw quads**: 메모리 상에서의 타일의 위치, 페이지 합성을 고려하여 타일을 웹 페이지의 어디에 그릴 것인지와 같은 정보들을 담고있다.  해상도별 타일 세트에서 타일을 선택적으로 조합하기 때문에, draw quads가 조합에 필요한 정보를 기억해야 한다.
+- **Draw quads**: 메모리 상에서의 타일의 위치, 페이지 합성을 고려하여 타일을 웹 페이지의 어디에 그릴 것인지와 같은 정보들을 담고있다. 해상도별 타일 세트에서 타일을 선택적으로 조합하기 때문에, draw quads가 조합에 필요한 정보를 기억해야 한다.
 - **Compositor frame**: 한 페이지의 프레임을 나타내는 draw quads의 모음이다.
 
 이후 compositor frame은 IPC을 통해 브라우저 프로세스로 넘겨진다. 이 때 브라우저 UI의 변경 사항을 반영하려는 UI 쓰레드나 확장 앱을 위한 다른 renderer 프로세스에 의해 compositor frame이 추가될 수 있다.
 
 이렇게 브라우저 프로세스로 넘어온 프레임들은 화면에 출력하기 위해 GPU로 보내진다. 스크롤이 발생하면 compositor 쓰레드는 GPU로 보낼 또 다른 프레임을 만든다.
 
-|💡|
-|-|
-|(2019년 4월 기준) 앞으로는 compositor frame이 브라우저 프로세스를 거치지 않고 바로 GPU 프로세스로 보내지는 방식으로 변경될 예정이라고 한다.|
+| 💡                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------- |
+| (2019년 4월 기준) 앞으로는 compositor frame이 브라우저 프로세스를 거치지 않고 바로 GPU 프로세스로 보내지는 방식으로 변경될 예정이라고 한다. |
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/composit.png" alt="composit" />

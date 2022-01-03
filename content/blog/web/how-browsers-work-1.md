@@ -1,7 +1,7 @@
 ---
 title: '브라우저는 어떻게 동작하는가? Part1'
 date: 2020-08-29
-category: 'web'
+category: 'Web'
 draft: false
 ---
 
