@@ -110,18 +110,18 @@ $$1AD = (1 × 16^2) + (10 × 16^1) + (13 × 16^0) = 256 + 160 + 13 = 429$$
 이를 그림으로 나타내면 다음과 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/single_precision.png" alt="IEEE single precision" />
-    <figcaption>IEEE Single Precision (32 bits)</figcaption>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/single_precision.png" alt="IEEE 754 single precision" />
+    <figcaption>IEEE 754 Single Precision (32 bits)</figcaption>
 </figure>
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/double_precision.png" alt="IEEE double precision" />
-    <figcaption>IEEE Double Precision (64 bits)</figcaption>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/double_precision.png" alt="IEEE 754 double precision" />
+    <figcaption>IEEE 754 Double Precision (64 bits)</figcaption>
 </figure>
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/floating_point_scheme.png" alt="IEEE floating_point_scheme" />
-    <figcaption>IEEE 부동소수점 scheme</figcaption>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/how-computers-represent-numbers/floating_point_scheme.png" alt="IEEE 754 floating_point_scheme" />
+    <figcaption>IEEE 754 부동소수점 scheme</figcaption>
 </figure>
 
 <br />
