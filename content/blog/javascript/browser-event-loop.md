@@ -1,7 +1,7 @@
 ---
 title: '브라우저 환경에서의 이벤트 루프'
 date: 2020-10-03
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 

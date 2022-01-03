@@ -1,7 +1,7 @@
 ---
 title: '이벤트 버블링과 캡처링'
 date: 2021-12-11
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -55,9 +55,9 @@ draft: false
 - 이벤트 캡처링 단계를 포착하기 위해선 다음과 같이 리스너를 등록할 때 `capture` 인자를 추가적으로 전달해야 한다:
 
 ```js
-element.addEventListener(type, listener, { capture: true });
+element.addEventListener(type, listener, { capture: true })
 // 혹은
-element.addEventListener(type, listener, true);
+element.addEventListener(type, listener, true)
 ```
 
 - `capture` 옵션이 `false`인 경우, 핸들러는 버블링 단계에서 동작한다. 이 값이 default 이다 (즉, 기본적으로 핸들러는 버블링 단계에서 동작한다).
@@ -78,12 +78,12 @@ element.addEventListener(type, listener, true);
 
 - [예제](https://codepen.io/jaehyeon48/pen/OJxbwNa?editors=1010)
 - 위 예제에선 특정 `tile` 요소를 클릭하면 해당 요소의 바탕색을 변경하는 예시입니다. 이 때, 반복문을 활용하여 각각의 `tile` 요소마다 이벤트 핸들러를 등록하는 대신 이벤트 위임 기법을 활용하여 상위 요소인 `container` 요소에 이벤트 핸들러를 등록하고, 이벤트 핸들러 내에서 `target` 속성을 활용하여 바탕색을 변경하는 방식을 사용하고 있습니다.
-- 이렇듯 이벤트 위임 패턴을 사용하면 
-    - 동적인 엘리먼트에 대한 이벤트 처리가 수월하고,
-    - 상위 엘리먼트에서만 이벤트 리스너를 관리하기 때문에 하위 엘리먼트는 자유롭게 추가 삭제할 수 있고,
-    - 동일한 이벤트에 대해 한 곳에서 관리하기 때문에 각각의 엘리먼트를 여러 곳에 등록하여 관리하는 것보다 관리가 수월하고,
-    - 많은 핸들러를 할당하지 않아도 되기 때문에 메모리 사용량이 줄어들고,
-    - 등록 핸들러 자체가 줄어들기 때문에 메모리 누수 가능성도 줄어들게 된다.
+- 이렇듯 이벤트 위임 패턴을 사용하면
+  - 동적인 엘리먼트에 대한 이벤트 처리가 수월하고,
+  - 상위 엘리먼트에서만 이벤트 리스너를 관리하기 때문에 하위 엘리먼트는 자유롭게 추가 삭제할 수 있고,
+  - 동일한 이벤트에 대해 한 곳에서 관리하기 때문에 각각의 엘리먼트를 여러 곳에 등록하여 관리하는 것보다 관리가 수월하고,
+  - 많은 핸들러를 할당하지 않아도 되기 때문에 메모리 사용량이 줄어들고,
+  - 등록 핸들러 자체가 줄어들기 때문에 메모리 누수 가능성도 줄어들게 된다.
 
 ## Reference
 

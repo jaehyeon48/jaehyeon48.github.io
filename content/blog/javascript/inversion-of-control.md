@@ -1,7 +1,7 @@
 ---
 title: '제어의 역전'
 date: 2021-12-26
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -45,19 +45,19 @@ draft: false
 ```js
 // Array.prototype.filter가 없다고 가정해 보자구요
 function filter(array) {
-  let newArray = [];
+  let newArray = []
   for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+    const element = array[index]
     if (element !== null && element !== undefined) {
-      newArray[newArray.length] = element;
+      newArray[newArray.length] = element
     }
   }
-  return newArray;
+  return newArray
 }
 
 // 유스 케이스:
 
-filter([0, 1, undefined, 2, null, 3, 'four', '']);
+filter([0, 1, undefined, 2, null, 3, 'four', ''])
 // [0, 1, 2, 3, 'four', '']
 ```
 
@@ -72,38 +72,38 @@ function filter(
     filterUndefined = true,
     filterZero = false,
     filterEmptyString = false,
-  } = {},
+  } = {}
 ) {
-  let newArray = [];
+  let newArray = []
   for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+    const element = array[index]
     if (
       (filterNull && element === null) ||
       (filterUndefined && element === undefined) ||
       (filterZero && element === 0) ||
       (filterEmptyString && element === '')
     ) {
-      continue;
+      continue
     }
 
-    newArray[newArray.length] = element;
+    newArray[newArray.length] = element
   }
-  return newArray;
+  return newArray
 }
 
-filter([0, 1, undefined, 2, null, 3, 'four', '']);
+filter([0, 1, undefined, 2, null, 3, 'four', ''])
 // [0, 1, 2, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterNull: false });
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterNull: false })
 // [0, 1, 2, null, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterUndefined: false });
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterUndefined: false })
 // [0, 1, 2, undefined, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterZero: true });
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterZero: true })
 // [1, 2, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterEmptyString: true });
+filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterEmptyString: true })
 // [0, 1, 2, 3, 'four']
 ```
 
@@ -118,38 +118,38 @@ filter([0, 1, undefined, 2, null, 3, 'four', ''], { filterEmptyString: true });
 ```jsx{2,6}
 // Array.prototype.filter가 없다고 가정해 보자구요
 function filter(array, filterFn) {
-  let newArray = [];
+  let newArray = []
   for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+    const element = array[index]
     if (filterFn(element)) {
-      newArray[newArray.length] = element;
+      newArray[newArray.length] = element
     }
   }
-  return newArray;
+  return newArray
 }
 
 filter(
   [0, 1, undefined, 2, null, 3, 'four', ''],
-  el => el !== null && el !== undefined,
-);
+  el => el !== null && el !== undefined
+)
 // [0, 1, 2, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== undefined);
+filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== undefined)
 // [0, 1, 2, null, 3, 'four', '']
 
-filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== null);
+filter([0, 1, undefined, 2, null, 3, 'four', ''], el => el !== null)
 // [0, 1, 2, undefined, 3, 'four', '']
 
 filter(
   [0, 1, undefined, 2, null, 3, 'four', ''],
-  el => el !== undefined && el !== null && el !== 0,
-);
+  el => el !== undefined && el !== null && el !== 0
+)
 // [1, 2, 3, 'four', '']
 
 filter(
   [0, 1, undefined, 2, null, 3, 'four', ''],
-  el => el !== undefined && el !== null && el !== '',
-);
+  el => el !== undefined && el !== null && el !== ''
+)
 // [0, 1, 2, 3, 'four']
 ```
 
@@ -168,8 +168,8 @@ filter(
     { name: 'cat', legs: 4, mammal: true },
     { name: 'salmon', legs: 0, mammal: false },
   ],
-  animal => animal.legs === 0,
-);
+  animal => animal.legs === 0
+)
 
 // [
 //   { name: 'dolphin', legs: 0, mammal: true },
@@ -185,13 +185,13 @@ filter(
 
 ```js
 // before
-filter([0, 1, undefined, 2, null, 3, 'four', '']);
+filter([0, 1, undefined, 2, null, 3, 'four', ''])
 
 // after
 filter(
   [0, 1, undefined, 2, null, 3, 'four', ''],
-  el => el !== null && el !== undefined,
-);
+  el => el !== null && el !== undefined
+)
 ```
 
 음.. 확실히 둘 중 하나는 나머지보다 더 사용하기 편한 것 같기도 하네요. 하지만 제어가 역전된 API는 원한다면 이전의 API를 다시 구현할 수 있으며, (일반적으론) 재구현하기 굉장히 간단합니다:
@@ -204,7 +204,7 @@ function filterWithOptions(
     filterUndefined = true,
     filterZero = false,
     filterEmptyString = false,
-  } = {},
+  } = {}
 ) {
   return filter(
     array,
@@ -214,8 +214,8 @@ function filterWithOptions(
         (filterUndefined && element === undefined) ||
         (filterZero && element === 0) ||
         (filterEmptyString && element === '')
-      ),
-  );
+      )
+  )
 }
 ```
 
@@ -238,8 +238,8 @@ filterByLegCount(
     { name: 'cat', legs: 4, mammal: true },
     { name: 'salmon', legs: 0, mammal: false },
   ],
-  0,
-);
+  0
+)
 
 // [
 //   { name: 'dolphin', legs: 0, mammal: true },
@@ -276,13 +276,13 @@ function App() {
         { contents: 'Delete', onSelect: () => alert('Delete') },
       ]}
     />
-  );
+  )
 }
 ```
 
 이를 통해 우리는 메뉴 항목을 다양하게 커스터마이징 할 수 있습니다. 하지만 이때 "Delete" 메뉴 이전에 줄을 추가하고 싶다면 어떻게 해야 할까요? `precedeWithLine` 같은 옵션(prop)을 추가해야 할까요? 글쎄요..🤔 `{ contents: <hr /> }` 같은 특별한 메뉴 항목을 추가할 순 있을 것 같기도 한데요, 이렇게 하면 `onSelect`를 제공하지 않는 경우에 대해서도 처리를 해야 할 것 같네요. 이렇게 되면 API가 이상해질 것 같습니다.
 
-약간씩 다른 동작을 하고 싶은 사람을 위한 멋진 API를 만들 땐 `if` 문과 삼항 연산자 대신 제어의 역전을 적용할 수 있을지부터 따져보세요. 지금의 경우로 치자면, 메뉴를 렌더링 하는 책임을 유저에게 주면 어떨까요? React의 강력한 조합 기능을 사용해봅시다. 
+약간씩 다른 동작을 하고 싶은 사람을 위한 멋진 API를 만들 땐 `if` 문과 삼항 연산자 대신 제어의 역전을 적용할 수 있을지부터 따져보세요. 지금의 경우로 치자면, 메뉴를 렌더링 하는 책임을 유저에게 주면 어떨까요? React의 강력한 조합 기능을 사용해봅시다.
 
 ```jsx
 function App() {
@@ -297,11 +297,11 @@ function App() {
         <MenuItem onSelect={() => alert('Delete')}>Delete</MenuItem>
       </MenuList>
     </Menu>
-  );
+  )
 }
 ```
 
-여기서 주목해야 할 점은 컴포넌트 사용자에게 보이는 state가 없다는 점입니다. 현재 state 들은 컴포넌트들 간에 암묵적으로 공유되고 있습니다. 그리고 이것이 복합 컴포넌트 패턴의 주요 이점이지요. 이러한 기능을 사용함으로써 우리는 컴포넌트 사용자에게 렌더링 제어권을 넘겨주었고, 이에 따라 줄 (또는 무언가) 을 직관적으로 추가하기 쉽게 바뀌었습니다. API 문서를 볼 필요도 없고, 부가적인 기능, 코드, 혹은 테스트를 추가할  필요가 사라졌습니다. 이제 모두가 승리자입니다. 🤗
+여기서 주목해야 할 점은 컴포넌트 사용자에게 보이는 state가 없다는 점입니다. 현재 state 들은 컴포넌트들 간에 암묵적으로 공유되고 있습니다. 그리고 이것이 복합 컴포넌트 패턴의 주요 이점이지요. 이러한 기능을 사용함으로써 우리는 컴포넌트 사용자에게 렌더링 제어권을 넘겨주었고, 이에 따라 줄 (또는 무언가) 을 직관적으로 추가하기 쉽게 바뀌었습니다. API 문서를 볼 필요도 없고, 부가적인 기능, 코드, 혹은 테스트를 추가할 필요가 사라졌습니다. 이제 모두가 승리자입니다. 🤗
 
 이 패턴에 대해선 [제 블로그](https://kentcdodds.com/blog/compound-components-with-react-hooks)에서 더욱 자세히 살펴보실 수 있습니다. 이 패턴을 제게 알려주신 [Ryan Florence](https://twitter.com/ryanflorence)께 경의를 표합니다.
 
@@ -327,7 +327,7 @@ function stateReducer(state, changes) {
         highlightedIndex: state.highlightedIndex,
       }
     default:
-      return changes;
+      return changes
   }
 }
 
@@ -350,19 +350,19 @@ function stateReducer(state, changes) {
 ```js
 // Array.prototype.filter가 없다고 가정해 보자구요
 function filter(array) {
-  let newArray = [];
+  let newArray = []
   for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+    const element = array[index]
     if (element !== null && element !== undefined) {
-      newArray[newArray.length] = element;
+      newArray[newArray.length] = element
     }
   }
-  return newArray;
+  return newArray
 }
 
 // 유스 케이스:
 
-filter([0, 1, undefined, 2, null, 3, 'four', '']);
+filter([0, 1, undefined, 2, null, 3, 'four', ''])
 // [0, 1, 2, 3, 'four', '']
 ```
 
@@ -377,5 +377,3 @@ filter([0, 1, undefined, 2, null, 3, 'four', '']);
 만약 이 포스트에서 사용된 예제를 직접 체험해보고 싶으시다면 [여기](https://codesandbox.io/s/inversion-of-control-qunm8?fontsize=14&hidenavigation=1&theme=dark)를 누르세요! 행운을 빕니다. 🤞
 
 추신: 만약 이 글이 마음에 들었다면 [이 영상](https://www.youtube.com/watch?v=5io81WLgXtg)도 마음에 드실겁니다!
-
-

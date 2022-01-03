@@ -1,7 +1,7 @@
 ---
 title: '왜 자바스크립트는 프로토타입을 선택했는가?'
 date: 2022-01-03
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -36,7 +36,7 @@ class Chair {
   // ...
 }
 
-const myChair = new Chair();
+const myChair = new Chair()
 ```
 
 위 코드에서, `Chair` 클래스는 이데아에 존재하는 추상적인 개념입니다. 힙 영역만을 실존 세계라고 한다면, 위 클래스는 코드상으로만 존재하지 실제로는 존재하지 않습니다.

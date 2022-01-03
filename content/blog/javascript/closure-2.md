@@ -1,7 +1,7 @@
 ---
 title: '자바스크립트 클로저 Part2'
 date: 2020-08-22
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -21,15 +21,12 @@ draft: false
 
 ```js
 function lookupStudentRecord(studentID) {
-    ajax(
-        `https://some.api/student/${studentID}`,
-        function onRecord(record) {
-            console.log(`${record.name} (${studentID})`);
-        }
-    )
+  ajax(`https://some.api/student/${studentID}`, function onRecord(record) {
+    console.log(`${record.name} (${studentID})`)
+  })
 }
 
-lookupStudentRecord(114); // 'Frank (114)'
+lookupStudentRecord(114) // 'Frank (114)'
 ```
 
 `onRecord()` 콜백은 미래의 어느 시점에 Ajax로 부터 응답이 오면 호출될 것이다. 물론 콜백이 호출되는 시점에선 `lookupStudentRecord`는 이미 종료되고 난 뒤일 것이다.
@@ -40,14 +37,14 @@ lookupStudentRecord(114); // 'Frank (114)'
 
 ```js
 function listenForClicks(btn, label) {
-    btn.addEventListener('click', function onClick() {
-        console.log(`The ${ label } button was clicked!`);
-    });
+  btn.addEventListener('click', function onClick() {
+    console.log(`The ${label} button was clicked!`)
+  })
 }
 
-const submitBtn = document.getElementById('submit-btn');
+const submitBtn = document.getElementById('submit-btn')
 
-listenForClicks(submitBtn, 'Checkout');
+listenForClicks(submitBtn, 'Checkout')
 ```
 
 `label` 변수는 이벤트 핸들러 `onClick()` 함수에 의해 에워싸여진다. 따라서 버튼이 눌려져서 `onClick()` 핸들러가 호출되는 시점에서도 여전히 `label` 변수를 참조할 수 있게 되는 것이다.
@@ -66,15 +63,15 @@ listenForClicks(submitBtn, 'Checkout');
 
 ```js
 function say(myName) {
-    let greeting = 'Hello';
-    output();
+  let greeting = 'Hello'
+  output()
 
-    function output() {
-        console.log(`${greeting}, ${myName}!`);
-    }
+  function output() {
+    console.log(`${greeting}, ${myName}!`)
+  }
 }
 
-say('Kyle'); // 'Hello, Kyle!'
+say('Kyle') // 'Hello, Kyle!'
 ```
 
 내부 함수 `output()`은 외부 스코프에 있는 `greeting`과 `myName` 변수를 참조하고 있다. 하지만 `output()` 함수 호출이 이 함수가 호출된 스코프에서 일어나고 있으므로 이는 클로저가 아니라 단순히 렉시컬 스코프를 통해 두 변수를 참조한 것이다.
@@ -85,21 +82,21 @@ say('Kyle'); // 'Hello, Kyle!'
 
 ```js
 const students = [
-    { id: 14, name: 'Kyle' },
-    { id: 73, name: 'Suzy' },
-    { id: 112, name: 'Frank' },
-    { id: 6, name: 'Sarah' }
-];
+  { id: 14, name: 'Kyle' },
+  { id: 73, name: 'Suzy' },
+  { id: 112, name: 'Frank' },
+  { id: 6, name: 'Sarah' },
+]
 
 function getFirstStudent() {
-    return function firstStudent(){
-        return students[0].name;
-    };
+  return function firstStudent() {
+    return students[0].name
+  }
 }
 
-const student = getFirstStudent();
+const student = getFirstStudent()
 
-student(); // Kyle
+student() // Kyle
 ```
 
 내부 함수 `firstStudent()`에서 외부 변수 `students`를 참조하고 있지만, `students`는 글로벌 스코프의 변수이므로 `firstStudent()` 함수가 어디서 호출되건 상관없이 (클로저가 아니라) 렉시컬 스코프를 통해 `students`에 접근할 수 있다. 따라서 모든 함수는 어디서 호출되건 상관없이 글로벌 변수에 접근할 수 있으므로, 글로벌 변수들은 클로저에 의해 에워싸여 진다고 할 수는 없다.
@@ -110,15 +107,15 @@ student(); // Kyle
 
 ```js
 function lookupStudent(studentID) {
-    return function nobody() {
-        let msg = "Nobody's here yet.";
-        console.log(msg);
-    };
+  return function nobody() {
+    let msg = "Nobody's here yet."
+    console.log(msg)
+  }
 }
 
-const student = lookupStudent(112);
+const student = lookupStudent(112)
 
-student(); // Nobody's here yet.
+student() // Nobody's here yet.
 ```
 
 위 코드에서, 내부 함수 `nobody()`가 에워싸는 외부 변수는 없다. 단지 자신의 스코프 내부에 있는 `msg` 변수만 참조할 뿐이다. `studentID` 변수가 `nobody()` 함수를 둘러싼 외부 스코프에 있다고 하더라도 내부 함수 `nobody()`에 의해 참조되지 않으므로 이 경우 자바스크립트 엔진은 `lookupStudent()` 함수가 종료되면 `studentID` 변수를 메모리에서 제거해버린다.
@@ -129,12 +126,12 @@ student(); // Nobody's here yet.
 
 ```js
 function greetStudent(studentName) {
-    return function greeting(){
-        console.log(`Hello, ${ studentName }!`);
-    };
+  return function greeting() {
+    console.log(`Hello, ${studentName}!`)
+  }
 }
 
-greetStudent("Kyle"); // 아무런 일도 일어나지 않는다.
+greetStudent('Kyle') // 아무런 일도 일어나지 않는다.
 ```
 
 이 코드에선 분명 외부 함수 `greetStudent()`가 호출되고, 내부 함수 `greeting()`이 외부 변수 `studentName`을 참조하므로 클로저가 존재한다고 할 수 있지만 내부 함수가 "호출"되지는 않는다. 즉, 내부 함수가 어디에 저장되지 않고 그냥 "버려진다".
@@ -150,11 +147,12 @@ greetStudent("Kyle"); // 아무런 일도 일어나지 않는다.
 > 클로저는 어떤 함수가 이 함수의 스코프 밖에 있는 변수에 대해, 해당 변수를 사용할 수 없는 스코프에서 실행됨에도 불구하고 변수를 사용하는 경우 관측할 수 있다.
 
 이 정의에서 핵심적인 부분은 다음과 같다:
+
 - 반드시 함수가 호출되어야 한다.
 - 반드시 함수 외부 스코프에 존재하는 변수를 하나 이상 참조해야 한다.
 - 반드시 참조하는 변수가 속한 스코프 이외의 스코프에서 함수를 호출해야 한다.
 
-이러한 관측 중심(observation-oriented) 정의가 시사하는 바는 클로저를 단순히 비직관적이고 학술적인 것으로 치부하지 말고, 클로저가 프로그램에 미치는 영향을 잘 살펴서 클로저를 잘 활용할 줄 알아야 한다는 점이다. 
+이러한 관측 중심(observation-oriented) 정의가 시사하는 바는 클로저를 단순히 비직관적이고 학술적인 것으로 치부하지 말고, 클로저가 프로그램에 미치는 영향을 잘 살펴서 클로저를 잘 활용할 줄 알아야 한다는 점이다.
 
 ## 클로저와 가비지 컬렉션
 
@@ -164,48 +162,40 @@ greetStudent("Kyle"); // 아무런 일도 일어나지 않는다.
 
 ```js
 function manageBtnClickEvents(btn) {
-    let clickHandlers = [];
+  let clickHandlers = []
 
-    return function listener(cb){
-        if (cb) {
-            const clickHandler =
-                function onClick(evt){
-                    console.log('clicked!');
-                    cb(evt);
-                };
-            clickHandlers.push(clickHandler);
-            btn.addEventListener(
-                'click',
-                clickHandler
-            );
-        }
-        else {
-            // passing no callback unsubscribes
-            // all click handlers
-            for (const handler of clickHandlers) {
-                btn.removeEventListener(
-                    'click',
-                    handler
-                );
-            }
+  return function listener(cb) {
+    if (cb) {
+      const clickHandler = function onClick(evt) {
+        console.log('clicked!')
+        cb(evt)
+      }
+      clickHandlers.push(clickHandler)
+      btn.addEventListener('click', clickHandler)
+    } else {
+      // passing no callback unsubscribes
+      // all click handlers
+      for (const handler of clickHandlers) {
+        btn.removeEventListener('click', handler)
+      }
 
-            clickHandlers = [];
-        }
-    };
+      clickHandlers = []
+    }
+  }
 }
 
-const onSubmit = manageBtnClickEvents(mySubmitBtn);
+const onSubmit = manageBtnClickEvents(mySubmitBtn)
 
-onSubmit(function checkout(evt){
-    // handle checkout
-});
+onSubmit(function checkout(evt) {
+  // handle checkout
+})
 
-onSubmit(function trackAction(evt){
-    // log action to analytics
-});
+onSubmit(function trackAction(evt) {
+  // log action to analytics
+})
 
 // later, unsubscribe all handlers:
-onSubmit();
+onSubmit()
 ```
 
 이 코드에서, 내부 함수 `onClick()`의 클로저는 인자로 전달된 이벤트 콜백 `cb`을 가진다. 즉, 이벤트 핸들러 `checkout()`과 `trackAction()`에 대한 레퍼런스가 클로저를 통해 유지된다는 말이며 이 두 핸들러가 이벤트에 등록(subscribe)되어 있는 동안에는 가비지 컬렉트 되지 않는다.
@@ -226,45 +216,45 @@ onSubmit();
 
 ```js
 function manageStudentGrades(studentRecords) {
-    let grades = studentRecords.map(getGrade);
+  let grades = studentRecords.map(getGrade)
 
-    return addGrade;
+  return addGrade
 
-    // ************************
+  // ************************
 
-    function getGrade(record) {
-        return record.grade;
-    }
+  function getGrade(record) {
+    return record.grade
+  }
 
-    function sortAndTrimGradesList() {
-        // sort by grades, descending
-        grades.sort(function desc(g1, g2) {
-            return g2 - g1;
-        });
+  function sortAndTrimGradesList() {
+    // sort by grades, descending
+    grades.sort(function desc(g1, g2) {
+      return g2 - g1
+    })
 
-        // only keep the top 10 grades
-        grades = grades.slice(0, 10);
-    }
+    // only keep the top 10 grades
+    grades = grades.slice(0, 10)
+  }
 
-    function addGrade(newGrade) {
-        grades.push(newGrade);
-        sortAndTrimGradesList();
-        return grades;
-    }
+  function addGrade(newGrade) {
+    grades.push(newGrade)
+    sortAndTrimGradesList()
+    return grades
+  }
 }
 
 const addNextGrade = manageStudentGrades([
-    { id: 14, name: 'Kyle', grade: 86 },
-    { id: 73, name: 'Suzy', grade: 87 },
-    { id: 112, name: 'Frank', grade: 75 },
-    // ... many more records
-    { id: 6, name: 'Sarah', grade: 91 }
-]);
+  { id: 14, name: 'Kyle', grade: 86 },
+  { id: 73, name: 'Suzy', grade: 87 },
+  { id: 112, name: 'Frank', grade: 75 },
+  // ... many more records
+  { id: 6, name: 'Sarah', grade: 91 },
+])
 
 // later
 
-console.log(addNextGrade(81)); // [ 91, 87, 86, 81, 75 ]
-console.log(addNextGrade(68)); // [ 91, 87, 86, 81, 75, 68 ]
+console.log(addNextGrade(81)) // [ 91, 87, 86, 81, 75 ]
+console.log(addNextGrade(68)) // [ 91, 87, 86, 81, 75, 68 ]
 ```
 
 외부 함수 `manageStudentGrades()`는 학생들의 목록을 받아 `addGrade()` 함수 레퍼런스를 리턴한다. 그리고 이렇게 리턴받은 `addGrade()` 함수 레퍼런스를 `addNextGrade`라는 변수에 저장하였다. 이후 `addNextGrade()` 함수에 새로운 점수를 인자로 주어 실행하면 내림차순으로 정렬된 상위 10개의 점수를 리턴받게 된다.

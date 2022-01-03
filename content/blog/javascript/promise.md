@@ -1,15 +1,15 @@
 ---
 title: '자바스크립트 프로미스'
 date: 2021-12-31
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
-*현재 작성중인 포스트입니다.
+\*현재 작성중인 포스트입니다.
 
 ## 프로미스란?
 
-[ECMAScript 2022 명세서](https://tc39.es/ecma262/#sec-promise-objects)에 따르면, 
+[ECMAScript 2022 명세서](https://tc39.es/ecma262/#sec-promise-objects)에 따르면,
 
 > 프로미스는 (아마도 비동기식으로 동작할 가능성이 높은) 지연된 계산의 최종 결과물에 대해 일종의 프록시로서 사용되는 객체입니다.
 
@@ -23,14 +23,26 @@ draft: false
 
 ```js
 opA(resultA => {
-	opB(resultA, resultB => {
-		opC(resultB, resultC => {
-			opD(resultC, resultD => {
-				// ...
-			}, failureCallback);
-		}, failureCallback);
-	}, failureCallback);
-}, failureCallback);
+  opB(
+    resultA,
+    resultB => {
+      opC(
+        resultB,
+        resultC => {
+          opD(
+            resultC,
+            resultD => {
+              // ...
+            },
+            failureCallback
+          )
+        },
+        failureCallback
+      )
+    },
+    failureCallback
+  )
+}, failureCallback)
 ```
 
 ([데모](https://codesandbox.io/s/callback-hell-example-gypy0?file=/src/index.js))
@@ -45,24 +57,24 @@ opA(resultA => {
 
 ```js
 opA()
-	.then(resultA => {
-		return opB(resultA);	
-	})
-	.then(resultB => {
-		return opC(resultB);
-	})
-	.then(resultC => {
-		return opD(resultC);
-	})
-	.catch(failureCallback);
+  .then(resultA => {
+    return opB(resultA)
+  })
+  .then(resultB => {
+    return opC(resultB)
+  })
+  .then(resultC => {
+    return opD(resultC)
+  })
+  .catch(failureCallback)
 
 // 혹은
 
 opA()
-	.then(resultA => opB(resultA))
-	.then(resultB => opC(resultB))
-	.then(resultC => opD(resultC))
-	.catch(failureCallback);
+  .then(resultA => opB(resultA))
+  .then(resultB => opC(resultB))
+  .then(resultC => opD(resultC))
+  .catch(failureCallback)
 ```
 
 ([데모](https://codesandbox.io/s/resolve-callback-hell-with-promise-39sw2?file=/src/index.js))
@@ -72,7 +84,11 @@ opA()
 물론 위 코드를 아래와 같이 단순화할 수 있습니다:
 
 ```js
-opA().then(opB).then(opC).then(opB).catch(failureCallback);
+opA()
+  .then(opB)
+  .then(opC)
+  .then(opB)
+  .catch(failureCallback)
 ```
 
 ([데모](https://codesandbox.io/s/resolve-callback-hell-with-promise-simpler-version-nl00u?file=/src/index.js))
@@ -105,9 +121,9 @@ opA().then(opB).then(opC).then(opB).catch(failureCallback);
 - **resolved**: settled 되었거나, 다른 프로미스의 상태에 맞추기 위해 "잠긴(locked in)" 상황을 의미합니다. 이미 resolved된 프로미스를 resolve 하거나 reject 하려고 해도 아무런 일이 발생하지 않습니다.
 - **unresolved**: resolved가 아닌 프로미스들은 모두 unresolved 입니다. unresolved인 프로미스를 resolve 하거나 reject 하려고 하면 해당 프로미스에 영향을 미칩니다.
 
-프로미스는 또 다른 프로미스 혹은 thenable*로 "resolve" 될 수 있습니다. 이 경우, 프로미스는 이후에 사용할 프로미스 혹은 thenable을 저장합니다. 또는, 프로미스가 아닌 값으로 "resolve"될 수도 있습니다. 이 경우, 프로미스는 해당 값으로 fulfilled 됩니다.
+프로미스는 또 다른 프로미스 혹은 thenable\*로 "resolve" 될 수 있습니다. 이 경우, 프로미스는 이후에 사용할 프로미스 혹은 thenable을 저장합니다. 또는, 프로미스가 아닌 값으로 "resolve"될 수도 있습니다. 이 경우, 프로미스는 해당 값으로 fulfilled 됩니다.
 
-<small>* then() 메서드를 가지고 있는 객체를 thenable 이라고 합니다. 모든 프로미스는 thenable 이지만, 모든 thenable이 프로미스인 것은 아닙니다.</small>
+<small>\* then() 메서드를 가지고 있는 객체를 thenable 이라고 합니다. 모든 프로미스는 thenable 이지만, 모든 thenable이 프로미스인 것은 아닙니다.</small>
 
 ## 프로미스의 상태와 운명의 관계
 
@@ -128,14 +144,14 @@ resolved인 프로미스는 다음의 세 가지 상태 중 하나에 속합니�
 
 이를 표로 정리해보면 아래와 같습니다:
 
-|**동작**|**의존성**|**상태**|**resolved?**|**settled?**|
-|-|-|-|-|-|
-|`new Promise((resolve, reject) => ...)`|❌|pending|❌|❌|
-|`...resolve(thenable)`|locked in|pending*|🟢|❌|
-|`...resolve(other)`|❌|fulfilled|🟢|🟢|
-|`...reject(any)`|❌|rejected|🟢|🟢|
+| **동작**                                | **의존성** | **상태**  | **resolved?** | **settled?** |
+| --------------------------------------- | ---------- | --------- | ------------- | ------------ |
+| `new Promise((resolve, reject) => ...)` | ❌         | pending   | ❌            | ❌           |
+| `...resolve(thenable)`                  | locked in  | pending\* | 🟢            | ❌           |
+| `...resolve(other)`                     | ❌         | fulfilled | 🟢            | 🟢           |
+| `...reject(any)`                        | ❌         | rejected  | 🟢            | 🟢           |
 
-<small>*해당 프로미스가 어떤 상태가 될지는 thenable에 달려있습니다.</small>
+<small>\*해당 프로미스가 어떤 상태가 될지는 thenable에 달려있습니다.</small>
 
 프로미스가 어떤 상태가 될지는 thenable에 달린 경우, 즉 프로미스가 thenable에 "locked in"된 경우는 [이 데모](https://codesandbox.io/s/hidden-cache-mj5pk?file=/src/index.js:0-611)에서 보실 수 있습니다.
 

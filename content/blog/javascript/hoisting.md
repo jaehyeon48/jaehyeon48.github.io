@@ -1,7 +1,7 @@
 ---
 title: '자바스크립트 호이스팅'
 date: 2020-08-19 16:21:13
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -16,16 +16,16 @@ draft: false
 스코프 내에 있는 변수는 어느순간 부터 사용 가능한 걸까? 변수가 선언(생성)된 시점부터 사용할 수 있지 않을까?? 꼭 그렇지만은 않다. 다음 코드를 생각해보자:
 
 ```js
-greeting(); // Hello!
+greeting() // Hello!
 
 function greeting() {
-  console.log('Hello!');
+  console.log('Hello!')
 }
 ```
 
 아마 이런식의 코드를 작성해본 경험이 있을 것이다. 이 코드는 아주 잘 작동한다 하지만 이런방식의 코드가 어떻게, 혹은 왜 동작하는지 생각해본적이 있는가? 위 코드에서, 함수 `greeting()` 은 분명 3번째 줄에 선언되었는데 어째서 1번째 줄에서 해당 함수를 호출할 수 있는걸까?
 
-자바스크립트 코드가 컴파일되는 과정에서 모든 identifier들은 각자가 속한 스코프에 "등록"된다 (사실 자바스크립트는 인터프리터 언어라기 보다 컴파일 언어에 더 가깝다!). 특히, 어떤 스코프에 진입(enter)했을 때 해당 스코프의 모든 identifier들이 스코프의 시작 부분에 "생성"된다. 
+자바스크립트 코드가 컴파일되는 과정에서 모든 identifier들은 각자가 속한 스코프에 "등록"된다 (사실 자바스크립트는 인터프리터 언어라기 보다 컴파일 언어에 더 가깝다!). 특히, 어떤 스코프에 진입(enter)했을 때 해당 스코프의 모든 identifier들이 스코프의 시작 부분에 "생성"된다.
 
 이렇게 변수들이 스코프 (한참) 아래에 선언되어 있음에도 불구하고 해당 스코프에 진입하자 마자 스코프의 모든 변수들에 접근할 수 있게 되는 현상을 **호이스팅(hoisting)** 이라고 한다.
 
@@ -42,10 +42,10 @@ function greeting() {
 위에서 살펴봤듯이, 함수 호이스팅은 오직 "함수 선언"(`function` 키워드를 이용한 함수 선언)에만 적용된다. 함수 표현식(function expression)에는 적용되지 않는다. 다음 코드를 보자:
 
 ```js
-greeting(); // TypeError: greeting is not a function
+greeting() // TypeError: greeting is not a function
 
-var greeting = function () {
-    console.log('hi');
+var greeting = function() {
+  console.log('hi')
 }
 ```
 
@@ -64,13 +64,14 @@ var greeting = function () {
 이번에는 변수 호이스팅에 대해 좀 더 알아보자.
 
 ```js
-greeting = 'Hello';
-console.log(greeting); // Hello
+greeting = 'Hello'
+console.log(greeting) // Hello
 
-var greeting = 'Howdy!';
+var greeting = 'Howdy!'
 ```
 
 `greeting` 변수가 4번째 줄에 선언되었음에도 불구하고 1번째 줄에서 정상적으로 값을 할당하고 있는데, 그 이유는
+
 - `greeting` 이라는 identifier가 hoist 되었기 때문이고,
 - 해당 스코프의 최상단에서 자동적으로 `undefined` 로 할당되었기 때문이다.
 
@@ -79,31 +80,31 @@ var greeting = 'Howdy!';
 호이스팅을 설명하는 글에서 주로 사용하는 비유는 "들어올린다"(lift)는 것이다. 즉, 무거운 물건을 들어올리듯이 identifier들을 스코프의 최상단으로 들어올린다는 것이다. 어떤 경우, 자바스크립트 엔진이 다음 코드와 같이 실제로 소스 코드를 변경하여 identifier를 재배치 한다고 하는 글도 있다.
 
 ```js
-var greeting;
-greeting = 'Hello';
+var greeting
+greeting = 'Hello'
 console.log(greeting) // Hello
-greeting = 'Howdy';
+greeting = 'Howdy'
 ```
 
 또한, 함수 호이스팅의 경우 프로그램 실행 전에 엔진이 함수 선언부 전체를 hoist 한다고 주장하는 경우도 있다. 거기다 함수 선언문이 먼저 호이스팅 되고 그 다음에 변수가 호이스팅 된다고 주장한다:
 
 ```js
 // 호이스팅 전
-studentName = 'Suzy';
+studentName = 'Suzy'
 greeting() // Hi, Suzy!
 
 function greeting() {
-	console.log(`Hi, ${studentName}!`);
+  console.log(`Hi, ${studentName}!`)
 }
-var studentName;
+var studentName
 
 // 호이스팅 후
 function greeting() {
-    console.log(`Hi, ${studentName}!`);
+  console.log(`Hi, ${studentName}!`)
 }
-var studentName;
+var studentName
 
-studentName = 'Suzy';
+studentName = 'Suzy'
 greeting() // Hi, Suzy!
 ```
 
@@ -116,44 +117,44 @@ greeting() // Hi, Suzy!
 만약 다음과 같이 어떤 스코프 내에서 동일한 변수가 두 번 이상 선언되면 어떻게 될까?
 
 ```js
-var studentName = 'Frank';
-console.log(studentName); // Frank
+var studentName = 'Frank'
+console.log(studentName) // Frank
 
-var studentName;
-console.log(studentName); // ?
+var studentName
+console.log(studentName) // ?
 ```
 
 두 번째 `var studentName` 이 해당 변수를 "재선언(re-declared)" 했으므로 `undefined` 를 출력하는 것이 맞을까? 아니다. 사실 "재선언" 이라는 것은 존재하지 않는다. 앞서 살펴본 호이스팅에 빗대어 살펴보자면 위 코드는 다음과 같다고 할 수 있다:
 
 ```js
-var studentName;
-var studentName; // no-op
+var studentName
+var studentName // no-op
 studentName = 'Frank'
-console.log(studentName); // Frank
-console.log(studentName); // Frank
+console.log(studentName) // Frank
+console.log(studentName) // Frank
 ```
 
 호이스팅 이라는 것이 실제로는 스코프의 시작 부분에 변수들을 등록하는 것이므로, 위와 같이 두 번째 선언문은 사실상 의미없는 no-op(no-operation) 문장이다.
 
-또한 한 가지 알아둬야할 것이,  `var studentName;` 문장은 `var studentName = undefined;` 와 동일한 문장이 아니다! 다음 코드를 통해 이와 같은 사실을 알 수 있다:
+또한 한 가지 알아둬야할 것이, `var studentName;` 문장은 `var studentName = undefined;` 와 동일한 문장이 아니다! 다음 코드를 통해 이와 같은 사실을 알 수 있다:
 
 ```js
-var studentName = 'Frank';
-console.log(studentName); // Frank
+var studentName = 'Frank'
+console.log(studentName) // Frank
 
-var studentName;
-console.log(studentName); // 여전히 Frank
+var studentName
+console.log(studentName) // 여전히 Frank
 
-var studentName = undefined; // 명시적으로 undefined로 초기화
-console.log(studentName); // undefined
+var studentName = undefined // 명시적으로 undefined로 초기화
+console.log(studentName) // undefined
 ```
 
 `let` 혹은 `const` 의 경우는 어떨까?
 
 ```js
-let studentName = 'Frank';
-console.log(studentName);
-let studentName = 'Frank';
+let studentName = 'Frank'
+console.log(studentName)
+let studentName = 'Frank'
 ```
 
 위 코드를 실행하면 즉시 `SyntaxError` 가 발생하는 것을 볼 수 있다. 그 이유는 `let` (그리고 `const`) 의 경우 재선언이 불가능하기 때문이다.
@@ -161,12 +162,12 @@ let studentName = 'Frank';
 물론, 다음과 같은 경우도 불가능하다.
 
 ```js
-var studentName = 'Frank';
-let studentName = 'Suzy';
+var studentName = 'Frank'
+let studentName = 'Suzy'
 
 // OR
-let studentName = 'Frank';
-var studentName = 'Suzy';
+let studentName = 'Frank'
+var studentName = 'Suzy'
 ```
 
 `const` 의 경우 규칙이 더 엄격하다. `let` 과 같이 재선언이 불가능함은 물론, `const` 변수는 선언할 때 **무조건** 초기화 해야한다. 그리고 초기화한 후 값을 재할당 하는 것이 불가능하다.
@@ -178,8 +179,8 @@ const myVariable; // SyntaxError -> 무조건 선언과 동시에 초기화 해�
 ```
 
 ```js
-const studentName = 'Frank';
-console.log(studentName); // Frank
+const studentName = 'Frank'
+console.log(studentName) // Frank
 studentName = 'Suzy' // TypeError -> 재할당 불가
 ```
 
@@ -190,10 +191,10 @@ studentName = 'Suzy' // TypeError -> 재할당 불가
 이제까지 살펴본 바로는, 변수를 "재선언" 하는 것은 바람직하지 않은 것 같다. 그렇다면 루프문에선 어떨까? 다음 코드를 살펴보자:
 
 ```js
-let keepGoing = true;
+let keepGoing = true
 while (keepGoing) {
-    let value = Math.random();
-    if (value > 0.5) keepGoing = false;
+  let value = Math.random()
+  if (value > 0.5) keepGoing = false
 }
 ```
 
@@ -208,22 +209,22 @@ while (keepGoing) {
 그렇다면 `var` 의 경우는 어떨까? 위 코드에서 다음과 같이 `value` 가 `var` 로 선언되면 어떤 일이 발생하는 걸까?
 
 ```js
-let keepGoing = true;
+let keepGoing = true
 while (keepGoing) {
-    var value = Math.random();
-    if (value > 0.5) keepGoing = false;
+  var value = Math.random()
+  if (value > 0.5) keepGoing = false
 }
 ```
 
 `var` 변수는 재선언을 허용하므로 여기서는 `value` 변수가 계속해서 재선언 되는 것일까?
 
-아니다.  `var` 변수는 "함수 스코프"로 취급되므로 위 코드에서 변수 `value` 는 글로벌 스코프에 오직 한 번만 선언되고, 값만 계속해서 재할당 되는 것이다. 위 코드에서 while문 바로 아래에 `console.log()` 를 이용하여 `value` 가 글로벌 스코프로 선언되었음을 확인할 수 있다:
+아니다. `var` 변수는 "함수 스코프"로 취급되므로 위 코드에서 변수 `value` 는 글로벌 스코프에 오직 한 번만 선언되고, 값만 계속해서 재할당 되는 것이다. 위 코드에서 while문 바로 아래에 `console.log()` 를 이용하여 `value` 가 글로벌 스코프로 선언되었음을 확인할 수 있다:
 
 ```js
 while (keepGoing) {
-	// ...
+  // ...
 }
-console.log(value); // 0.5보다 큰값
+console.log(value) // 0.5보다 큰값
 ```
 
 만약 여기서 `value` 가 `let` 으로 선언되었다면 `ReferenceError` 가 발생할 것이다.
@@ -234,8 +235,8 @@ console.log(value); // 0.5보다 큰값
 
 ```js
 for (let i = 0; i < 3; i++) {
-	let value = i * 10;
-	console.log(`${i}: ${value}`);
+  let value = i * 10
+  console.log(`${i}: ${value}`)
 }
 // 0: 0
 // 1: 10
@@ -250,13 +251,13 @@ for (let i = 0; i < 3; i++) {
 
 ```js
 // 물론 실제로 이렇게 변환되는 것은 아니다.
-let $$i = 0;
+let $$i = 0
 
 for (; $$i < 3; $$i++) {
-    let i = $$i;
+  let i = $$i
 
-    let value = i * 10;
-    console.log(`${i}: ${value}`);
+  let value = i * 10
+  console.log(`${i}: ${value}`)
 }
 ```
 
@@ -265,9 +266,13 @@ for (; $$i < 3; $$i++) {
 다음과 같은 `for` 루프의 형태도 논리는 동일하다:
 
 ```js
-for (let key in someObj) { /* ... */ }
+for (let key in someObj) {
+  /* ... */
+}
 
-for (let student of students) { /* ... */ }
+for (let student of students) {
+  /* ... */
+}
 ```
 
 여기서도 변수(`key` , `student`) 는 `for` 루프의 각 iteration 스코프 인스턴스에 속한다. 따라서 이 경우에도 재선언은 일어나지 않는다.
@@ -277,17 +282,20 @@ for (let student of students) { /* ... */ }
 그럼 이제 `const` 의 경우도 한번 살펴보자. 사실 `const` 도 앞서 살펴본 경우와 동일하게 동작한다:
 
 ```js
-let keepGoing = true;
+let keepGoing = true
 while (keepGoing) {
-    const value = Math.random();
-    if (value > 0.5) keepGoing = false;
+  const value = Math.random()
+  if (value > 0.5) keepGoing = false
 }
 ```
 
 `for` 루프의 경우도 마찬가지다:
+
 ```js
-for (const key in someObj) {}
-for (const student of students) {}
+for (const key in someObj) {
+}
+for (const student of students) {
+}
 ```
 
 하지만 문제가 하나 있다. 다음을 살펴보자:
@@ -295,7 +303,7 @@ for (const student of students) {}
 ```js
 for (const i = 0; i < 3; i++) {
   // 첫 번째 iteration 이후 에러 발생!!
-	// TypeError: Assignment to constant variable.
+  // TypeError: Assignment to constant variable.
 }
 ```
 
@@ -304,13 +312,13 @@ for (const i = 0; i < 3; i++) {
 하지만 위 코드를 다음과 같이 확장해보면 문제를 금방 파악할 수 있다:
 
 ```js
-const $$i = 0;
+const $$i = 0
 
 for (; $$i < 3; $$i++) {
-    const i = $$i;
+  const i = $$i
 
-    let value = i * 10;
-    console.log(`${i}: ${value}`);
+  let value = i * 10
+  console.log(`${i}: ${value}`)
 }
 ```
 
@@ -327,9 +335,9 @@ for (; $$i < 3; $$i++) {
 하지만 `let` 과 `const` 의 경우는 조금 다르다. 다음을 살펴보자:
 
 ```js
-console.log(studentName);
+console.log(studentName)
 
-let studentName = 'Suzy';
+let studentName = 'Suzy'
 ```
 
 위 코드를 실행하면 `ReferenceError: Cannot access 'studentName' before initialization` 와 같은 에러가 발생한다. 에러 메시지를 살펴보면, `studentName` 이라는 변수가 (첫째 줄에) 존재하기는 하나, 아직 초기화 되지 않아 사용할 수 없다는 의미이다.
@@ -337,10 +345,10 @@ let studentName = 'Suzy';
 그럼 다음과 같이 초기화 해주면 될까?
 
 ```js
-studentName = 'Suzy'; // ReferenceError
-console.log(studentName);
+studentName = 'Suzy' // ReferenceError
+console.log(studentName)
 
-let studentName;
+let studentName
 ```
 
 여전히 동일한 에러가 발생한다. 뭐가 문제일까? 초기화 되지 않은(uninitialized) 변수를 어떻게 초기화(initialize)할 수 있을까?
@@ -348,21 +356,21 @@ let studentName;
 `let` 과 `const` 의 경우, 해당 변수를 "초기화"하는 **유일한 방법**은 **변수를 선언할 때 초기화** 하는 방법밖에 없다. 즉,
 
 ```js
-let studentName = 'Suzy';
-console.log(studentName); // Suzy
+let studentName = 'Suzy'
+console.log(studentName) // Suzy
 
 // 혹은
-let studentName;
-studentName = 'Suzy';
-console.log(studentName); // Suzy
+let studentName
+studentName = 'Suzy'
+console.log(studentName) // Suzy
 ```
 
 스코프에 진입하여 변수가 자동적으로 초기화 될 때까지 해당 변수를 사용할 수 없는 **기간**을 TDZ라고 한다. 즉, TDZ란 변수가 존재는 하지만 아직 초기화 되지 않아서 사용할 수 없는 구간이라 할 수 있다. 변수가 원래 선언된 위치에 도달해서야 비로소 해당 변수를 사용할 수 있게 되는 것이다. 다음 코드에 대해 TDZ를 그림으로 나타내면 아래와 같다:
 
 ```js
-console.log(pi);
-const pi = 3.14;
-console.log(pi);
+console.log(pi)
+const pi = 3.14
+console.log(pi)
 ```
 
 <figure>
@@ -377,12 +385,12 @@ console.log(pi);
 한편, TDZ는 "위치"가 아니라 "시간"과 관련된 개념이다. 다음 코드를 보자:
 
 ```js
-askQuestion(); // ReferenceError
+askQuestion() // ReferenceError
 
-let studentName = 'Suzy';
+let studentName = 'Suzy'
 
 function askQuestion() {
-	console.log(`${studentName}, do you know?`);
+  console.log(`${studentName}, do you know?`)
 }
 ```
 
@@ -392,12 +400,12 @@ function askQuestion() {
 
 ```js
 function askQuestion() {
-    console.log(`${studentName}, do you know?`);
+  console.log(`${studentName}, do you know?`)
 }
-let studentName;
-askQuestion(); // undefined, do you know?
+let studentName
+askQuestion() // undefined, do you know?
 
-studentName = 'Suzy';
+studentName = 'Suzy'
 ```
 
 앞서도 언급했지만 "호이스팅" 이라는 것은 개념적인 것이다. 즉, **실제로는 자바스크립트를 컴파일 하는 과정에서 identifier들을 스코프의 맨 윗부분에 등록하는 과정을 호이스팅** 이라고 부르는 것이다. 실제로 위 코드와 같은 일이 일어나는 것이 아니다.
@@ -410,20 +418,20 @@ studentName = 'Suzy';
 
 우선 TDZ가 생겨난 배경부터 살펴보자. 사실 TDZ는 `const`로 인해 생겨난 개념이다.
 
-초기에 ES6를 개발할 때, TC39 멤버들은 `const`(와 `let`)가 블록의 최상단으로 호이스팅 되어야 하는지 결정했어야 했고, 결국 `var`와 같이 호이스팅 되도록 설계했다. 
+초기에 ES6를 개발할 때, TC39 멤버들은 `const`(와 `let`)가 블록의 최상단으로 호이스팅 되어야 하는지 결정했어야 했고, 결국 `var`와 같이 호이스팅 되도록 설계했다.
 
 근데 왜 `let`과 `const`는 `var`와는 달리 자동적으로 (`undefined`로) 초기화되지 않는걸까? 다음 코드를 통해 그 이유를 알 수 있다:
 
 ```js
 {
-    // 어떤 값이 출력될까?
-    console.log(studentName);
+  // 어떤 값이 출력될까?
+  console.log(studentName)
 
-    // ...
+  // ...
 
-    const studentName = 'Frank';
+  const studentName = 'Frank'
 
-    // ...
+  // ...
 }
 ```
 

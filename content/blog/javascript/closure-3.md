@@ -1,7 +1,7 @@
 ---
 title: '자바스크립트 클로저 Part3'
 date: 2020-08-22
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -19,17 +19,17 @@ draft: false
 
 ```js
 function storeStudentInfo(id, name, grade) {
-    return function getInfo(whichValue){
-        // warning: using `eval(..)` is a bad idea!
-        return eval(whichValue);
-    };
+  return function getInfo(whichValue) {
+    // warning: using `eval(..)` is a bad idea!
+    return eval(whichValue)
+  }
 }
 
-const info = storeStudentInfo(73, 'Suzy', 87);
+const info = storeStudentInfo(73, 'Suzy', 87)
 
-console.log(info('name')); // Suzy
+console.log(info('name')) // Suzy
 
-console.log(info('grade')); // 87
+console.log(info('grade')) // 87
 ```
 
 내부 함수 `getInfo()`는 `id`, `name`, `grade` 변수 중 어떠한 것도 명시적으로 클로저로 감싸고 있지는 않다. 그렇지만 `eval()`을 통해 여전히 해당 변수들에 접근이 가능한 것처럼 보인다. 따라서 내부 함수에 의해 명시적으로 참조되지는 않지만 해당 변수들이 클로저를 통해 유지되는것 처럼 보인다. 그렇다면 앞서 살펴본 "클로저는 변수 단위로 적용된다"는 것이 틀린걸까?
@@ -44,14 +44,14 @@ console.log(info('grade')); // 87
 
 ```js
 function manageStudentGrades(studentRecords) {
-    let grades = studentRecords.map(getGrade);
+  let grades = studentRecords.map(getGrade)
 
-    // unset `studentRecords` to prevent unwanted
-    // memory retention in the closure
-    studentRecords = null;
+  // unset `studentRecords` to prevent unwanted
+  // memory retention in the closure
+  studentRecords = null
 
-    return addGrade;
-    // ..
+  return addGrade
+  // ..
 }
 ```
 
@@ -71,16 +71,16 @@ function manageStudentGrades(studentRecords) {
 
 ```js
 function adder(num1) {
-    return function addTo(num2) {
-        return num1 + num2;
-    }
+  return function addTo(num2) {
+    return num1 + num2
+  }
 }
 
-const add10To = adder(10);
-const add42To = adder(42);
+const add10To = adder(10)
+const add42To = adder(42)
 
-console.log(add10To(15)); // 25
-console.log(add42To(9)); // 51
+console.log(add10To(15)) // 25
+console.log(add42To(9)) // 51
 ```
 
 우리가 여태껏 살펴보고 있는 관점에서 보자면, 함수가 어디에서 호출되건 관계없이 클로저는 함수가 선언된 원래의 환경에 대한 "숨겨진 링크"를 유지하여 함수가 클로저 내에 유지되는 변수들에 참조할 수 있도록 한다. 앞서 이러한 그림도 살펴본 적이 있다:
@@ -121,28 +121,25 @@ console.log(add42To(9)); // 51
 
 ```js
 const APIendpoints = {
-    'studentIDs': 'https://some.api/register-students',
-    // ..
-};
+  studentIDs: 'https://some.api/register-students',
+  // ..
+}
 
 const data = {
-    'studentIDs': [14, 73, 112, 6],
-    // ..
-};
+  studentIDs: [14, 73, 112, 6],
+  // ..
+}
 
-function makeRequest (evt) {
-    const btn = evt.target;
-    const recordKind = btn.dataset.kind;
-    ajax(
-        APIendpoints[recordKind],
-        data[recordKind]
-    );
+function makeRequest(evt) {
+  const btn = evt.target
+  const recordKind = btn.dataset.kind
+  ajax(APIendpoints[recordKind], data[recordKind])
 }
 
 // <button data-kind="studentIDs">
 //    Register Students
 // </button>
-btn.addEventListener('click', makeRequest);
+btn.addEventListener('click', makeRequest)
 ```
 
 `makeRequest` 함수는 클릭 이벤트로 부터 `evt` 변수를 통해 이벤트 객체를 전달받는다. 그 후 타겟 버튼의 `data-kind` 속성에서 데이터를 얻어 이 데이터로 적절한 URL을 찾은 다음 Ajax 통신을 한다.
@@ -151,41 +148,35 @@ btn.addEventListener('click', makeRequest);
 
 ```js
 const APIendpoints = {
-    'studentIDs': 'https://some.api/register-students',
-    // ..
-};
+  studentIDs: 'https://some.api/register-students',
+  // ..
+}
 
 const data = {
-    'studentIDs': [14, 73, 112, 6],
-    // ..
-};
+  studentIDs: [14, 73, 112, 6],
+  // ..
+}
 
-function setupButtonHandler (btn) {
-    const recordKind = btn.dataset.kind;
+function setupButtonHandler(btn) {
+  const recordKind = btn.dataset.kind
 
-    btn.addEventListener(
-        'click',
-        function makeRequest (evt){
-            ajax(
-                APIendpoints[recordKind],
-                data[recordKind]
-            );
-        }
-    );
+  btn.addEventListener('click', function makeRequest(evt) {
+    ajax(APIendpoints[recordKind], data[recordKind])
+  })
 }
 
 // <button data-kind="studentIDs">
 //    Register Students
 // </button>
 
-setupButtonHandler(btn);
+setupButtonHandler(btn)
 ```
 
 여기선 `setupButtonHandler()`라는 외부 함수를 만들어서 `data-kind`의 값을 `recordKind` 변수에 저장시켰다. 이렇게 하면 추후에 `makeRequest()` 함수가 `recordKind` 변수를 클로저 내에 저장하여 이벤트가 발생할 때마다 DOM을 읽을 필요 없이 클로저에 있는 `recordKind`를 참조하게 되어 프로그램이 더욱 효율적으로 동작하게 된다. 또한, `recordKind` 변수를 `setupButtonHandler()` 함수 내에 둠으로써 이 변수의 노출을 최소화 하였다.
 
-|참고|
-|-|
-|사실, 개선된 코드에서 `makeRequest` 함수로 전달된 `evt` 변수는 사용되지 않지만, 이전 코드와의 일관성을 위해 그대로 남겨놓았다.|
+| 참고                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------ |
+| 사실, 개선된 코드에서 `makeRequest` 함수로 전달된 `evt` 변수는 사용되지 않지만, 이전 코드와의 일관성을 위해 그대로 남겨놓았다. |
 
 <br/>
 
@@ -196,16 +187,13 @@ setupButtonHandler(btn);
 // const data = { ... };
 
 function setupButtonHandler(btn) {
-    const recordKind = btn.dataset.kind;
-    const requestURL = APIendpoints[recordKind];
-    const requestData = data[recordKind];
+  const recordKind = btn.dataset.kind
+  const requestURL = APIendpoints[recordKind]
+  const requestData = data[recordKind]
 
-    btn.addEventListener(
-        'click',
-        function makeRequest(evt) {
-            ajax(requestURL, requestData);
-        }
-    );
+  btn.addEventListener('click', function makeRequest(evt) {
+    ajax(requestURL, requestData)
+  })
 }
 ```
 
@@ -214,5 +202,6 @@ function setupButtonHandler(btn) {
 <br/>
 
 클로저를 사용함으로써 얻을 수 있는 이점을 정리해보자면 다음과 같다.
+
 - 함수 인스턴스가 이전에 사용한 데이터 등을 재활용할 수 있게 함으로써 프로그램의 효율성을 증대시킨다.
 - 변수의 불필요한 노출을 최소화 함으로써 코드의 가독성을 증대시킨다.

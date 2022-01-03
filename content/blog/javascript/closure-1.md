@@ -1,7 +1,7 @@
 ---
 title: '자바스크립트 클로저 Part1'
 date: 2020-08-21
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -23,17 +23,17 @@ draft: false
 
 ```js
 function hideTheCache() {
-    let cache = {};
-    return factorial;
+  let cache = {}
+  return factorial
 
-    // ****************
+  // ****************
 
-    function factorial(x) {
-        if (x < 2) return 1;
-        // 외부 스코프에 존재하는 "cache"를 참조하고 있음 -> 클로저!!
-        if (!(x in cache)) cache[x] = x * factorial(x - 1);
-        return cache[x];
-    }
+  function factorial(x) {
+    if (x < 2) return 1
+    // 외부 스코프에 존재하는 "cache"를 참조하고 있음 -> 클로저!!
+    if (!(x in cache)) cache[x] = x * factorial(x - 1)
+    return cache[x]
+  }
 }
 ```
 
@@ -57,34 +57,30 @@ function hideTheCache() {
 
 ```js
 function lookupStudent(studentID) {
+  var students = [
+    { id: 14, name: 'Kyle' },
+    { id: 73, name: 'Suzy' },
+    { id: 112, name: 'Frank' },
+    { id: 6, name: 'Sarah' },
+  ]
 
-    var students = [
-        { id: 14, name: 'Kyle' },
-        { id: 73, name: 'Suzy' },
-        { id: 112, name: 'Frank' },
-        { id: 6, name: 'Sarah' }
-    ];
+  return function greetStudent(greeting) {
+    var student = students.find(student => student.id === studentID)
 
-    return function greetStudent(greeting){
-        var student = students.find(student => student.id === studentID);
-
-        return `${greeting}, ${student.name}!`;
-    };
+    return `${greeting}, ${student.name}!`
+  }
 }
 
-var chosenStudents = [
-    lookupStudent(6),
-    lookupStudent(112)
-];
+var chosenStudents = [lookupStudent(6), lookupStudent(112)]
 
 // accessing the function's name:
-chosenStudents[0].name;
+chosenStudents[0].name
 // greetStudent
 
-chosenStudents[0]('Hello');
+chosenStudents[0]('Hello')
 // Hello, Sarah!
 
-chosenStudents[1]('Howdy');
+chosenStudents[1]('Howdy')
 // Howdy, Frank!
 ```
 
@@ -120,16 +116,16 @@ chosenStudents[1]('Howdy');
 
 ```js
 function adder(num1) {
-    return function addTo(num2) {
-        return num1 + num2;
-    }
+  return function addTo(num2) {
+    return num1 + num2
+  }
 }
 
-const add10To = adder(10);
-const add42To = adder(42);
+const add10To = adder(10)
+const add42To = adder(42)
 
-console.log(add10To(15)); // 25
-console.log(add42To(9)); // 51
+console.log(add10To(15)) // 25
+console.log(add42To(9)) // 51
 ```
 
 `adder()` 함수 내부에 있는 `addTo()` 함수의 각각의 인스턴스는 각자의 `num1` 변수(값은 각각 `10`과 `42`)를 "에워싸고" 있기 때문에 `adder()` 함수가 종료된다고 해서 `num1` 변수가 사라지지는 않는다.
@@ -161,24 +157,24 @@ console.log(add42To(9)); // 51
 
 ```js
 function makeCounter() {
-    let count = 0;
+  let count = 0
 
-    return function getCurrent() {
-        count = count + 1;
-        return count;
-    }
+  return function getCurrent() {
+    count = count + 1
+    return count
+  }
 }
 
-const hits = makeCounter();
+const hits = makeCounter()
 
 // ...
 
-console.log(hits()); // 1
+console.log(hits()) // 1
 
 // ...
 
-console.log(hits()); // 2
-console.log(hits()); // 3
+console.log(hits()) // 2
+console.log(hits()) // 3
 ```
 
 `count` 변수는 내부 함수 `getCurrent()`에 의해 에워 싸이기 때문에 가비지 컬렉트의 대상이 아니다. 그리고 `hits()` 함수를 호출할 때마다 이 함수에서 `count` 변수에 접근하여 값을 1만큼 증가시킨 후 증가된 값을 반환한다.
@@ -186,42 +182,44 @@ console.log(hits()); // 3
 클로저를 생성하기 위해 일반적으로 함수(스코프)를 이용하여 내부 함수를 감싸는 경우가 많은데, 굳이 함수(스코프)를 사용할 필요는 없다. 단지 외부의 "스코프"가 내부 함수를 감싸기만 하면 된다:
 
 ```js
-let hits;
+let hits
 
-{ // 블록 스코프 이용
-    let count = 0;
-    hits = function getCurrent() {
-        count = count + 1;
-        return count;
-    }
+{
+  // 블록 스코프 이용
+  let count = 0
+  hits = function getCurrent() {
+    count = count + 1
+    return count
+  }
 }
 
 // ...
 
-console.log(hits()); // 1
-console.log(hits()); // 2
-console.log(hits()); // 3
+console.log(hits()) // 1
+console.log(hits()) // 2
+console.log(hits()) // 3
 ```
 
 <br/>
 
 대부분의 (초보) 개발자들이 클로저를 **변수 중심**이 아니라 값 중심으로 생각하는 경향이 있기 때문에 다음과 같이 클로저를 이용하여 변수의 값을 "캡쳐"하려고 하는 실수를 종종 저지르곤 한다:
+
 ```js
-let studentName = 'Frank';
+let studentName = 'Frank'
 
 const greeting = function hello() {
-    // 클로저라는 것은 'Frank'라는 값(문자열)이 아니라 
-    // studentName 변수 그 자체를 에워 싸는것임.
-    console.log(`Hello, ${studentName}!`);
+  // 클로저라는 것은 'Frank'라는 값(문자열)이 아니라
+  // studentName 변수 그 자체를 에워 싸는것임.
+  console.log(`Hello, ${studentName}!`)
 }
 
 // ...
 
-studentName = 'Suzy';
+studentName = 'Suzy'
 
 // ...
 
-greeting(); // 'Hello, Suzy!'
+greeting() // 'Hello, Suzy!'
 ```
 
 `greeting()`(a.k.a `hello()`) 이라는 함수를 정의할 때 클로저가 `studentName`이 당시에 가지고 있던 값(`'Frank'`)를 저장할 것이라고 잘못 생각하는 경우가 있다. 하지만 실제로 `greeting()`은 `'Frank'` 라는 "값"이 아니라 `studentName`이라는 "변수"를 저장한다. 따라서 나중에 `greeting()`을 호출할 때, 호출할 당시의 `studentName` 변수의 값이 출력된다.
@@ -231,23 +229,23 @@ greeting(); // 'Hello, Suzy!'
 위와 같은 실수는 루프문 내부에서 함수를 정의할 때도 발생한다:
 
 ```js
-let keeps = [];
+let keeps = []
 
 for (var i = 0; i < 3; i++) {
-    keeps[i] = function keepI() {
-        // i를 에워쌈 (close over)
-        return i;
-    }
+  keeps[i] = function keepI() {
+    // i를 에워쌈 (close over)
+    return i
+  }
 }
 
-console.log(keeps[0]()); // 3 -> ???
-console.log(keeps[1]()); // 3 -> ????
-console.log(keeps[2]()); // 3 -> ❓
+console.log(keeps[0]()) // 3 -> ???
+console.log(keeps[1]()) // 3 -> ????
+console.log(keeps[2]()) // 3 -> ❓
 ```
 
-|참고|
-|-|
-|보통 위와 같은 클로저 예시는 주로 루프문 내부에서 `setTimeout()` 혹은 이벤트 핸들러를 이용하는 경우가 많다. 하지만 나(원문 저자)는 예시를 좀 더 단순화 하기 위해 배열에 함수를 저장하는 방식을 사용했다. 하지만 이렇게 하든 `setTimeout()`등을 사용하든 근본적인 클로저의 원리는 동일하다.|
+| 참고                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 보통 위와 같은 클로저 예시는 주로 루프문 내부에서 `setTimeout()` 혹은 이벤트 핸들러를 이용하는 경우가 많다. 하지만 나(원문 저자)는 예시를 좀 더 단순화 하기 위해 배열에 함수를 저장하는 방식을 사용했다. 하지만 이렇게 하든 `setTimeout()`등을 사용하든 근본적인 클로저의 원리는 동일하다. |
 
 아마 `keeps[0]`에 저장된 함수(인스턴스)가 생성될 때 `i`의 값이 `0`이었으므로 `keeps[0]();`의 결과가 `0`이 나올거라고 예상했을지도 모르겠다. 하지만 이는 앞서 말했듯이 클로저를 변수 중심이 아니라 값 중심으로 생각했기 때문에 발생한 잘못된 예측이다. `for`문의 구조 때문에 각 iteration 마다 독립적인 (새로운) `i`가 존재한다고 생각했을 수도 있다. 하지만 여기선 `i`가 `var`로 선언되었기 때문에 `i`는 오직 (`for` 블록 스코프가 아니라 글로벌 스코프에) 하나만 존재한다.
 
@@ -260,23 +258,23 @@ console.log(keeps[2]()); // 3 -> ❓
 그럼 위 코드를 우리가 원하는 결과가 나오게끔 하려면 어떻게 해야할 까? 다음과 같이 각 iteration 마다 새로운 변수를 생성하는 방법이 있을 것이다:
 
 ```js
-let keeps = [];
+let keeps = []
 
 for (var i = 0; i < 3; i++) {
-    // i의 값을 복사하는 변수를 매 iteration 마다 생성
-    let j = i;
+  // i의 값을 복사하는 변수를 매 iteration 마다 생성
+  let j = i
 
-    // `keeps[i]` 에서는 i 변수를 에워싸는 것이 아니므로 이런식으로
-    // 작성해도 괜찮음
-    keeps[i] = function keepEachJ(){
-        // i가 아니라 j를 에워쌈
-        return j;
-    };
+  // `keeps[i]` 에서는 i 변수를 에워싸는 것이 아니므로 이런식으로
+  // 작성해도 괜찮음
+  keeps[i] = function keepEachJ() {
+    // i가 아니라 j를 에워쌈
+    return j
+  }
 }
 
-console.log(keeps[0]());   // 0
-console.log(keeps[1]());   // 1
-console.log(keeps[2]());   // 2
+console.log(keeps[0]()) // 0
+console.log(keeps[1]()) // 1
+console.log(keeps[2]()) // 2
 ```
 
 여기선 각각의 내부 함수 인스턴스가 `i`와는 완전 별개인 새로운 변수 `j`를 에워싸고 있기 때문에 우리가 원하는 결과가 정상적으로 출력됨을 알 수 있다.
@@ -288,19 +286,19 @@ console.log(keeps[2]());   // 2
 물론 더 깔끔한 방법이 있다. [여기](/javascript/hoisting/#%EB%A3%A8%ED%94%84%EB%AC%B8)서 살펴본 것과 같이 `let`을 사용하면 각 iteration 마다 개별적인 `i`가 생성되므로 위 문제를 더욱 간단하게 해결할 수 있다.
 
 ```js
-let keeps = [];
+let keeps = []
 
 for (let i = 0; i < 3; i++) {
-    // 각 iteration 마다 자동적으로 새로운
-    // i가 생성됨
-    keeps[i] = function keepEachI(){
-        return i;
-    };
+  // 각 iteration 마다 자동적으로 새로운
+  // i가 생성됨
+  keeps[i] = function keepEachI() {
+    return i
+  }
 }
 
-console.log(keeps[0]());   // 0
-console.log(keeps[1]());   // 1
-console.log(keeps[2]());   // 2
+console.log(keeps[0]()) // 0
+console.log(keeps[1]()) // 1
+console.log(keeps[2]()) // 2
 ```
 
 <figure>

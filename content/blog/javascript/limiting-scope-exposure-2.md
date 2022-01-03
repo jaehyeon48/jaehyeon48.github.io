@@ -1,7 +1,7 @@
 ---
 title: '자바스크립트 변수 노출 최소화 하기 Part2'
 date: 2020-08-20
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -17,24 +17,24 @@ draft: false
 
 ```js
 function func() {
-    if (true) {
-        let a = 10;
-        var b = 100; // 블록 스코프에 속하는 것이 아니라 함수 스코프에 속함
-    }
+  if (true) {
+    let a = 10
+    var b = 100 // 블록 스코프에 속하는 것이 아니라 함수 스코프에 속함
+  }
 
-    return b;
+  return b
 }
 
-console.log(func()); // 100
+console.log(func()) // 100
 ```
 
 그럼 왜 `let` 대신 `var`를 사용한걸까? 일단 한눈에 보기에도 `var`는 `let`과 구별되기도 하고, `var` 자체가 주는 의미가 "이 변수는 함수 스코프임" 이기 때문이다. 물론 `let`을 함수 스코프 내에 선언하여 사용할 수도 있지만, 블록 내에 있는 다른 `let` 변수들과 잘 구별되지 않으므로 함수 전체에서 사용하는 `let`인지 혹은 특정 블록 내에서 사용하는 `let`인지 구별이 잘 되지 않을 수 있다.
 
 다시말해, 내 생각(원문 저자)엔 `let`보다 `var`가 "함수 전체에서 사용되는 변수"라는 의미를 더 잘 나타내므로 각자의 목적에 맞게 두 변수를 적절히 사용하는 것이 좋아보인다. 즉, "함수 스코프"라는 것을 나타내고 싶을땐 `var`를, "블록 스코프"라는 것을 나타내고 싶을땐 `let`을 사용하는게 적절할 것 같다.
 
-|⚠️ 경고|
-|-|
-|`var`와 `let`을 같이 사용하라는 내 생각은 분명 논쟁의 소지가 다분하다. 보통 "var는 오류가 많아. let을 사용해!" 라던가, 혹은 "var는 절대로 사용하면 안된다. 반드시 let을 써라"와 같은 말을 들어봤을 수도 있다. 물론 이러한 주장도 일리는 있다. 하지만 이 주장들도 내 주장과 마찬가지로 어디까지나 "주장"일 뿐이다. `var`는 고장나거나(broken), 혹은 deprecated 된 녀석이 아니다. 자바스크립트 초창기부터 아주 잘 작동해왔으며, 아마 앞으로도 (자바스크립트가 없어질때까지) 그럴것이다!|
+| ⚠️ 경고                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `var`와 `let`을 같이 사용하라는 내 생각은 분명 논쟁의 소지가 다분하다. 보통 "var는 오류가 많아. let을 사용해!" 라던가, 혹은 "var는 절대로 사용하면 안된다. 반드시 let을 써라"와 같은 말을 들어봤을 수도 있다. 물론 이러한 주장도 일리는 있다. 하지만 이 주장들도 내 주장과 마찬가지로 어디까지나 "주장"일 뿐이다. `var`는 고장나거나(broken), 혹은 deprecated 된 녀석이 아니다. 자바스크립트 초창기부터 아주 잘 작동해왔으며, 아마 앞으로도 (자바스크립트가 없어질때까지) 그럴것이다! |
 
 ## 그럼 let은?
 
@@ -50,17 +50,17 @@ console.log(func()); // 100
 
 ```js
 try {
-    doesntExist();
+  doesntExist()
 } catch (error) {
-    console.log(error); // ReferenceError: doesntExist is not defined
+  console.log(error) // ReferenceError: doesntExist is not defined
 
-    let onlyHere = true;
-    var outerVariable = true;
+  let onlyHere = true
+  var outerVariable = true
 }
 
-console.log(outerVariable); // true
+console.log(outerVariable) // true
 
-console.log(error); // ReferenceError: error is not defined
+console.log(error) // ReferenceError: error is not defined
 ```
 
 위 코드에서 `catch`문에 의해 선언된 `error`변수는 `catch`블록에 속하는 블록 스코프 변수이다. 또한 또 다른 블록 스코프 변수 (`let`, `const`)를 `catch` 블록 내에 포함할 수도 있다. 하지만 함수 스코프인 `var`는 `catch`블록에 귀속되지 않고 함수 스코프 방식(여기서는 글로벌 스코프)으로 동작한다.
@@ -69,10 +69,9 @@ ES2019 부터는 `catch`문에 변수를 선언하지 않을 수도 있다 (즉,
 
 ```js
 try {
-    doSomething();
-}
-catch {
-    doAnotherOne();
+  doSomething()
+} catch {
+  doAnotherOne()
 }
 ```
 
@@ -86,15 +85,16 @@ catch {
 
 ```js
 if (false) {
-    function ask() {
-        console.log('정말 실행되나?');
-    }
+  function ask() {
+    console.log('정말 실행되나?')
+  }
 }
 
-ask();
+ask()
 ```
 
 위 코드를 실행하면 어떤 결과가 나올까?
+
 1. `ask` identifier가 `if` 블록 내부에 존재하므로 블록 밖인 글로벌 스코프에서 `ask()`를 호출하면 `ReferenceError`가 발생할 것 이다.
 2. `ask`라는 identifer가 존재는 하지만 `undefined`이므로 (왜냐면 `if`문이 실행되지 않았기 때문에!) `ask()`를 호출하면 `TypeError`가 발생할 것이다.
 3. `ask()`가 정상적으로 동작하여 결과가 출력될 것이다.
@@ -108,55 +108,56 @@ ask();
 <br/>
 
 함수 선언을 블록 내부에 하는 경우 중 한 예시는 다음 코드와 같이 특정 조건에 따라 함수를 다르게 정의하는 경우이다:
+
 ```js
-if (typeof Array.isArray !== "undefined") {
-    function isArray(a) {
-        return Array.isArray(a);
-    }
-}
-else {
-    function isArray(a) {
-        return Object.prototype.toString.call(a) === "[object Array]";
-    }
+if (typeof Array.isArray !== 'undefined') {
+  function isArray(a) {
+    return Array.isArray(a)
+  }
+} else {
+  function isArray(a) {
+    return Object.prototype.toString.call(a) === '[object Array]'
+  }
 }
 ```
 
 이와 같은 방법으로 코딩하는 이유는, 만약 함수 내부에서 `if`문을 사용하여 동작을 다르게 정의하면 매번 함수를 호출할 때마다 불필요하게 체킹을 해야 하므로 성능상의 패널티가 존재하기 때문이다.
 
-|⚠️ 경고|
-|-|
-|FiB의 예측 불허한 특성 이외에, 위 코드와 같이 분기문을 통해 여러 버전의 함수를 만들게 되면 디버깅이 (매우) 힘들어지는 단점이 있다. 예를 들어, `isArray()` 함수에 버그가 발생하여 해당 버그를 고쳐야할 때 우선 어느 버전의 `isArray()`에 문제가 생겼는지 살펴봐야한다. 가끔 분기 조건을 잘못 체크하여 엉뚱한 버전을 고치는 경우가 발생할 수도 있다. 따라서 하나의 함수에 대해 분기문을 통해 여러 버전을 만드는 경우, 디버깅이 매우 힘들어 질 수 있다는 점을 분명히 염두해야 한다.|
+| ⚠️ 경고                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FiB의 예측 불허한 특성 이외에, 위 코드와 같이 분기문을 통해 여러 버전의 함수를 만들게 되면 디버깅이 (매우) 힘들어지는 단점이 있다. 예를 들어, `isArray()` 함수에 버그가 발생하여 해당 버그를 고쳐야할 때 우선 어느 버전의 `isArray()`에 문제가 생겼는지 살펴봐야한다. 가끔 분기 조건을 잘못 체크하여 엉뚱한 버전을 고치는 경우가 발생할 수도 있다. 따라서 하나의 함수에 대해 분기문을 통해 여러 버전을 만드는 경우, 디버깅이 매우 힘들어 질 수 있다는 점을 분명히 염두해야 한다. |
 
 <br/>
 
 앞서 살펴본 예시 외에도 FiB에 대한 여러가지 이례적인 케이스들이 도사리고 있다. 이러한 케이스들도 물론 자바스크립트 실행환경에 따라 다르게 동작한다. 예를 들면:
+
 ```js
 if (true) {
-    function ask() {
-        console.log('이거 호출?');
-    }
+  function ask() {
+    console.log('이거 호출?')
+  }
 }
 
 if (true) {
-    function ask() {
-        console.log('아니면 이거 호출?');
-    }
+  function ask() {
+    console.log('아니면 이거 호출?')
+  }
 }
 
 for (let i = 0; i < 5; i++) {
-    function ask() {
-        console.log('그것도 아니면 이것들 중 하나?');
-    }
+  function ask() {
+    console.log('그것도 아니면 이것들 중 하나?')
+  }
 }
 
-ask();
+ask()
 
 function ask() {
-    console.log('아 혹시 이건가?');
+  console.log('아 혹시 이건가?')
 }
 ```
 
-함수 호이스팅을 고려해 본다면 `아 혹시 이건가?`를 출력하는 제일 마지막 `ask()` 함수가 `ask();` 출력 바로 위에 호이스팅 되어 이 함수가 실행될 것이라 예측할 수도 있다. 진짜 그럴까? 
+함수 호이스팅을 고려해 본다면 `아 혹시 이건가?`를 출력하는 제일 마지막 `ask()` 함수가 `ask();` 출력 바로 위에 호이스팅 되어 이 함수가 실행될 것이라 예측할 수도 있다. 진짜 그럴까?
 
 아니다 (하... 🤦‍♂️)
 
@@ -165,30 +166,31 @@ function ask() {
 적어도 내가 생각하기로는, 이렇게 이상하게 동작하는 FiB를 피하는 가장 실용적인 해결책은 **그냥 FiB를 사용하지 않는것**이다. 즉, 블록안에서 함수 선언을 하지말고 항상 가장 바깥 함수 스코프(만약 여러 스코프가 중첩된 경우 그 중 가장 바깥) 혹은 글로벌 스코프에다 함수를 선언하는 것이 예측 불가능한 상황들을 피할 수 있는 방법인 것 같다.
 
 따라서 앞에서 살펴본 두 버전의 `isArray`를 선언하는 방법은 다음과 같이 할 수 있을 것 같다:
+
 ```js
 function isArray(a) {
-    if (typeof Array.isArray !== "undefined") {
-        return Array.isArray(a);
-    }
-    else {
-        return Object.prototype.toString.call(a) == "[object Array]";
-    }
+  if (typeof Array.isArray !== 'undefined') {
+    return Array.isArray(a)
+  } else {
+    return Object.prototype.toString.call(a) == '[object Array]'
+  }
 }
 ```
 
 아 물론이다. 이렇게 하면 다소 성능이 저하될 수는 있다. 하지만 보다 전체적인 관점에서 봤을 때 이렇게 하는 것이 더 좋을 것이다.
 
 만약 위와 같이 코딩함으로 인해 발생하는 성능 저하가 애플리케이션에 치명적이라면, 다음과 같이 코딩할 수도 있을 것이다:
+
 ```js
 var isArray = function isArray(a) {
-    return Array.isArray(a);
-};
+  return Array.isArray(a)
+}
 
 // override the definition, if you must
-if (typeof Array.isArray === "undefined") {
-    isArray = function isArray(a) {
-        return Object.prototype.toString.call(a) === "[object Array]";
-    };
+if (typeof Array.isArray === 'undefined') {
+  isArray = function isArray(a) {
+    return Object.prototype.toString.call(a) === '[object Array]'
+  }
 }
 ```
 

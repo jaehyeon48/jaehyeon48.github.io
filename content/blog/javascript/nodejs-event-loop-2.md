@@ -1,7 +1,7 @@
 ---
 title: 'Node.js의 이벤트 루프 Part2'
 date: 2020-08-19
-category: 'javascript'
+category: 'JavaScript'
 draft: false
 ---
 
