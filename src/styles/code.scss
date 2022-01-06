@@ -109,10 +109,13 @@ pre[class*='language-'] {
 }
 
 .token.tag,
-.token.attr-name,
 .token.namespace,
 .token.deleted {
   color: #e2777a;
+}
+
+.token.attr-name {
+  color: #dd9755;
 }
 
 .token.function-name {
