@@ -122,9 +122,12 @@ pre[class*='language-'] {
   color: #6196cc;
 }
 
-.token.boolean,
-.token.number,
 .token.function {
+  color: #5eaaec;
+}
+
+.token.boolean,
+.token.number {
   color: #ff9100;
 }
 
@@ -171,4 +174,8 @@ pre[class*='language-'] {
 
 .token.inserted {
   color: green;
+}
+
+.token.parameter {
+  color: #e06c75;
 }
