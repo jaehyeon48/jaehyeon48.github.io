@@ -91,6 +91,39 @@ UTF-8의 장점 중 하나는 영문자들이 ASCII에서 그랬던 것과 완�
 
 기존의 인코딩 방식 중엔 몇몇 코드 포인트만 제대로 저장하고 나머지는 물음표를 표시하는 것이 많습니다. 예를 들어 영문자를 표시하는 데 흔히 사용되는, 속칭 Latin-1이라고 불리는 [ISO-8859-1](https://www.htmlhelp.com/reference/charset/) 인코딩을 이용하여 러시아어나 히브리어를 나타내려고 하면 대부분의 글자가 깨질 것입니다. 하지만 UTF-7, 8, 16, 32 인코딩 방식 모두 어떠한 코드 포인트도 정확하게 나타낼 수 있습니다.
 
+## 인코딩에 관한 가장 중요한 사실 한가지
+
+만약 앞서 제가 알려드린 내용들을 모두 까먹으신다고 해도, 이것만은 꼭 기억해주세요: **인코딩도 모르면서 문자열을 사용하는 것은 말이 안됩니다**. 더 이상 모래 속에 머리를 파뭍은채 `"일반 텍스트(plain text)" == ASCII`라고 생각하시면 안 됩니다!
+
+<p class="text-center"><strong><u>일반 텍스트라는 것은 존재하지 않습니다</u>.</strong></p>
+
+메모리, 파일, 혹은 이메일에 저장된 문자열이 어떤 인코딩 방식을 써서 저장되었는가를 모르신다면 이를 해석할 수도 없고 유저들에게 제대로 보여줄 수도 없을 것입니다.
+
+"제 사이트가 깨져서 보여요" 혹은 "악센트 기호를 썼을 때 이메일이 깨져서 보인대요"와 같은 거의 대부분의 멍청한 문제들은 문자열을 어떤 인코딩 방식으로 인코딩했는지에 대해 알려줘야 하는 것도 모르는 무지한 프로그래머로 인해 생깁니다.
+
+그럼 문자열이 어떤 인코딩 방식을 사용하는지 어떻게 알려줄 수 있을까요? 이메일의 경우 다음과 같은 헤더를 통해 알려줄 수 있습니다:
+
+> Content-Type: text/plain; charset="UTF-8"
+
+웹페이지의 경우, 다음과 같이 `<meta>` 태그를 이용하여 인코딩 정보를 포함할 수 있습니다:
+
+```html
+<meta charset="UTF-8">
+
+혹은,
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+```
+
+이에 대해 "그럼 해당 `<meta>` 태그 전까지의 HTML 파일은 어떻게 읽을 수 있나요?"라고 궁금해하실 수도 있겠습니다. 다행히도 코드 포인트 32부터 127까지는 대부분의 인코딩 방식이 동일하기 때문에 그다지 걱정하실 필요가 없습니다.
+
+하지만 브라우저가 해당 `<meta>` 태그를 보는 순간 기존의 파싱을 중단하고 명시된 인코딩으로 다시 해석을 하므로 인코딩 정보가 담긴 `<meta>` 태그는 반드시 `<head>` 태그의 최상단 쪽에 위치해야 합니다 ([W3C](https://www.w3.org/International/questions/qa-html-encoding-declarations)에 따르면 반드시 파일의 첫 1,024바이트 내에 포함되어야 하므로, `<head>` 태그를 열자마자 표기하는 것을 추천하고 있습니다. 또한 [이 문서](https://www.w3.org/International/questions/qa-choosing-encodings#useunicode)에 따르면 인코딩 방식으로 UTF-8를 사용하는 것을 적극 권장하고 있습니다).
+
+만약 인코딩 정보가 HTTP 헤더에도, HTML 파일에도 없다면 브라우저는 인코딩 방식을 추측합니다만, 정확도는 보장할 수 없습니다.
+
+<br />
+
+비록 이 포스트에서 인코딩과 유니코드에 관한 모든 것을 다루진 못했지만, 이 정도만 알더라도 프로그래밍 하는 데엔 지장이 없다고 생각합니다.
+
 ## Reference
 
 [https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/)
