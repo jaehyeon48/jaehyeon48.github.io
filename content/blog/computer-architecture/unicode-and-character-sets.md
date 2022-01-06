@@ -18,10 +18,7 @@ draft: false
 
 이 당시 대부분의 컴퓨터는 8비트였기 때문에 ASCII 문자를 모두 저장하고도 1비트가 남았습니다. 그래서 사람들은 "128부터 255 사이의 코드를 우리 맘대로 이용할 수 있지 않을까?"라고 생각했습니다. 대표적으로 IBM-PC의 OEM character set에는 여분의 코드에 악센트가 추가된 영문자와 도형 등을 그리기 위한 문자들을 대응하였습니다.
 
-<figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/unicode-and-character-sets/ibm_oem_character_set.png" alt="IBM's OEM character set" />
-    <figcaption>IBM's OEM character set. 출처: https://en.wikipedia.org/wiki/Code_page_437#/media/File:Codepage-437.png</figcaption>
-</figure>
+
 
 그러다 이러한 컴퓨터들이 전 세계적으로 팔리기 시작하자, 여분의 코드는 각 나라의 사정에 맞게 변경되었습니다. 예를 들어 미국에서 사용되던 컴퓨터에서 문자 코드 130은 é를 나타내었지만, 이스라엘에서 사용된 컴퓨터는 히브리어 ג를 나타내었습니다. 이 때문에 미국인이 이스라엘에 이력서 "résumés"를 보내면 이스라엘에서는 "rגsumגs"라고 받았었습니다. 특히 러시아어 같은 경우 여분의 문자 코드를 어떻게 사용할지에 대한 여러 가지 아이디어가 있었기 때문에 러시아 내에서 러시아 사람끼리 문서를 주고받는 것조차 쉽지 않았죠.
 
@@ -60,6 +57,39 @@ A -> 0100 0001
 <p class="text-center"><strong class="font-2em">Hello</strong></p>
 
 유니코드에서 이를 코드 포인트로 나타내면 `U+0048 U+0065 U+006C U+006C U+006F`가 됩니다. 그저 숫자일 뿐이죠. 그럼 이와 같은 것들을 어떻게 메모리에 저장하고, 이메일에서 표현할 수 있을까요?
+
+## 인코딩 (Encodings)
+
+이것이 바로 인코딩이 하는 역할입니다.
+
+유니코드 인코딩에 관한 초창기 아이디어는 앞서 소개한 미신과도 연관되어 있습니다. 코드 포인트 숫자들을 그냥 2바이트로 저장하는 것이죠. 이렇게 하면 방금 살펴본 Hello의 코드 포인트는
+
+<p class="text-center">00 48 00 65 00 6C 00 6C 00 6F</p>
+
+가 되겠죠. 정말로 그럴까요? 이건 어떤가요?
+
+<p class="text-center">48 00 65 00 6C 00 6C 00 6F 00</p>
+
+물론 이것도 따지고 보면 맞습니다. [엔디안](https://en.wikipedia.org/wiki/Endianness#:~:text=In%20computing%2C%20endianness%20is%20the,little%2Dendian%20(LE).&text=A%20little%2Dendian%20system%2C%20in,byte%20at%20the%20smallest%20address.)에 따라 첫 번째 방식이 될지, 두 번째 방식이 될지 결정되겠죠.
+
+이렇게 동일한 유니코드를 저장하는 방법이 두 가지가 있었기 때문에, 유니코드 문자열 맨 앞에 FE FF와 같은 문자를 표기하는 기이한 컨벤션이 생기게 되었죠. 이를 [Unicode Byte Order Mark](https://www.w3.org/International/questions/qa-byte-order-mark#bomwhat)라고 합니다.
+
+한동안 이렇게 코드 포인트를 2바이트로 저장하는 방법은 괜찮은 것처럼 보였으나, 곧 미국 개발자들이 "저 0들은 뭐야!" 하며 불평하기 시작했습니다. 왜냐면 이분들은 영문자를 사용했기 때문에 U+00FF보다 큰 코드 포인트를 사용할 일이 드물었기 때문이죠. 이분들 입장에선 문자열 크기를 두 배로 늘리는 것이 지 않았고, 또 기존의 ANSI나 DBCS character set을 사용하는 문서들은 어떻게 변환할 것인가에 대한 문제도 존재했습니다. 이러한 이유로 대부분의 사람들은 유니코드를 그냥 무시했습니다. 하지만 그로 인해 문제들은 더욱 심각해져만 갔죠.
+
+이때 [UTF-8](https://www.utf8.com/)이라는 훌륭한 개념이 등장합니다. UTF-8은 바이트 단위로 문자열의 유니코드 코드 포인트를 저장하는 방식입니다. 0~127에 해당하는 코드 포인트들은 오직 1바이트에 저장되고, 128 이상의 코드 포인트들은 최대 6바이트를 사용하여 저장됩니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/computer-architecture/unicode-and-character-sets/utf_8_table.png" alt="UTF-8 table" />
+    <figcaption>UTF-8 테이블</figcaption>
+</figure>
+
+UTF-8의 장점 중 하나는 영문자들이 ASCII에서 그랬던 것과 완전 똑같이 표현된다는 것입니다. 앞서 살펴본 `Hello`의 경우 유니코드가 `U+0048 U+0065 U+006C U+006C U+006F` 였는데, 이를 UTF-8 인코딩으로 저장하면 `48 65 6C 6C 6F`가 됩니다. 이는 ASCII, ANSI, 그리고 여타 다른 OEM character set과 완벽히 동일하죠. 악센트가 표시된 영문자나 그리스어 같은 문자를 사용하는 경우 하나의 코드 포인트를 저장하기 위해 몇 바이트를 추가로 더 사용하면 됩니다. 또한, UTF-8을 사용하면 하나의 0바이트를 null-terminator로 사용하고자 했던 구식의 문자열 처리 코드가 문자열을 잘라내지 않는다는 장점이 있습니다.
+
+이외에도 유니코드를 인코딩하는 방식에는 여러 가지가 있습니다. UTF-8과 거의 흡사하지만 최상위 비트가 0인 UTF-7도 있고, 코드 포인트를 4바이트로 통일하여 저장하는 UCS-4 방식도 있습니다. 하지만 실제로 사용되지는 않습니다.
+
+그리고 사실은 유니코드 코드 포인트를 예전 방식의 인코딩 방식을 사용하여 인코딩할 수는 있습니다. 예를 들어 **Hello**문자열을 ASCII, 예전 그리스어 OEM, 히브리어 ANSI 혹은 기타 여러 가지 인코딩 방식을 이용하여 인코딩할 수는 있죠. 하지만 몇몇 문자열이 깨지는 문제가 발생할 수 있습니다. 여러분이 나타내고자 하는 유니코드 코드 포인트에 상응하는 것이 이러한 인코딩에 없다면 물음표 "?" 혹은 �와 같은 글자가 표시될 것입니다. 혹은 이상한 글자들이 튀어나올 수도 있구요.
+
+기존의 인코딩 방식 중엔 몇몇 코드 포인트만 제대로 저장하고 나머지는 물음표를 표시하는 것이 많습니다. 예를 들어 영문자를 표시하는 데 흔히 사용되는, 속칭 Latin-1이라고 불리는 [ISO-8859-1](https://www.htmlhelp.com/reference/charset/) 인코딩을 이용하여 러시아어나 히브리어를 나타내려고 하면 대부분의 글자가 깨질 것입니다. 하지만 UTF-7, 8, 16, 32 인코딩 방식 모두 어떠한 코드 포인트도 정확하게 나타낼 수 있습니다.
 
 ## Reference
 
