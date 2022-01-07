@@ -44,7 +44,7 @@ draft: false
 </figure>
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/algorithms/sorting/selection-sort/selection_sort_process_last.png" alt="selection sort process final" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/algorithms/sorting/selection-sort/selection_sort_process_final.png" alt="selection sort process final" />
     <figcaption>선택 정렬 프로세스 완료</figcaption>
 </figure>
 
