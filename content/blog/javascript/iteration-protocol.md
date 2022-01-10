@@ -10,7 +10,7 @@ draft: false
 자바스크립트의 iteration 프로토콜은 데이터 소스(sources)와 데이터 소비자(consumer) 개체(entity)를 연결하는 역할을 합니다. Iteration은 데이터 소스가 구현한 `Iterable` 이라는 인터페이스를 데이터 소비자가 사용하는 방식으로 동작합니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/iterator_protocol/data_sources_and_consumers.png" alt="JavaScript data sources and consumers">
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/iterator-protocol/data_sources_and_consumers.png" alt="JavaScript data sources and consumers">
     <figcaption>자바스크립트 데이터 소스와 데이터 소비자 및 이들을 연결하는 인터페이스</figcaption>
 </figure>
 
