@@ -9,7 +9,9 @@ draft: false
 
 ## 제너레이터(Generator)란?
 
-자바스크립트에서 제너레이터란 **제너레이터 함수(generator function)**을 통해 생성한 객체로, `iterable` 이자 `iterator`인 객체입니다. 이때 제너레이터 함수는 `function*`과 같이 `function` 키워드 뒤에 `*`를 붙여 정의할 수도 있고, 메서드로 사용되는 경우 메서드 이름 앞에 `*`를 붙여 정의할 수 있습니다:
+자바스크립트에서 제너레이터란 **제너레이터 함수(generator function)**을 통해 생성한 객체로, `iterable` 이자 `iterator`인 객체입니다. Iteration 작업을 할 때 `iterable`, `iterator` 객체들을 직접 다루기 까다로울 수 있기 때문에, 제너레이터를 이용하여 좀 더 쉽게 `iterator`를 구현할 수 있습니다.
+
+제너레이터 함수는 `function*`과 같이 `function` 키워드 뒤에 `*`를 붙여 정의할 수도 있고, 메서드로 사용되는 경우 메서드 이름 앞에 `*`를 붙여 정의할 수 있습니다:
 
 ```js
 // 제너레이터 함수 선언식
