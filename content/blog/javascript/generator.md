@@ -126,3 +126,50 @@ console.log(iterable.next()); // { value: 101, done: false }
 console.log(iterable.next()); // { value: 1000, done: false }
 console.log(iterable.next()); // { value: undefined, done: true }
 ```
+
+## 제너레이터 함수에서 제너레이터 함수 호출하기
+
+여태껏 저희가 살펴본 `yield` 는 오직 제너레이터 함수 바로 안에(directly) 존재하는 경우에만 정상적으로 동작합니다. 예를 들어, `foo()` 제너레이터 함수에서 `bar()` 제너레이터 함수를 호출하여 `foo()`에서 `bar()`가 yield하는 두 값을 yield 하고자 한다고 해봅시다:
+
+```js
+function* foo() {
+  bar();
+}
+
+function* bar() {
+  yield 1;
+  yield 2;
+}
+
+const iter = foo();
+console.log(iter.next()); // { value: undefined, done: true }
+```
+
+위 코드를 실행하면 우리가 원하는 결과를 얻지 못함을 알 수 있습니다. 왜그럴까요?
+
+그 이유는 `foo()` 에서 `bar()`를 호출하면 `bar()`는 `iterable`을 리턴하는데, `foo()`에서 이를 *무시*하기 때문입니다.
+
+앞서 우리가 원하는 것은 `bar()`가 yield하는 모든 값을 `foo()`에서 yield 하고자 하는 것이었죠. 이렇게 하려면 `yield*`를 사용해야 합니다:
+
+```js
+function* foo() {
+  yield* bar();
+
+  // 위 코드는 아래의 코드와 흡사합니다:
+  // for (const val of bar()) {
+  //   yield val;
+  // }
+}
+
+function* bar() {
+  yield 1;
+  yield 2;
+}
+
+const iter = foo();
+console.log(iter.next()); // { value: 1, done: false }
+console.log(iter.next()); // { value: 2, done: false }
+console.log(iter.next()); // { value: undefined, done: true }
+```
+
+즉, yield를 다른 함수로 위임(delegate)하기 위해선 `yield`가 아니라 `yield*`를 사용해야 합니다.
