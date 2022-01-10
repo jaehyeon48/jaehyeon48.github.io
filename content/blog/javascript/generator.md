@@ -189,3 +189,11 @@ console.log(iter.next()); // { value: undefined, done: true }
 ```
 
 즉, yield를 다른 함수로 위임(delegate)하기 위해선 `yield`가 아니라 `yield*`를 사용해야 합니다.
+
+## References
+
+[Exploring ES6](https://exploringjs.com/es6/ch_generators.html)
+
+[JavaScript for impatient programmers (ES2021 edition)](https://exploringjs.com/impatient-js/)
+
+[JavaScript: The Definitive Guide, 7th Edition](https://www.oreilly.com/library/view/javascript-the-definitive/9781491952016/)
