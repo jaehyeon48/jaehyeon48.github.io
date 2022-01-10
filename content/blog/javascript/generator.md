@@ -52,6 +52,8 @@ for (const val of iterable) {
 
 위 코드에서 볼 수 있듯이, 제너레이터 함수를 호출하면 `iterable` 이자 `iterator` 객체인 제너레이터 객체를 반환합니다. 그리고 나서 반환된 제너레이터 객체에 대해 iteration을 수행하면 제너레이터 객체의 `next()` 메서드를 호출하는데, 이렇게 할 때마다 제너레이터 함수의 이전 위치에서 실행을 재개하여 다음 `yield` 문 까지 실행한 후 그 값을 반환하고 다시 제너레이터 함수 실행을 일시 정지 합니다.
 
+<hr />
+
 (당연하게도?) 제너레이터 함수 내의 모든 `yield`가 실행되면 해당 제너레이터는 종료됩니다:
 
 ```js
@@ -85,6 +87,20 @@ console.log(iterable.next()); // { value: 2, done: false }
 console.log(iterable.next()); // { value: 100, done: true }
 console.log(iterable.next()); // { value: undefined, done: true }
 ```
+
+여기서 눈여겨 보셔야 할 부분이, `return` 문에서 리턴한 값이 iteration result 객체의 `value` 값으로 들어갔다는 점입니다 (`{ value: 100, done: true }`). 사실 앞서 살펴본 모든 제너레이터 함수에도 암묵적으로 `return undefined;` 문장이 존재하기 때문에 (`{ value: undefined, done: true }`)와 같은 결과가 나타나는 것입니다.
+
+하지만 `for...of`와 같이 iterable 프로토콜을 활용하는 대부분의 기능들은 `done` 값이 `true`일 때의 `value` 값은 무시합니다. 바로 위 예제를 살펴보자면:
+
+```js
+for (const val of iterable) {
+  console.log(val);
+} // 1, 2
+
+console.log([...iterable]); // [1, 2]
+```
+
+<hr />
 
 제너레이터 함수 내부에서 예외가 발생한 경우에도 즉시 종료됩니다:
 
