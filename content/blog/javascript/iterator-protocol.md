@@ -95,6 +95,47 @@ for (const elem of iterable) {
 
 또한 `iterable`, `iterator` 프로토콜을 통해 배열과 같이 주로 iteration의 대상이 되는 자료 구조 이외의 어느 자료구조라도 손쉽게 iteration을 할 수 있게 됩니다.
 
+## 비동기 iteration
+
+우선 앞서 살펴본 iterator와 iterator result의 인터페이스를 다시 한번 살펴봅시다:
+
+```ts
+interface Iterator<T> {
+  next(): IteratorResult<T>;
+}
+
+interface IteratorResult<T> {
+  value: T;
+  done: boolean;
+}
+```
+
+비동기 iteration 프로토콜을 구현하기 위해선 `next()` 메서드의 반환 값을 비동기로 전달하기만 하면 됩니다. 이를 위해 다음의 두 가지 방법을 고려해볼 수 있습니다:
+
+- `value`만 프로미스로 감쌀 것인가? (`value`의 타입이 `Promise<T>`)
+- `next()` 메서드가 프로미스를 반환할 것인가? (`next()`의 리턴 타입이 `Promise<IteratorResult<T>>`)
+
+하지만 생각해보면 두 번째 방법이어야만 합니다. 그 이유는 `next()` 메서드가 결과를 반환할 때 비동기 작업을 수행하기 때문인데, 작업의 결과값을 반환할지 아니면 iteration의 종료를 알릴지는 비동기 작업이 끝난 이후에야 할 수 있습니다. 다시 말해, `value`와 `done` 속성 모두 프로미스로 감싸야 한다는 의미입니다.
+
+비동기 iteration에 대한 인터페이스는 다음과 같습니다:
+
+```ts
+interface AsyncIterable<T> {
+  [Symbol.asyncIterator](): AsyncIterator<T>;
+}
+
+interface AsyncIterator<T> {
+  next(): Promise<IteratorResult<T>>; // 동기 iteration 인터페이스와 차이나는 부분입니다.
+}
+
+interface IteratorResult<T> {
+  value: T;
+  done: boolean;
+}
+```
+
+이러한 비동기 iteration 프로토콜을 이용하여 `for await...of` 문을 사용할 수 있습니다.
+
 ## Reference
 
 [Iteration protocols - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols)
