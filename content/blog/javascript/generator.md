@@ -190,6 +190,107 @@ console.log(iter.next()); // { value: undefined, done: true }
 
 즉, yield를 다른 함수로 위임(delegate)하기 위해선 `yield`가 아니라 `yield*`를 사용해야 합니다.
 
+## 옵저버로서의 제너레이터
+
+데이터 소비자(consumer)로서 동작하는 제너레이터 객체는 다음의 `Observer`라는 인터페이스를 준수합니다:
+
+```ts
+interface Observer {
+  next(value?: any): void;
+  return(value?: any): void;
+  throw(error): void;
+}
+```
+
+옵저버로서 동작하는 제너레이터는 입력을 받을 때까지 일시 정지 상태가 됩니다. 제너레이터 객체에 전달되는 입력에는 세 가지 종류가 있습니다:
+
+- **next()**: 일반적인 입력.
+- **return()**: 제너레이터 종료.
+- **throw()**: 에러발생을 알림.
+
+### next()로 값 전달하기
+
+제너레이터를 옵저버로서 사용하는 경우 `next(value)`를 통해 값을 전달하고 `yield`를 통해 값을 전달받을 수 있습니다:
+
+```js
+function* dataConsumer() {
+  console.log('시작');
+  console.log(`1. ${yield}`); // A
+  console.log(`2. ${yield}`); // B
+  return 'result';
+}
+```
+
+이제 이를 사용하는 법을 살펴봅시다:
+
+```js
+const gen = dataConsumer();
+
+console.log(gen.next());
+// 시작
+// { value: undefined, done: false }
+```
+
+위와 같이 제너레이터 객체 `gen`의 `next()`를 호출하면 "시작"을 출력하고, A에 있는 첫 번째 `yield`의 값을 반환합니다. 이 때 `yield`가 아무것도 명시적으로 반환하고 있지 않으므로 `undefined`가 반환됩니다.
+
+이제 A의 `yield`와 B의 `yield`에 값을 전달해봅시다:
+
+```js
+console.log(gen.next('a'));
+// 1. a
+// { value: undefined, done: false }
+
+console.log(gen.next('b'));
+// 2. b
+// { value: result, done: true }
+```
+
+여기서 볼 수 있듯이, `next()`는 *비대칭적*으로 동작합니다. 즉, 이전에 실행된 `yield`에 값을 전달하지만, 그 다음에 나오는 `yield`의 값을 반환하게 됩니다. 하지만 이는 어쩔 수 없는 제너레이터의 특성입니다
+
+### return()과 throw()로 값 전달하기
+
+`return(value)`와 `throw(value)` 또한 `next(value)`와 유사하게 동작합니다:
+
+- **return(value)**: 적절한 `yield` 위치에서 `return value;`를 수행.
+- **throw(value)**: 적절한 `yield` 위치에서 `throw value;`를 수행.
+
+```js
+/* return(value)를 수행하는 경우 */
+
+function* genFunc() {
+  yield 1;
+  yield 2;
+  yield 3;
+  yield 4;
+}
+
+const gen = genFunc();
+console.log(gen.next()); // { value: 1, done: false }
+console.log(gen.next()); // { value: 2, done: false }
+console.log(gen.return(100)); // { value: 100, done: true }
+console.log(gen.next()); // { value: undefined, done: true }
+```
+
+```js
+/* throw(value)를 수행하는 경우 */
+
+function* genFunc() {
+  try {
+    yield 1;
+    yield 2;
+    yield 3;
+  } catch (error) {
+    yield error;
+  }
+}
+
+const gen = genFunc();
+console.log(gen.next()); // { value: 1, done: false }
+console.log(gen.next()); // { value: 2, done: false }
+console.log(gen.return('I am an error')); // { value: 'I am an error', done: false }
+console.log(gen.next()); // { value: undefined, done: true }
+```
+
 ## References
 
 [Exploring ES6](https://exploringjs.com/es6/ch_generators.html)
