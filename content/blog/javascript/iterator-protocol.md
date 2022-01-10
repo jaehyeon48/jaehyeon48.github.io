@@ -56,6 +56,45 @@ IterationResult 객체의 `value`와 `done` 속성이 나타내는 것은 다음
 
 `for...of` 문의 `break`을 사용하는 경우 혹은 예외 상황과 같이, `iteration result` 객체의 `done` 속성이 `true`가 되기 전에 iteration이 종료되는 경우도 있습니다. 이 경우 자바스크립트 엔진은 `iterator` 객체에 `return()` 메서드가 존재하는지 살펴보고 만약 존재한다면 이 메서드를 아무런 인자 없이 호출합니다. 이때 `return()` 메서드 또한 반드시 `iteration result` 객체를 반환해야만 하는데, 비록 반환된 객체의 속성이 무시되기는 하지만 그렇다고 원시 타입을 반환하면 에러가 발생합니다. `return()` 메서드는 주로 iteration 동작을 종료한 뒤 클린업 작업을 수행해야 할 때, 예기치 못한 에러 등으로 인해 동작이 중간에 종료되는 경우에도 정상적으로 클린업 작업을 수행하기 위해 사용합니다.
 
+## Iterable 객체를 iterate 하는 방법
+
+`Iterable` 객체를 iterate 하는 방법은 다음과 같습니다:
+
+1. `Iterable` 객체의 `@@iterator` 메서드를 호출하여 해당 객체의 `iterator` 객체를 획득합니다.
+2. `iterator` 객체가 반환하는 `iteration result` 객체의 `done` 속성값이 `true`가 될 때까지 `next()` 메서드를 호출합니다.
+
+이를 그림으로 나타내면 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/iterator-protocol/how_iteration_works_under_the_hood.png" alt="How iteration works under the hood">
+    <figcaption>Iterable 객체를 iterate 하는 방법</figcaption>
+</figure>
+
+이를 이용하여 어떤 `iterable` 객체에 대한 일반적인 `for...of` 문을 다음 코드와 같이 작성할 수 있습니다:
+
+```js
+const iterable = [1, 2, 3];
+const iterator = iterable[Symbol.iterator]();
+
+for (let it = iterator.next(); !it.done; it = iterator.next()) {
+  console.log(it.value);
+} // 1, 2, 3
+
+
+// for...of 내부에서 자동으로 iterator 메소드를 호출하여 iterator 객체를 사용합니다
+for (const elem of iterable) {
+    console.log(elem);
+} // 1, 2, 3
+```
+
+<br />
+
+`iterable`, `iterator` 객체의 주요한 특징 중 하나는, 이 객체들이 본질적으로 lazy 한 특성을 지닌다는 것입니다다. 즉, 다음 값을 얻기 위해 계산을 해야할 때, 해당 값이 실제로 필요한 시점까지 그 계산을 미루는 것입니다.
+
+예를 들어 아주 긴 문자열을 공백으로 분리하여 여러 단어들로 토큰화 하는 경우를 생각해봅시다. `.split()` 메소드를 사용하면 손쉽게 할 수 있지만, 이렇게 하면 분리하여 얻은 첫 번째 단어를 사용하기도 전에 미리 모든 문자열을 처리해놓게 됩니다. 만약 이렇게 했다가 나중에 알고보니 처음 몇개의 단어만 사용하고 나머지는 사용하지 않게 된다면 불필요한 메모리 낭비를 초래하게 됩니다.
+
+또한 `iterable`, `iterator` 프로토콜을 통해 배열과 같이 주로 iteration의 대상이 되는 자료 구조 이외의 어느 자료구조라도 손쉽게 iteration을 할 수 있게 됩니다.
+
 ## Reference
 
 [Iteration protocols - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols)
