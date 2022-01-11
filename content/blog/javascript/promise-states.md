@@ -1,11 +1,9 @@
 ---
-title: '자바스크립트 프로미스'
+title: '자바스크립트 프로미스와 프로미스 상태들'
 date: 2021-12-31
 category: 'JavaScript'
 draft: false
 ---
-
-\*현재 작성중인 포스트입니다.
 
 ## 프로미스란?
 
