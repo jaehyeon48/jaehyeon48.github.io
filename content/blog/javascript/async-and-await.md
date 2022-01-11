@@ -185,3 +185,5 @@ func end
 [async function - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
 
 [JavaScript for impatient programmers (ES2021 edition)](https://exploringjs.com/impatient-js/)
+
+[JavaScript Visualized: Promises & Async/Await - Lydia Hallie](https://dev.to/lydiahallie/javascript-visualized-promises-async-await-5gke#asyncawait)
