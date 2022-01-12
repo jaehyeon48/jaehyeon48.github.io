@@ -104,3 +104,9 @@ draft: false
 #### 5
 
 엑세스 토큰 요청을 받은 인가 서버는 우선 클라이언트를 인증한 다음 인가 코드의 유효성을 검사하고, 넘겨받은 redirection URI가 3번에서 사용된 URI와 동일한지 체크합니다. 유효성 검증이 통과되면 인가 서버는 엑세스 토큰을 반환합니다. 이때 리프레쉬 토큰또한 함께 반환될 수도 있습니다.
+
+## References
+
+[rfc6749](https://datatracker.ietf.org/doc/html/rfc6749)
+[What is OAuth 2.0? - auth0](https://auth0.com/intro-to-iam/what-is-oauth-2/)
+[An Introduction to OAuth 2 - DigitalOcean](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2)
