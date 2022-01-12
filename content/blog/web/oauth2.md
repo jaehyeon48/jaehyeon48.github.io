@@ -68,7 +68,7 @@ draft: false
 인가 코드의 흐름을 그림으로 나타내면 다음과 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/oauth2/auth_code_flow.png" alt="OAuth 2.0 authorization code flow" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/oauth2/authorization_code_flow.png" alt="OAuth 2.0 authorization code flow" />
 </figure>
 
 #### 1
