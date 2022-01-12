@@ -47,6 +47,8 @@ draft: false
 5. 발급받은 엑세스 토큰을 가지고 클라이언트는 자원 서버에 가서 제한된 자원을 요청합니다.
 6. 자원 서버는 엑세스 토큰의 유효성을 검사한 뒤, 유효한 엑세스 토큰인 경우 클라이언트의 요청에 응답합니다.
 
+이때, 클라이언트가 자원 소유자로부터 승인을 받는 과정(1~2번)은 인가 서버를 매개로 하는 방식이 선호됩니다. 이에 대해선 아래의 인가 코드 타입 섹션을 참고해주세요.
+
 ## 인가 승인 (Authorization Grant)
 
 앞서 살펴본 흐름에서 1~4번 과정은 승인을 받고 엑세스 토큰을 얻는 과정을 나타내고 있습니다. 인가 승인 타입은 애플리케이션이 인가를 요청할 때 사용된 방법과 API가 지원하는 타입에 따라 결정됩니다. OAuth 2.0은 서로 다른 상황에서 유용한 4개의 주요 승인 타입을 정의하고 있습니다:
@@ -56,3 +58,49 @@ draft: false
 - **기기 코드(Device Code)**: 스마트 TV와 같이 브라우저가 없거나 입력에 제한이 있는 기기에서 주로 사용됩니다.
 
 이외에도 [암묵적인(Implicit) 방법 타입](https://oauth.net/2/grant-types/implicit/)과 [비밀번호 타입](https://oauth.net/2/grant-types/password/)이 존재하지만 이 둘은 보안에 취약하기 때문에 권장되지 않는 방법입니다.
+
+### 인가 코드 타입
+
+인가 코드 타입에선 인가 서버가 엑세스 토큰 교환에 사용되는 1회용 **인가 코드**를 클라이언트에게 발급합니다. 이러한 교환 과정이 서버 내에서 안전하게(즉, private 하게) 이뤄질 수 있기 때문에 전통적인 웹 앱에 최적화된 방법이라 할 수 있습니다. 리디렉션을 기반으로 동작하기 때문에 반드시 애플리케이션은 유저 에이전트(브라우저)와 상호작용할 수 있어야 하고, 유저 에이전트를 통해 들어오는 API 인가 코드를 받을 수 있어야 합니다.
+
+물론 모바일/네이티브 앱이나 SPA에서도 사용될 수는 있지만 이 경우 클라이언트 시크릿이 안전하게 저장될 수 없기 때문에 [Authorization Code with PKCE grant](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce) 방법을 사용하는 것이 더 좋습니다.
+
+인가 코드의 흐름을 그림으로 나타내면 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/oauth2/auth_code_flow.png" alt="OAuth 2.0 authorization code flow" />
+</figure>
+
+#### 1
+
+클라이언트가 자원 소유자의 유저 에이전트를 통해 인가 endpoint에 접근합니다. 이때 클라이언트는 클라이언트 id, 자원 요청 범위(scope), 지역 상태, 그리고 접근이 허가(혹은 거절)된 경우 유저 에이전트가 다시 되돌아올 리디렉션 URI를 포함합니다.
+
+흔히 아래와 비슷한 링크를 이용하는 경우가 많습니다:
+
+<p>https://github.com/login/oauth/authorize?client_id=<code class="language-text">CLIENT_ID</code>&redirect_uri=<code class="language-text">REDIRECT_URI</code>&scope=<code class="language-text">SCOPE</code>&state=<code class="language-text">STATE</code></p>
+
+#### 2
+
+인가 서버는 우선 자원 소유자를 인증한 다음, 자원 소유자로 하여금 인가 요청을 승인할지 거절할지 선택하도록 합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/oauth2/github_authentication.jpg" alt="GitHub authentication" />
+    <figcaption>깃헙에서 자원 소유자를 인증하는 절차. 출처: https://help.victorops.com/knowledge-base/github-authentication-guide/</figcaption>
+</figure>
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/oauth2/github_authorization.jpg" alt="GitHub authorization" />
+    <figcaption>깃헙에서 자원 소유자가 요청을 승인할 것인지를 묻는 절차. 출처: https://help.victorops.com/knowledge-base/github-authentication-guide/</figcaption>
+</figure>
+
+#### 3
+
+자원 소유자가 요청을 승인하면 인가 서버는 유저 에이전트를 1번에서 제공한 redirect URI로 리디렉션 시킵니다. 이때 redirection URI에는 인가 코드와 클라이언트가 이전에 제공한 지역 상태가 포함됩니다.
+
+#### 4
+
+이제 클라이언트는 방금 받은 인가 코드를 가지고 인가 서버의 토큰 endpoint에 엑세스 토큰을 요청합니다. 이때 검증을 위해 인가 코드를 얻는 데 사용한 redirection URI도 요청에 함께 포함합니다.
+
+#### 5
+
+엑세스 토큰 요청을 받은 인가 서버는 우선 클라이언트를 인증한 다음 인가 코드의 유효성을 검사하고, 넘겨받은 redirection URI가 3번에서 사용된 URI와 동일한지 체크합니다. 유효성 검증이 통과되면 인가 서버는 엑세스 토큰을 반환합니다. 이때 리프레쉬 토큰또한 함께 반환될 수도 있습니다.
