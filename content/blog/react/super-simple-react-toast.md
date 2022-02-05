@@ -447,3 +447,88 @@ export const ProgressBar = styled.div<ProgressBarProps>`
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/auto_delete.gif" alt="메시지 자동 삭제 기능 테스트" />
 </figure>
 
+## 메시지 위치 지정 기능 구현하기
+
+이번에는 토스트 메시지가 표시될 위치를 지정할 수 있도록 해보겠습니다. 일단은 화면의 왼쪽상·하단, 오른쪽상·하단에 위치할 수 있도록 하고, 이외의 위치는 추후에 구현하겠습니다:
+
+```tsx
+// styles.ts
+const positions: ToastPositions = {
+  topLeft: {
+    top: '12px',
+    left: '12px',
+  },
+  topRight: {
+    top: '12px',
+    right: '12px'  
+  },
+  bottomLeft: {
+    bottom: '12px',
+    left: '12px',
+  },
+  bottomRight: {
+    bottom: '12px',
+    right: '12px'  
+  },
+};
+
+export const Container = styled.div<ToastContainerProps>`
+  position: absolute;
+  z-index: 999;
+  top: ${({ position }) => positions[position].top};
+  bottom: ${({ position }) => positions[position].bottom};
+  left: ${({ position }) => positions[position].left};
+  right: ${({ position }) => positions[position].right};
+  
+  ...
+```
+
+이렇게 외부로부터 렌더링 위치를 prop으로 전달받도록 하였습니다:
+
+```tsx{3,11}
+// Toast.tsx
+  // ...
+  success(message: string, theme: Theme = 'light', position: ToastPosition = "topLeft", duration = this.#defaultDuration) {
+    const id = uuid();
+    this.#messages.push({
+      id,
+      message,
+      theme,
+      type: 'success',
+      duration,
+      position
+    });
+  }
+```
+
+그리고 root 컨테이너들의 스타일도 다음과 같이 수정하여 stacking context를 알맞게 생성하도록 했습니다:
+
+```html
+<!-- index.html -->
+<body>
+	<div id="toast-root"></div>
+	<div id="root"></div>
+</body>
+```
+
+```css
+/* GlobalStyle.tsx */
+  /* ... */
+  #root {
+    position: relative;
+  }
+
+  #toast-root {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+```
+
+여기까지 구현된 동작은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/positions.gif" alt="메시지 위치 테스트" />
+</figure>
