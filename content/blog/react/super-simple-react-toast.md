@@ -93,3 +93,86 @@ export default App;
 </figure>
 
 이제 기능을 구현해보도록 하겠습니다!
+
+## Toast 객체 생성
+
+우선 `Toast.tsx` 파일을 생성하고 아래와 같은 스켈레톤 코드를 작성하였습니다:
+
+```tsx
+// Toast.tsx
+
+class Toast {
+  success(message: string) {
+    console.log(message);
+  }
+  warning(message: string) {
+    console.log(message);
+  }
+  error(message: string) {
+    console.log(message);
+  }
+  info(message: string) {
+    console.log(message);
+  }
+}
+
+export default new Toast();
+```
+
+그리고 `App.tsx`에서 위 파일을 import하고 각 버튼에 연결시켜 주었습니다:
+
+```tsx
+// App.tsx
+
+// ...
+import toast from './Toast';
+
+// ...
+<button type="button" onClick={() => toast.success(messageText)}>success message</button>
+<button type="button" onClick={() => toast.warning(messageText)}>warning message</button>
+<button type="button" onClick={() => toast.info(messageText)}>info message</button>
+<button type="button" onClick={() => toast.error(messageText)}>error message</button>
+```
+
+현재 동작하는 모습은 아래와 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/toast_skeleton.gif" alt="Toast 스켈레톤 코드 동작" />
+</figure>
+
+이제 ReactDOM.render 메소드를 이용하여 `<div id="toast-root>`에 렌더링하도록 기능을 추가해보겠습니다.
+
+우선 `Toast` 클래스의 `constructor`에 root 요소인 `<div id="toast-root>`를 잡는 코드를 추가하겠습니다. 이때 `toast-root` 요소가 존재함을 확신할 수 있으므로 타입스크립트의 assertion을 이용하여 타입을 고정시켜 주겠습니다:
+
+```tsx
+class Toast {
+  #rootElem;
+  constructor() {
+    this.#rootElem = document.getElementById('toast-root') as HTMLElement;
+  }
+  // ...
+```
+
+그 다음 각 메소드에 아래와 같은 코드를 작성하겠습니다:
+
+```tsx
+  // ...
+  success(message: string) {
+    render(<p>{message}</p>, this.#rootElem);
+  }
+  warning(message: string) {
+    render(<p>{message}</p>, this.#rootElem);
+  }
+  error(message: string) {
+    render(<p>{message}</p>, this.#rootElem);
+  }
+  info(message: string) {
+    render(<p>{message}</p>, this.#rootElem);
+  }
+```
+
+현재 동작하는 모습은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/render_test.gif" alt="Toast 렌더링 테스트" />
+</figure>
