@@ -297,3 +297,75 @@ export const Container = styled.div<Type>`
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/style_test.gif" alt="Toast 메시지 스타일 테스트" />
 </figure>
+
+## Toast 메시지 여러개 띄우기 & 지우기
+
+하지만 아직 토스트 메시지를 단 하나밖에 띄우지 못한다는 단점이 있습니다. 이를 해결하기 위해 우선 `Toast` 클래스에 메시지를 담을 `messages` 배열을 생성하고, `ToastMessage` 컴포넌트에 이 `messages` 배열을 넘기도록 수정하겠습니다 (`messages` 배열은 큐의 역할을 합니다). 그리고 이 `messages` 배열에는 각각의 메시지 데이터를 저장하는 객체를 `push` 합니다. 이제 여러 개의 메시지가 존재하므로 각 메시지를 구분할 `id` 속성도 추가하였습니다:
+
+```tsx
+// Toast.tsx
+class Toast {
+  // ...
+  #messages: Message[];
+  constructor() {
+    this.#messages = [];
+  }
+
+  success(message: string, theme: Theme = 'light') {
+    this.#messages.push({
+      id: this.#messages.length,
+      message,
+      theme,
+      type: 'success'
+    });
+
+    render(<ToastMessage messages={this.#messages} closeMessage={this.#closeMessage.bind(this)} />, this.#rootElem);
+  }
+
+  // ...
+```
+
+그리고 `ToastMessage` 컴포넌트를 아래와 같이 수정하였습니다:
+
+```tsx
+// ToastMessage.tsx
+// ...
+export default function ToastMessage({ messages, closeMessage }: Props) {
+  // ...
+
+  return (
+    <>
+      {messages.map(({ id, message, theme, type }) => (
+        <Style.Container currentTheme={theme} messageType={type} key={id}>
+          {getIcon(type)}
+          <Style.Message currentTheme={theme} messageType={type}>{message}</Style.Message>
+          <Style.CloseButton type="button" currentTheme={theme} messageType={type} onClick={() => closeMessage(id)}>
+            <Icon.Close />
+          </Style.CloseButton>
+        </Style.Container>
+      ))}
+    </>
+  );
+}
+```
+
+또한 위에서 볼 수 있듯이 각 메시지를 지우는 함수인 `closeMessage` 메서드도 구현하여 `ToastMessage` 컴포넌트에 prop으로 넘깁니다:
+
+```tsx
+// Toast.tsx
+class Toast {
+  // ...
+  #closeMessage(idToDelete: number) {
+    const indexToDelete = this.#messages.findIndex(({ id }) => id === idToDelete);
+    this.#messages.splice(indexToDelete, 1);
+    render(<ToastMessage messages={this.#messages} closeMessage={this.#closeMessage.bind(this)} />, this.#rootElem);
+  }
+
+  // ...
+```
+
+이렇게 해서 구현된 동작은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/multiple_messages.gif" alt="메시지 여러 개 띄우기 및 지우기 테스트" />
+</figure>
