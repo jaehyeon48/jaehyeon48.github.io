@@ -369,3 +369,81 @@ class Toast {
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/multiple_messages.gif" alt="메시지 여러 개 띄우기 및 지우기 테스트" />
 </figure>
+
+## 일정시간 이후 자동으로 메시지 삭제 구현
+
+이제 `setTimeout` 함수를 이용하여 일정 시간 이후에 자동으로 메시지를 삭제하는 기능을 구현해보겠습니다:
+
+```tsx
+// Toast.tsx
+class Toast {
+  // ...
+  #autoCloseMessage(duration: number, id: string) {
+    setTimeout(() => {
+      this.#closeMessage(id);
+    }, duration, this);
+  }
+```
+
+이때, 이전에 구현한 코드에선 각 메시지 객체의 `id`를 배열의 인덱스로 했었습니다. 하지만 이렇게 하니까 메시지를 마구잡이로 띄웠을때 메시지들이 제대로 사라지지 않는 버그가 있어서 각 메시지 객체의 `id` 값으로 `uuid`를 이용하기로 했습니다:
+
+```tsx{4}
+class Toast {
+  // ...
+  success(message: string, theme: Theme = 'light', duration = this.#defaultDuration) {
+    const id = uuid();
+    this.#messages.push({
+      id,
+      message,
+      theme,
+      type: 'success'
+    });
+
+    render(<ToastMessage messages={this.#messages} closeMessage={this.#closeMessage.bind(this)} />, this.#rootElem);
+    this.#autoCloseMessage(duration, id);
+  }
+}
+```
+
+또한, 메시지의 `duration`을 시각적으로 알려주는 `progressBar`도 추가하였습니다:
+
+```tsx{9}
+// ToastMessage.tsx
+// ...
+<Style.Container currentTheme={theme} messageType={type} key={id}>
+  {getIcon(type)}
+  <Style.Message currentTheme={theme} messageType={type}>{message}</Style.Message>
+  <Style.CloseButton type="button" currentTheme={theme} messageType={type} onClick={() => closeMessage(id)}>
+    <Icon.Close />
+  </Style.CloseButton>
+  <Style.ProgressBar currentTheme={theme} messageType={type} duration="3s" />
+</Style.Container>
+```
+
+```tsx
+// styles
+export const ProgressBar = styled.div<ProgressBarProps>`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 5px;
+  background-color: ${({ currentTheme, messageType }) => ToastTheme[currentTheme][messageType].progressBarColor};
+  animation: progressBar ${({ duration }) => duration} linear;
+
+  @keyframes progressBar {
+    0% {
+      width: 100%;
+    }
+    100% {
+      width: 0%;
+    }
+  }
+`;
+```
+
+이로써 구현된 동작은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/auto_delete.gif" alt="메시지 자동 삭제 기능 테스트" />
+</figure>
+
