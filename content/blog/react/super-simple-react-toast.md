@@ -19,3 +19,77 @@ draft: false
 이때, 현재의 DOM root 바깥에 있는 root에 렌더링하는 방법은 ReactDOM.render 말고도 [React Portals](https://reactjs.org/docs/portals.html)를 이용할 수도 있습니다. 하지만 제가 원하는 방식은 `toast.success('success message')`와 같이 함수 호출을 통해 메시지를 렌더링하는 방식이기 때문에 portal 대신 render를 사용하기로 했습니다. 물론 render를 사용하면 render를 호출한 부모의 lifecycle과는 별개로 동작하므로 기존 트리의 Context 와 같은 부분에는 접근할 수 없다는 단점이 있습니다만 토스트 메시지를 렌더링하는 상황에선 별 상관없을 것이라 생각했습니다.
 
 React portal과 render에 관해선 [이 블로그](https://jaeseokim.dev/React/React-Portal_Render%EC%9D%98_%EC%B0%A8%EC%9D%B4%EC%A0%90_%ED%99%9C%EC%9A%A9%EB%B0%A9%EC%95%88_%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0/#portal%EC%9D%98-%ED%99%9C%EC%9A%A9-%EB%B0%A9%EC%95%88)를 참고했습니다.
+
+## 세팅
+
+우선 타입스크립트 CRA를 이용하여 프로젝트를 생성한 다음, 현재 프로젝트에서 styled-components를 사용하고 있기 때문에 마찬가지로 라이브러리를 설치해주고 `index.html`과 `App.tsx`를 다음과 같이 작성해주었습니다:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+		<title>Super Simple React Toast</title>
+	</head>
+	<body>
+		<div id="root"></div>
+		<div id="toast-root"></div>
+	</body>
+</html>
+```
+
+```tsx
+import { SyntheticEvent, useState } from 'react';
+import { ThemeProvider, DefaultTheme } from 'styled-components';
+import GlobalStyle from './GlobalStyle';
+
+const lightTheme: DefaultTheme= {
+  bgColor: '#F8F9FA'
+}
+
+const darkTheme: DefaultTheme = {
+  bgColor: '#1A1C34'
+}
+
+function App() {
+  const [messageText, setMessageText] = useState('');
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
+  
+  function handleChange(e: SyntheticEvent) {
+    const target = e.target as HTMLInputElement;
+    setMessageText(target.value);
+  }
+
+  function toggleTheme() {
+    setCurrentTheme(prev => prev === 'light' ? 'dark' : 'light');
+  }
+
+  return (
+    <ThemeProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyle />
+      <button type="button">success message</button>
+      <button type="button">warning message</button>
+      <button type="button">info message</button>
+      <button type="button">error message</button>
+      <br />
+      <br />
+      <input type="text" value={messageText} onChange={handleChange} placeholder="메시지 내용" />
+      <br />
+      <br />
+      <button type="button" onClick={toggleTheme}>toggle theme</button>
+    </ThemeProvider>
+  );
+}
+
+export default App;
+```
+
+현재 앱의 theme을 토글하는 버튼과, 성공/경고/안내/에러 메시지를 띄우는 버튼 및 메시지 내용을 적는 input을 작성했습니다. theme 토글은 정상적으로 동작하지만 토스트 메시지와 관련된 기능은 아직 구현하지 않아 작동하지 않는 상태입니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/app_setting.gif" alt="앱 초기 설정 화면" />
+</figure>
+
+이제 기능을 구현해보도록 하겠습니다!
