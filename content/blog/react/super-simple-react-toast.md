@@ -176,3 +176,124 @@ class Toast {
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/render_test.gif" alt="Toast 렌더링 테스트" />
 </figure>
+
+## Toast 컴포넌트 생성
+
+이제 Toast 컴포넌트를 생성해보겠습니다:
+
+```tsx
+// components/ToastMessage.tsx
+import * as Style from './styles';
+import * as Icon from '../icons';
+
+type MessageType = 'success' | 'warning' | 'error' | 'info';
+
+interface Props {
+  message: string;
+  type: MessageType;
+}
+
+export default function ToastMessage({ message, type }: Props) {
+  function getIcon() {
+    if (type === 'success') return <Icon.Success />;
+    if (type === 'warning') return <Icon.Warning />;
+    if (type === 'error') return <Icon.Error />;
+    if (type === 'info') return <Icon.Info />;
+  }
+
+  return (
+    <Style.Container>
+      <Style.IconContainer>{getIcon()}</Style.IconContainer>
+      <Style.Message>{message}</Style.Message>
+      <Style.CloseButton type="button">
+        <Icon.Close />
+      </Style.CloseButton>
+    </Style.Container>
+  );
+}
+```
+
+```tsx
+// components/styles.ts
+import styled from 'styled-components';
+
+export const Container = styled.div`
+  display: flex;
+  padding: 1em;
+`;
+
+export const IconContainer = styled.div`
+  & > svg {
+
+  }
+`;
+
+export const Message = styled.p`
+`;
+
+export const CloseButton = styled.button``;
+```
+
+```tsx
+// Toast.tsx
+  // ...
+  success(message: string) {
+    render(<ToastMessage message={message} type="success" />, this.#rootElem);
+  }
+
+  warning(message: string) {
+    render(<ToastMessage message={message} type="warning" />, this.#rootElem);
+  }
+
+  error(message: string) {
+    render(<ToastMessage message={message} type="error" />, this.#rootElem);
+  }
+  
+  info(message: string) {
+    render(<ToastMessage message={message} type="info" />, this.#rootElem);
+  }
+```
+
+현재 동작 화면은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/skeleton_message_component.gif" alt="Toast 메시지 컴포넌트 렌더링 테스트" />
+</figure>
+
+일단 현재까지 전반적인 기능은 잘 동작하므로, 각 메시지 타입별 스타일을 추가해봅시다. 전체 코드는 너무 길어서 일부만 적겠습니다:
+
+```tsx
+// components/styles.ts
+export const Container = styled.div<Type>`
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 30px;
+  border-radius: 5px 5px 0px 0px;
+  padding: 0.7em;
+  background-color: ${({ currentTheme, messageType }) => ToastTheme[currentTheme][messageType].backgroundColor};
+
+  & > svg {
+    fill: ${({ currentTheme, messageType }) => ToastTheme[currentTheme][messageType].color};
+    margin-right: 0.5em;
+  }
+`;
+
+ // ...
+```
+
+토스트 메시지는 styled-components의 [ThemeProvider](https://styled-components.com/docs/advanced#theming) 컨텍스트와는 다른 트리에 렌더링되므로 기본적으로 제공되는 `theme` prop을 사용할 수 없습니다. 따라서 토스트 메시지의 theme을 지원하기 위해 메시지를 호출하는 메서드의 API를 다음과 같이 수정하였습니다:
+
+```tsx{3-4}
+// Toast.tsx
+  // ...
+  success(message: string, theme: Theme = 'light') {
+    render(<ToastMessage theme={theme} message={message} type="success" />, this.#rootElem);
+  }
+```
+
+현재 동작 화면은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/style_test.gif" alt="Toast 메시지 스타일 테스트" />
+</figure>
