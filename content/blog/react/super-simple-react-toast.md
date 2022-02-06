@@ -532,3 +532,55 @@ export const Container = styled.div<ToastContainerProps>`
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/positions.gif" alt="메시지 위치 테스트" />
 </figure>
+
+## ...라고 할뻔 했으나
+
+하지만 위와 같이 각 토스트 메시지별로 위치를 입력받게되면 각 메시지들의 좌표를 계산하는 것이 어려워서 아래와 같이 토스트 메시지들을 표시하는 컨테이너를 만들고 해당 컨테이너의 위치만 수정하도록 하였습니다:
+
+```tsx{3}
+// ToastMessage.tsx
+  return (
+    <Style.ToastContainer position={position}>
+      {messages.map(({ id, message, theme, type, duration }) => (
+        <Style.Toast currentTheme={theme} messageType={type} key={id}>
+    ...
+```
+
+```tsx
+// styles.tsx
+export const ToastContainer = styled.div<ToastContainerProps>`
+  position: absolute;
+  z-index: 999;
+  top: ${({ position }) => positions[position].top};
+  bottom: ${({ position }) => positions[position].bottom};
+  left: ${({ position }) => positions[position].left};
+  right: ${({ position }) => positions[position].right};
+`;
+```
+
+```tsx{3,12}
+class Toast {
+  // ...
+  #position: ToastPosition;
+  constructor(position: ToastPosition = 'topLeft') {
+    // ...
+    this.#position = position;
+  }
+
+  // ...
+}
+
+export default new Toast("topRight");
+```
+
+동작:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/positions_2.gif" alt="메시지 위치 테스트 2" />
+</figure>
+
+그리고 각 토스트 메시지의 간격을 조정하면 다음과 같게 됩니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/positions_3.gif" alt="메시지 위치 테스트 최종" />
+</figure>
