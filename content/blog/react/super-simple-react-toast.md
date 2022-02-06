@@ -584,3 +584,13 @@ export default new Toast("topRight");
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/positions_3.gif" alt="메시지 위치 테스트 최종" />
 </figure>
+
+## 애니메이션 적용
+
+마지막으로, [react-toastify](https://github.com/fkhadra/react-toastify/blob/master/scss/animations/_flip.scss)에 있는것을 이용하여 메시지가 나타날 때 애니메이션을 적용해보았습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/animation.gif" alt="메시지 애니메이션" />
+</figure>
+
+하지만 메시지가 사라질때 애니메이션을 어떻게 적용하는지는 아직 모르겠습니다 😂 좀 더 알아봐야겠습니다
