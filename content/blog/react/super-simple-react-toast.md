@@ -594,3 +594,55 @@ export default new Toast("topRight");
 </figure>
 
 하지만 메시지가 사라질때 애니메이션을 어떻게 적용하는지는 아직 모르겠습니다 😂 좀 더 알아봐야겠습니다
+
+## 메시지 위치를 동적으로 설정할 수 있도록 수정하기
+
+이전 방식에선 메시지 위치를 최초에 한 번만 설정하고, 이후 동적으로는 변경할 수 없는 구조였습니다. 하지만 각 메서드를 호출할 때 동적으로 메시지 위치를 지정할 수 있도록 구조를 수정해보겠습니다:
+
+```tsx
+// toast.tsx
+const positions = ['topLeft', 'topRight', 'topCenter', 'bottomLeft', 'bottomRight', 'bottomCenter'] as const;
+
+class Toast {
+  // ...
+  #messages: Map<ToastPosition, Message[]>;
+  constructor() {
+    this.#messages = new Map(positions.map(position => [position, []]));
+  }
+
+  // ...
+```
+
+우선 메시지 객체가 저장되는 `messages` 배열(큐)을 위와 같이 각 포지션을 key로 하는 `Map` 자료구조로 수정하였습니다. 그 다음 메시지를 렌더링할 때 아래와 같이 해주었습니다:
+
+```tsx{2,4,12-23}
+ // ...
+ success(message: string, theme: Theme = 'light', position: ToastPosition = 'topCenter', duration = this.#defaultDuration) {
+    const id = uuid();
+    (this.#messages.get(position) as Message[]).push({
+      id,
+      message,
+      theme,
+      type: 'success',
+      duration
+    });
+
+    render(
+      <>
+        {positions.map(position => (
+          <ToastMessage 
+            position={position}
+            messages={this.#messages.get(position) as Message[]}
+            closeMessage={this.#closeMessage.bind(this)}
+        />
+        ))}
+      </>,
+      this.#rootElem
+    );
+    this.#autoCloseMessage(duration, position, id);
+  }
+```
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/dynamic_positions.gif" alt="동적으로 메시지 위치 지정" />
+</figure>
