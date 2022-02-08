@@ -70,3 +70,9 @@ draft: false
 ## 구현2
 
 위 구현을 바탕으로, 특정 컨테이너가 아니라 앱의 스크롤을 바꾸는 `GlobalCustomScroll`을 구현해보았습니다. 글로벌 스크롤은 `root` 요소의 자식이 아니라 `body` 요소의 자식으로 렌더링하기 위해 `createPortal`을 사용했습니다: [데모 링크](https://codesandbox.io/s/react-custom-scrollbar-demo-with-global-scroll-s1v0c)
+
+## 남은 과제
+
+- 화면 resize시 그에 맞춰 스크롤바 thumb의 높이 다시 계산하기
+- 스크롤바 `thumb`의 크기가 매우매우 작아지는 경우(즉, `outerH` 대비 `innerH`가 너무 커지는 경우)엔 어떻게 할것인가?
+- 실제 스크롤바처럼 마우스로 `thumb`를 잡고 움직일 수 있도록 구현하기
