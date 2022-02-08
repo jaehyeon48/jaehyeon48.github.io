@@ -20,7 +20,7 @@ draft: false
 우선, 커스텀 스크롤바를 구현하기 위해 필요한 기초 계산들을 수행했습니다. 스크롤바는 주로 리스트, 테이블 등에서 사용되지 싶은데 리스트를 예로 들자면 바깥 컨테이너는 `<ul>`, 안쪽에는 여러 개의 `<li>`를 담고 있는 내부 컨테이너 `<div>` 등이 존재한다고 했을때 이를 그림으로 나타내면 아래와 같을겁니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/basic_layout" alt="기본 레이아웃" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/basic_layout.png" alt="기본 레이아웃" />
 </figure>
 
 일반적으로 내부 컨테이너(`<div>` 등)에는 여러 개의 `<li>`, `<td>` 등이 존재할 것이고, 외부 컨테이너는 보통 `<ul>`, `<tbody>` 등의 요소가 사용될 것입니다. 그리고 외부 컨테이너엔 `overflow: hidden scroll;`과 같은 css 속성을 먹여주겠죠?
@@ -48,7 +48,7 @@ draft: false
 제가 생각한 로직은 다음과 같습니다. 일단 살펴보면 내부 컨테이너가 움직이는 y축 범위는 `0`(스크롤 제일 위) 부터 `innerH - outerH`(스크롤 제일 아래) 입니다. 하지만 이 범위를 그대로 `thumb`에 적용하면 아래 그림과 같이 됩니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/calculate_y_of_thumb_worng.png" alt="잘못된 thumb y좌표 구하기" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/calculate_y_of_thumb_wrong.png" alt="잘못된 thumb y좌표 구하기" />
 </figure>
 
 즉, 스크롤을 제일 아래로 내렸을 때 스크롤은 외부 컨테이너의 최상단에 위치하게 됩니다. 하지만 우리가 원하는 것은 거기서 `outer - thumbH` 만큼 더 내려오는 것이죠!
@@ -58,7 +58,7 @@ draft: false
 이에 착안하여 스크롤의 y축 범위를 구하는 방법은 아래 그림과 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/calculate_y_of_thumb_worng.png" alt="잘못된 thumb y좌표 구하기" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/calculate_height_of_thumb_final.png" alt="thumb y좌표 구하기 최종" />
 </figure>
 
 이제 모든 계산은 끝났으므로 이를 구현하기만 하면 됩니다!
