@@ -66,3 +66,7 @@ draft: false
 ## 구현1
 
 여기까지 결정한 사항들을 바탕으로, 커스텀 훅 기반으로 구현한 데모 링크입니다: [데모 링크](https://codesandbox.io/s/react-custom-scrollbar-demo-1-obn9b)
+
+## 구현2
+
+위 구현을 바탕으로, 특정 컨테이너가 아니라 앱의 스크롤을 바꾸는 `GlobalCustomScroll`을 구현해보았습니다. 글로벌 스크롤은 `root` 요소의 자식이 아니라 `body` 요소의 자식으로 렌더링하기 위해 `createPortal`을 사용했습니다: [데모 링크](https://codesandbox.io/s/react-custom-scrollbar-demo-with-global-scroll-s1v0c)
