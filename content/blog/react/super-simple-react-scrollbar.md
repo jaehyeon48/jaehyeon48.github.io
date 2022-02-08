@@ -31,7 +31,11 @@ draft: false
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-toast/calculate_height_of_thumb.png" alt="thumb 높이 구하기" />
 </figure>
 
-이때 두 번째 $innerH * thumbH = outerH^2$ 식에서, $innerH ≥ outerH$ 이므로 $thumbH ≤ outerH$임을 유추할 수 있을 것 같습니다.
+~~~이때 두 번째 $innerH * thumbH = outerH^2$ 식에서, $innerH ≥ outerH$ 이므로 $thumbH ≤ outerH$임을 유추할 수 있을 것 같습니다.~~~
+
+제가 잘못생각했습니다! innerH가 outerH보다 작은 경우가 있을 수 있고 이때 thumbH의 height는 0이 되겠네요 😂
+
+<br />
 
 `thumb`의 높이도 구했으면 마지막으로 `thumb`의 y좌표를 구해줄 차례입니다:
 
