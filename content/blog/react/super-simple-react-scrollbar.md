@@ -74,5 +74,29 @@ draft: false
 ## 남은 과제
 
 - 화면 resize시 그에 맞춰 스크롤바 thumb의 높이 다시 계산하기
-- 스크롤바 `thumb`의 크기가 매우매우 작아지는 경우(즉, `outerH` 대비 `innerH`가 너무 커지는 경우)엔 어떻게 할것인가?
+- ~~~스크롤바 `thumb`의 크기가 매우매우 작아지는 경우(즉, `outerH` 대비 `innerH`가 너무 커지는 경우)엔 어떻게 할것인가?~~~
 - 실제 스크롤바처럼 마우스로 `thumb`를 잡고 움직일 수 있도록 구현하기
+
+## 스크롤바 thumb의 크기가 매우 작아지는 케이스 처리
+
+이번엔 스크롤바 thumb의 크기가 매우 작아지는 경우에 대해서 처리해보겠습니다. 기본적인 아이디어는, 계산된 thumb의 높이가 일정 수준 이하로 내려가면 미리 설정해둔 최소 thumb 높이를 설정하고 thumb의 y좌표값을 보정해주는 것입니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/revised_thumb_h_concept.png" alt="최소 thumb 높이 조정" />
+</figure>
+
+위 그림처럼 원래의 thumb을 original thumb, 조정된 thumb을 revised thumb이라고 하고, original thumb의 y좌표를 y, revised thumb의 y좌표를 y'라고 해보겠습니다. 이때, 원래의 thumb을 최소 크기로 조정한다면 원래의 thumb과 조정된 thumb 간에는 `ΔH` 만큼의 차이가 발생하게 됩니다. 저는 thumb 높이를 보정하는 것의 핵심은 바로 이 `ΔH` 만큼의 차이를 y'에 반영해주는 것이라 생각했습니다. 이를 통해 도출한 식은 다음과 같습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/revised_thumb_h_calculation.png" alt="최소 thumb 높이 조정 계산" />
+</figure>
+
+이때 ymax값은 앞 섹션에서 구한 `innerH - thumbH`를 사용하면 되고, Δymax값은 (최소 thumb 높이 - 실제 thumb 높이)로 구할 수 있습니다.
+
+이것들을 반영하여 구현한 데모 링크입니다: [데모](https://codesandbox.io/s/react-scrollbar-revise-min-height-demo-q527h)
+
+이때, 글로벌 스크롤의 경우 스크롤을 올리고 내릴때 중간 중간에 이상하게 움직이는 버그가 있습니다. useCustomScrollBar 로직에는 이 같은 버그가 없는 것 같은데 버그의 원인은 아직 모르겠습니다. 기능적으로는 정상적으로 동작하는것으로 보아 페인팅 과정에서 무슨 문제가 일어나는 것 같습니다..? (예시를 위해 thumb의 너비를 크게 했습니다):
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/scrollbar_bug.gif" alt="최소 thumb 높이 조정 계산" />
+</figure>
