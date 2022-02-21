@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url> <loc>https://jaehyeon48.github.io/web/how-browsers-work/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/react/super-simple-react-scrollbar/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/react/super-simple-react-toast/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/algorithms/leetcode/238/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
@@ -46,8 +47,6 @@
 <url> <loc>https://jaehyeon48.github.io/web/samesite/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/software-architecture/refactoring-summary-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/javascript/browser-event-loop/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://jaehyeon48.github.io/web/how-browsers-work-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://jaehyeon48.github.io/web/how-browsers-work-2/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/git/git-pro-summary-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/javascript/closure-3/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/javascript/closure-2/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
