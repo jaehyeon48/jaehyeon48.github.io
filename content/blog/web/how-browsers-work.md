@@ -40,7 +40,7 @@ draft: false
     <figcaption>브라우저 네비게이션 단계.</figcaption>
 </figure>
 
-우선 첫 번째로 일어나는 일은, 올바른 장소로 찾아가는(navigate) 것입니다. 특정 웹 페이지를 찾아간다는 말은 해당 페이지에 대한 데이터(즉, 자원)가 어디에 있는지를 찾아낸다는 의미입니다.
+우선 첫 번째로 일어나는 일은, 올바른 장소로 찾아가는(navigate) 것입니다. 특정 웹 페이지를 찾아간다는 말은 해당 페이지에 대한 데이터가(즉, 자원) 어디에 있는지를 찾아낸다는 의미입니다.
 
 #### DNS Lookup
 
@@ -167,25 +167,25 @@ X-Firefox-Spdy: h2
     <figcaption>파싱 단계들.</figcaption>
 </figure>
 
-앞선 네비게이션 및 fetching 과정들을 통해 서버로부터 응답을 받기 시작하면 브라우저는 데이터를 파싱(분석)하기 시작합니다. 파싱 과정은 쉽게 말해 네트워크를 통해 서버로부터 전달받은 데이터를 DOM과 CSSOM(곧 살펴볼 예정)으로 변환하는 과정이라고 할 수 있습니다.
+앞선 네비게이션 및 fetching 과정들을 통해 서버로부터 응답을 받기 시작하면 브라우저는 데이터를 파싱(분석)하기 시작합니다. 파싱 과정은 쉽게 말해 네트워크를 통해 서버로부터 전달받은 HTML, CSS 데이터를 DOM과 CSSOM(곧 살펴볼 예정)으로 변환하는 과정이라고 할 수 있습니다.
 
 #### DOM 트리 생성
 
-우선 브라우저는 다운로드 한 HTML 파일을 분석하여 **DOM(Document Object Model)**이라는 객체 모델로 변환합니다. HTML, XML과 같이 마크업 언어로 작성된 문서들은 사람이 이해하긴 쉽지만, 컴퓨터가 사용하기엔 어려운 구조입니다. 따라서 문서를 프로그래밍 언어(주로 자바스크립트)로 쉽게 조작할 수 있는 형태로 문서를 트리 형태로 구조화한 것이 DOM 트리라고 할 수 있습니다. 일종의 API인 셈이지요.
+우선 브라우저는 다운로드 한 HTML 파일을 분석하여 **DOM(Document Object Model)**이라는 객체 모델로 변환합니다. HTML, XML과 같이 마크업 언어로 작성된 문서들은 사람이 이해하긴 쉽지만, 컴퓨터가 사용하기엔 어려운 구조입니다. 따라서 문서를 프로그래밍 언어(주로 자바스크립트)로 쉽게 조작할 수 있게 트리 형태로 구조화한 것이 DOM 트리라고 할 수 있습니다. 일종의 API인 셈이지요.
 
 HTML을 파싱하는 과정은 프로그래밍 언어를 파싱하는 일반적인 과정과는 사뭇 다릅니다. 몇 가지 이유는 다음과 같습니다:
 
 - HTML은 에러를 너그럽게 용납하기 때문입니다. 예를 들면 태그를 열고서 제대로 닫지 않는다든가(`<p>123`), 클래스 이름을 적을 때 따옴표를 쓰지 않는다든가(`<div class=abc></div>`), 중첩이 잘못 되었다든가(`<main><aside></main></aside>`)와 같은 경우들 대부분은 에러 없이 거의 정상적으로 표시됩니다.
 - HTML 파싱 프로세스 자체가 재진입(re-entrant)하는 특성을 갖습니다. 즉, 파싱 중에 자바스크립트의 `document.write()`등을 통해 새로운 요소가 추가될 수 있으므로 파싱 단계를 시작할 때의 최초 입력(원래의 HTML 문서)이 변경될 수 있습니다.
 
-이러한 이유로 인해 기존의 파싱 기법으로는 HTML을 해석할 수가 없기 때문에 브라우저들은 커스텀 parser를 구현하여 사용합니다.
+이러한 이유로 인해 기존의 파싱 기법으로는 HTML을 해석할 수가 없기 때문에 브라우저들은 커스텀 파서를 구현하여 사용합니다.
 
 HTML 파싱 알고리즘은 [HTML5 스펙](https://html.spec.whatwg.org/multipage/parsing.html)에 명시되어 있습니다. HTML 파싱 알고리즘은 크게 토큰화(tokenization)와 트리 구축(tree construction) 단계로 나눌 수 있습니다:
 
 - **토큰화 단계**: 위 HTML5 스펙에 따라 HTML 문서를 토큰으로 분리합니다. HTML 토큰에는 시작 태그(`<`), 종료 태그(`>`), 속성 이름, 속성값 등이 있습니다.
 - **트리 구축 단계**: 파싱된 토큰들을 DOM 트리 형태로 변환하는 과정입니다.
 
-앞서 말했듯이 DOM 트리는 HTML 문서의 구조를 나타내는 API 입니다. 이때 트리 형태로 나타내는 이유는 기본적으로 HTML에선 서로 다른 태그 간의 관계를 정의하고 있기 때문입니다. 어떤 태그가 다른 태그 안에 중첩되는 것과 같이요.
+앞서 말했듯이 DOM 트리는 HTML 문서의 구조를 나타내는 API 입니다. 이때 트리 형태로 나타내는 이유는 기본적으로 HTML에선 서로 다른 태그 간의 관계를 정의하고 있기 때문입니다. 어떤 태그가 다른 태그 안에 중첩되는 것처럼요.
 
 DOM 트리의 루트는 `<html>` 태그이며 트리의 각 요소를 DOM 노드라고 합니다. 당연한 말이겠지만 요소의 개수가 많을수록 DOM 트리를 만드는 데 시간이 더욱 오래 걸립니다. 파싱이 완료된 DOM 트리는 일반적으로 아래와 같은 형태가 됩니다:
 
@@ -238,7 +238,9 @@ CSSOM의 각 노드에는 해당 노드가 타겟으로 하는 DOM 요소의 스
 
 #### Render 트리 구축
 
-이 단계에선 DOM 트리와 CSSOM 트리를 합쳐 **렌더 트리(render tree)**를 만듭니다. 렌더 트리를 구축하는 과정은 일반적으로 다음과 같습니다:
+이 단계에선 DOM 트리와 CSSOM 트리를 합쳐 **렌더 트리(render tree)**를 만듭니다. 렌더 트리는 말 그대로 화면에 렌더링할 요소들의 정보들을 나타내는 자료 구조라고 보시면 될 것 같습니다. 
+
+렌더 트리를 구축하는 과정은 일반적으로 다음과 같습니다:
 
 1. DOM의 루트부터 시작하여 "visible" 한 요소를 탐색해 나갑니다.
    - 이때, 개인적으로 "visible" 한 요소의 의미를 "실재하는(existence)" 요소라고 생각합니다. 즉, 화면에 "실재(實在)"하는 요소들만 렌더 트리의 노드로 포함하는 것이죠. 실재하지 않는 요소라는 말은, 요소가 눈에 보이지도 않을 뿐 더러 화면 상에 아무런 공간도 차지하지 않는다는 것입니다.
@@ -324,7 +326,7 @@ CSSOM의 각 노드에는 해당 노드가 타겟으로 하는 DOM 요소의 스
     <figcaption>z-index가 적용된 요소를 그리는 예시. 출처: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-따라서 페인트 단계에서 메인 스레드는 레이아웃 트리를 이용하여 **페인트 기록(paint records)**을 만듭니다. 페인트 기록은 페인팅 과정을 기록한 노트라고 볼 수 있습니다. "바탕 먼저 그리고, 그 다음 텍스트, 그 다음 사각형" 과 같이 말이죠. `<canvas>`를 사용해보셨다면 이와 비슷한 경험을 해보신적이 있으실 겁니다.
+따라서 페인트 단계에서 메인 스레드는 레이아웃 트리를 이용하여 **페인트 기록(paint records)**을 만듭니다. 페인트 기록은 페인팅 과정을 어떻게 수행할지를 기록한 노트라고 볼 수 있습니다. "바탕 먼저 그리고, 그 다음 텍스트, 그 다음 사각형" 과 같이 말이죠. `<canvas>`를 사용해보셨다면 이와 비슷한 경험을 해보신적이 있으실 겁니다.
 
 CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS21/zindex.html)서 보실 수 있습니다.
 
@@ -339,18 +341,18 @@ CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS2
     <figcaption>가장 단순한 그리기 방법 출처: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-하지만 현대의 브라우저들은 **합성(composition)** 이라는 더욱 정교한 기법으로 화면을 그립니다. 합성이란 페이지를 레이어(layer)로 나눈 다음, 각 레이어를 따로따로 래스터화한 뒤 다시 하나의 페이지로 합치는 기법입니다. 만약 유저가 스크롤을 하면 레이어들은 이미 래스터화가 완료된 상태이므로 브라우저가 할 일은 단순히 레이어들을 새로 합치는 것입니다. 애니메이션도 이와 같은 방식으로 레이어들을 새로 합쳐서 구현할 수 있습니다:
+하지만 현대의 브라우저들은 **합성(composition)** 이라는 더욱 정교한 기법으로 화면을 그립니다. 합성이란 페이지를 레이어(layer)로 나눈 다음, 각 레이어를 따로따로 래스터화한 뒤 다시 하나의 페이지로 합치는 기법입니다. 만약 유저가 스크롤을 하면 레이어들은 이미 래스터화가 완료된 상태이므로 브라우저는 단순히 레이어들을 새로 합치기만 하면 됩니다. 애니메이션도 이와 같은 방식으로 레이어들을 새로 합쳐서 구현할 수 있습니다:
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/composition.gif" alt="합성." />
     <figcaption>합성. 출처: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-요소가 어떤 레이어 위에 가야 하는지를 알아내기 위해 메인 스레드는 레이아웃 트리를 이용하여 **레이어 트리(layer tree)**를 만들어 냅니다. `<video>`, `<canvas>` 요소 및 CSS의 `opacity`, 3D `transform` 속성 등은 새로운 레이어를 생성하도록 합니다. 또한, 슬라이드 메뉴와 같이 페이지의 어느 부분이 별도의 레이어로 구성되어야 하는데 그렇지 못하다면 CSS의 `will-change` 속성을 이용하여 별도의 레이어로 구성되게끔 할 수 있습니다. 이외에도 레이어를 생성하도록 하는 것들은 [여기](https://www.html5rocks.com/en/tutorials/speed/layers/#toc-layercreation)서 보실 수 있습니다.
+요소가 어떤 레이어에 존재해야 하는지를 알아내기 위해 메인 스레드는 레이아웃 트리를 이용하여 **레이어 트리(layer tree)**를 만들어 냅니다. `<video>`, `<canvas>` 요소 및 CSS의 `opacity`, 3D `transform` 속성 등은 새로운 레이어를 생성하도록 합니다. 또한, 슬라이드 메뉴와 같이 페이지의 특정 부분을 다른 레이어로 분리하고 싶다면 CSS의 `will-change` 속성을 이용하여 별도의 레이어로 구성되게끔 할 수 있습니다. 이외에도 레이어를 생성하도록 하는 것들은 [여기](https://www.html5rocks.com/en/tutorials/speed/layers/#toc-layercreation)서 보실 수 있습니다.
 
-일반적으로, 레이어를 이용하면 GPU를 사용하여 그리기 때문에 성능이 향상될 수 있습니다. 하지만 무턱대고 `will-change` 같은 속성을 남발하여 레이어를 과도하게 많이 만들게 되면 오히려 합성하는데 시간이 더 걸리게될 수도 있으므로 반드시 성능을 먼저 측정한 다음 최적화를 수행해야만 합니다.
+일반적으로, 레이어를 이용하면 GPU를 사용하여 그리기 때문에 성능이 향상될 수 있습니다. 하지만 무턱대고 `will-change` 같은 속성을 남발하여 레이어를 과도하게 많이 만들게 되면 오히려 합성하는데 시간이 더 걸리게될 수도 있고, 메모리 낭비가 발생할 수도 있으므로 반드시 성능을 먼저 측정한 다음 최적화를 수행해야만 합니다.
 
-이렇게 레이어 트리가 만들어지고 페인트 순서가 결정되면 브라우저의 메인 스레드는 이러한 정보들을 합성 스레드(compositor thread)로 넘깁니다. 그리고 이러한 정보들을 넘겨받은 합성 스레드는 각 레이어를 래스터화 하기 시작합니다. 어떤 레이어는 페이지 길이만큼 길 수도 있기 때문에 합성 스레드는 레이어를 **타일(tile)**로 나눈 다음 각 타일들을 래스터 스레드로 넘깁니다. 그럼 래스터 스레드는 각 타일을 래스터화 하고 이들을 GPU 메모리에 저장합니다:
+이렇게 레이어 트리가 만들어지고 페인트 순서가 결정되면 브라우저의 메인 스레드는 이러한 정보들을 합성 스레드(compositor thread)로 넘깁니다. 그리고 이러한 정보들을 넘겨받은 합성 스레드는 각 레이어를 래스터화 하기 시작합니다. 어떤 레이어는 그 크기가 전체 페이지 길이만큼 길 수도 있기 때문에 합성 스레드는 레이어를 **타일(tile)**로 나눈 다음 각 타일들을 래스터 스레드로 넘깁니다. 그럼 래스터 스레드는 각 타일을 래스터화 하고 이들을 GPU 메모리에 저장합니다:
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/raster_thread.png" alt="래스터 스레드의 동작" />
@@ -359,13 +361,13 @@ CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS2
 
 | 💡                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 래스터화 작업 역시 GPU의 도움을 받기 좋은 단계 입니다.. 이와 관련한 더 자세한 내용은 [Software vs. GPU Rasterization in Chromium](https://software.intel.com/content/www/us/en/develop/articles/software-vs-gpu-rasterization-in-chromium.html)을 참고하세요. |
+| 래스터화 작업 역시 GPU의 도움을 받기 좋은 단계 입니다. 이와 관련한 더 자세한 내용은 [Software vs. GPU Rasterization in Chromium](https://software.intel.com/content/www/us/en/develop/articles/software-vs-gpu-rasterization-in-chromium.html)을 참고하세요. |
 
 | 💡                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 합성 스레드 내부에도 레이어 트리가 여러 개 있습니다. 메인 스레드가 넘긴 레이어 트리는 합성 스레드의 **대기 트리(pending tree)**로 복사됩니다. 대기 트리 최신 프레임을 나타내지만, 아직 화면에는 그려지지 않은 상태입니다. 현재 화면에 그려지고 있는 이전 프레임은 **활성 트리(active tree)**로 그린 프레임입니다. 최신 정보로 화면을 갱신할 때는 대기 트리와 활성 트리를 스왑합니다. 이와 관련한 더 자세한 내용은 [Native One-copy Texture Uploads for Chrome OS...](https://software.intel.com/content/www/us/en/develop/articles/native-one-copy-texture-uploads-for-chrome-os-on-intel-architecture-enabled-by-default.html)를 참고하세요. |
+| 합성 스레드 내부에도 레이어 트리가 여러 개 있습니다. 메인 스레드가 넘긴 레이어 트리는 합성 스레드의 **대기 트리(pending tree)**로 복사됩니다. 대기 트리는 최신 프레임을 나타내지만, 아직 화면에는 그려지지 않은 상태입니다. 현재 화면에 그려지고 있는 이전 프레임은 **활성 트리(active tree)**로 그린 프레임입니다. 최신 정보로 화면을 갱신할 때는 대기 트리와 활성 트리를 스왑합니다. 이와 관련한 더 자세한 내용은 [Native One-copy Texture Uploads for Chrome OS...](https://software.intel.com/content/www/us/en/develop/articles/native-one-copy-texture-uploads-for-chrome-os-on-intel-architecture-enabled-by-default.html)를 참고하세요. |
 
-이때 합성 스레드는 래스터 스레드의 우선순위를 조정할 수 있는데, 이렇게 해서 뷰포트(혹은 뷰포트 근처)에 있는 요소들이 먼저 래스터화될 수 있도록 할 수 있습니다. 또한 각 레이어는 화면을 줌-인했을때를 대비해 화소(resolution)가 다른 여러 개의 타일을 준비합니다.
+이때 합성 스레드는 래스터 스레드의 우선순위를 조정할 수 있는데, 이렇게 해서 뷰포트(혹은 뷰포트 근처)에 있는 요소들이 먼저 래스터화될 수 있도록 할 수 있습니다. 또한 각 레이어는 화면을 줌-인 했을때를 대비해 화소(resolution)가 다른 여러 개의 타일을 준비합니다.
 
 이렇게 타일을 래스터화하고 나면 합성 스레드는 **draw quads**라고 하는 타일들의 정보를 모아서 **합성 프레임(compositor frame)**을 만듭니다:
 
@@ -396,14 +398,14 @@ CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS2
     <figcaption>렌더링 파이프라인 업데이트. 출처: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-만약 어떤 요소에 애니메이션을 적용한 경우, 브라우저는 애니메이션과 관련된 작업을 매 프레임 사이마다 수행해야만 합니다. 대부분의 디스플레이들은 60fps(즉, 화면을 1초에 60번 리프레쉬 함)이므로 이러한 작업을 약 16.66ms 마다 해야한다는 뜻이죠. 이렇게 매 프레임(초당 60개의 프레임)마다 요소들을 움직인다면 사용자의 눈에는 부드럽게 움직이는 것처럼 보일 것입니다. 하지만 만약 몇몇 프레임을 빠트렸다면 페이지는 "버벅(janky)"이는 것처럼 보일 것입니다:
+만약 어떤 요소에 애니메이션을 적용한 경우, 브라우저는 애니메이션과 관련된 작업을 매 프레임 사이마다 수행해야만 합니다. 대부분의 디스플레이들은 60fps(즉, 화면을 1초에 60번 리프레쉬 함)이므로 이러한 작업을 약 16.66ms 마다 해야한다는 뜻이죠. 이렇게 매 프레임(초당 60개의 프레임)마다 요소들을 움직인다면 사용자의 눈에는 부드럽게 움직이는 것처럼 보일 것입니다. 하지만 만약 몇몇 프레임을 빠트리게 되면 페이지는 "버벅(janky)"이는 것처럼 보일 것입니다:
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/pagejank1.png" alt="애니메이션 프레임 타임라인" />
     <figcaption>애니메이션 프레임 타임라인. 출처: https://developers.google.com/web/updates/2018/09/inside-browser-part3</figcaption>
 </figure>
 
-렌더링 작업이 화면 주사율에 잘 맞춰 진행되고 있다고 하더라도, 이러한 계산들은 메인 스레드에서 동작하기 때문에 애플리케이션이 다른 자바스크립트 작업을 수행한다면 이로 인해 화면이 버벅대는 것처럼 보일 수도 있습니다:
+렌더링 작업이 화면 주사율에 잘 맞춰 진행되고 있다고 하더라도, 이러한 계산들은 메인 스레드에서 동작하기 때문에 만약 애플리케이션이 다른 자바스크립트 작업을 수행한다면 이로 인해 렌더링 작업을 처리하지 못해 화면이 버벅대는 것처럼 보일 수도 있습니다:
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/pagejank2.png" alt="자바스크립트로 인해 버벅임 발생" />
@@ -424,7 +426,7 @@ CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS2
 - https://dev.to/gitpaulo/journey-of-a-web-page-how-browsers-work-10co
 - https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/#CSS_parsing
 - https://medium.com/jspoint/how-the-browser-renders-a-web-page-dom-cssom-and-rendering-df10531c9969
-- https://developers.google.com/web/updates/2018/09/inside-browser-part3#construction_of_a_dom
+- https://developers.google.com/web/updates/2018/09/inside-browser-part3
 - https://developers.google.com/web/fundamentals/performance/critical-rendering-path
 - https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work
 - https://www.html5rocks.com/en/tutorials/speed/layers/
