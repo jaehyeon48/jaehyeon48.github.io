@@ -22,7 +22,7 @@ draft: false
 객체 지향 모델로 비유하자면 ER는 3개의 구상 클래스(concrete class)를 가지는 추상 클래스(abstract class)로 볼 수 있습니다. 이러한 구조를 그림으로 나타내면 아래와 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/iterator-protocol/environment_record_hierarchy.png" alt="Environment Record 계층">
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/execution-context/environment_record_hierarchy.png" alt="Environment Record 계층">
     <figcaption>Environment Record 계층.</figcaption>
 </figure>
 
@@ -82,7 +82,7 @@ foo();
 위 예제 코드 실행 시 EC들이 생성되고 사라지는 과정을 그림으로 나타내면 다음과 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/iterator-protocol/ec_example.png" alt="EC 예시">
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/execution-context/ec_example.png" alt="EC 예시">
     <figcaption>EC 예시.</figcaption>
 </figure>
 
