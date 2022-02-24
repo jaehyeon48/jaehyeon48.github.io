@@ -87,4 +87,14 @@ body.light {
   th, td {
     border: 1px solid #a3acb5;
   }
+
+  :not(pre) > code[class*='language-'] {
+    margin: 0;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    white-space: normal;
+    background: #e6e9f4;
+    color: #e51010;
+    font-size: 14px;
+  }
 }
