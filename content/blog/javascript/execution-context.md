@@ -130,15 +130,40 @@ foo();
 
 하지만 제너레이터의 `yield`나 `async` 함수의 `await`과 같이, 특정 순간에 현재 실행 중인 EC가 잠시 중단(suspend)되는 경우도 있습니다. 이 경우 해당 EC에서 실행되는 코드 실행이 잠시 중단되어 이 코드의 모든 부분이 다 실행되기 전에 EC 스택에서 제거될 수 있습니다. 일반적으로 EC가 스택에서 제거되면 사라지지만 이 경우 아직 모든 실행을 끝마친 것이 아니므로 따로 저장되어 추후 실행을 재개(resume)할 때 다시 스택에 쌓이게 됩니다.
 
-### Environment
+### 환경
+
+**환경(environment)**이란 어떤 스코프 내에 생성된 변수·함수·클래스 등의 정보를 저장하는 저장소라고 할 수 있습니다.
 
 EC는 앞서 살펴봤던 기본 4가지 구성 요소 이외에 아래의 구성 요소를 추가로 갖습니다:
 
 |**구성 요소**|**목적**|
 |-|-|
-|LexicalEnvironment|EC 내의 코드에 존재하는 식별자들의 값을 매핑하는데 사용된 Environment Record를 가리킵니다.|
-|VariableEnvironment|VariableStatements에 의해 생성된, EC 내의 코드에 존재하는 식별자들의 값을 매핑하는데 사용된 Environment Record를 가리킵니다. ES6를 기준으로 LexicalEnvironment와 다른 점은 LexicalEnvironment에는 함수 선언·let·const 변수들의 바인딩에 관한 정보들이 저장되는 반면, VariableEnvironment에는 오직 var 변수들의 바인딩에 관한 정보들이 저장됩니다.|
-|PrivateEnvironment|EC 내의 클래스의 private 필드·메서드·접근자에 대한 정보를 저장합니다. 만약 EC 내에 클래스가 없다면 `null`입니다.|
+|LexicalEnvironment|EC 내의 코드에 존재하는 식별자들의 값을 매핑하는데 사용된 환경 레코드를 가리킵니다.|
+|VariableEnvironment|VariableStatements에 의해 생성된, EC 내의 코드에 존재하는 식별자들의 값을 매핑하는데 사용된 환경 레코드를 가리킵니다. ES6를 기준으로 LexicalEnvironment와 다른 점은 LexicalEnvironment에는 함수 선언·let·const 변수들의 바인딩에 관한 정보들이 저장되는 반면, VariableEnvironment에는 오직 var 변수들의 바인딩에 관한 정보들이 저장됩니다.|
+
+지금까지 살펴본 내용을 바탕으로, 아래 코드 예시의 환경 구조를 그림으로 나타내면 다음과 같습니다:
+
+```ts
+let x = 10;
+let y = 20;
+
+function foo(z) {
+  let x = 100;
+  return x + y + z;
+}
+
+foo(30); // 150
+```
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/execution-context/ec_structure_example.png" width="600px" alt="EC 구조 예시">
+    <figcaption>EC 구조 예시.</figcaption>
+</figure>
+
+💡 추가:
+
+[스택 오버플로우](https://stackoverflow.com/questions/23948198/variable-environment-vs-lexical-environment#answer-23948625)에 따르면(해당 답변의 댓글 부분 참고), 실제로 V8 엔진에는 `variableEnvironment` 가 구현되어 있지 않다고 합니다. 즉, 굳이 `var` 변수 바인딩을 `let`, `const` 변수 바인딩과 따로 분리하여 저장하지 않고 그냥 모두 `lexicalEnvironment` 에 저장한다는 것이죠!
+
 
 ## 레퍼런스
 
@@ -148,3 +173,4 @@ EC는 앞서 살펴봤던 기본 4가지 구성 요소 이외에 아래의 구�
 - https://homoefficio.github.io/2016/01/16/JavaScript-%EC%8B%9D%EB%B3%84%EC%9E%90-%EC%B0%BE%EA%B8%B0-%EB%8C%80%EB%AA%A8%ED%97%98/
 - https://dmitrysoshnikov.com/ecmascript/es5-chapter-3-1-lexical-environments-common-theory
 - http://dmitrysoshnikov.com/ecmascript/es5-chapter-3-2-lexical-environments-ecmascript-implementation/
+- http://dmitrysoshnikov.com/ecmascript/javascript-the-core-2nd-edition/
