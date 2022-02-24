@@ -7,32 +7,67 @@ draft: false
 
 ⚠️ 이 포스트에서 "자바스크립트"라는 말은 사실 엄밀히 말해 "ECMAScript"를 말하는 것입니다. 하지만 편의를 위해 ECMAScript를 자바스크립트라고 하겠습니다.
 
-## Environment Record
+## Environment Record(환경 레코드)
 
-우선 자바스크립트의 실행 컨텍스트에 대해 살펴보기 전에, `Environment Record`에 대해 살펴봅시다.
+우선 자바스크립트의 실행 컨텍스트에 대해 살펴보기 전에, **Environment Record(환경 레코드)**에 대해 살펴봅시다.
 
-`Environment Record`(이하 ER)는 자바스크립트 코드의 렉시컬 중첩 구조(lexical nesting structure)에 기반하여 식별자들을 특정 변수·함수의 값으로 바인딩하는 데 사용됩니다. ER은 자바스크립트 스펙 상으로만 존재하는 것이라 자바스크립트 프로그램에서 앞으로 살펴볼 값들에 접근하거나 이 값들을 조작하는 것은 불가능합니다.
+**환경 레코드**는 자바스크립트 코드의 렉시컬 중첩 구조(lexical nesting structure)에 기반하여 식별자들을 특정 변수·함수값으로 바인딩하는 데 사용됩니다. 즉, 환경 레코드는 어떤 렉시컬 환경(쉽게 말해, 렉시컬 스코프라고 생각해도 될 것 같습니다)에서 생성된 식별자들의 바인딩 정보를 "기록(record)"하는 저장소라고 할 수 있습니다. 환경 레코드는 자바스크립트 스펙 상으로만 존재하는 추상 개념이라 자바스크립트 프로그램에서 환경 레코드에 접근하는 것은 불가능합니다.
 
-일반적으로 ER은 함수 선언·블록 문·Try 문·Catch 절과 같이, 자바스크립트 코드의 특정 문법 구조와 연관되어 있습니다. 이러한 코드가 평가(혹은 실행, evaluate)될 때마다 해당 코드에 의해 생성된 식별자들을 바인딩하기 위해 새로운 ER이 생성됩니다. 이때 식별자를 바인딩한다는 말은 쉽게 말해 해당 식별자의 정보를 기록, 즉 식별자의 값을 기록한다고 할 수 있습니다.
+일반적으로 환경 레코드는 함수 선언·블록 문·Catch 절과 같은 자바스크립트 코드의 특정 문법 구조와 관련됩니다. 이와 같은 코드들이 평가(혹은 실행, evaluate)될 때마다 해당 코드에 의해 생성된 식별자들의 바인딩 정보를 기록하기 위해 새로운 환경 레코드가 생성됩니다. 이때 식별자를 *바인딩*한다는 말은 식별자(이름)를 값에 대응(associate)시키는 것이라고 볼 수 있습니다.
 
-모든 ER은 해당 ER을 논리적으로 감싸는(surround) 바깥 ER, 즉 부모 ER을 가리키는(참조하는) `[[OuterEnv]]`라는 필드를 가집니다. 만약 글로벌 영역과 같이 외부 ER이 없다면 `[[OuterEnv]]`의 값은 `null`입니다. 또한, 어떤 함수 내부에 여러 개의 중첩 함수들이 정의될 수 있는것처럼, 어떤 ER이 여러 개의 내부 ER에 대한 외부 ER의 역할을 할 수도 있습니다. 이와 같은 경우 각 내부 함수 선언의 ER은 해당 내부 함수들을 감싸고 있는 외부 ER을 `[[OuterEnv]]`의 값으로 가집니다.
+모든 환경 레코드는 해당 환경 레코드를 논리적으로 감싸는(surround) 바깥 환경 레코드, 즉 부모 환경 레코드를 가리키는(참조하는) `[[OuterEnv]]`라는 필드를 가집니다. 만약 글로벌 영역과 같이 외부 환경 레코드가 없다면 `[[OuterEnv]]`의 값은 `null`입니다. 또한, 어떤 함수 내부에 여러 개의 중첩 함수들이 정의될 수 있는 것처럼, 하나의 환경 레코드가 여러 개의 내부 환경 레코드에 대한 외부 환경 레코드의 역할을 할 수도 있습니다. 이 같은 경우 각 내부 함수의 환경 레코드는 해당 내부 함수들을 감싸고 있는 외부 환경 레코드를 `[[OuterEnv]]`의 값으로 가집니다.
 
-### Environment Record 타입 구조
+### 환경 레코드 타입 구조
 
-객체 지향 모델로 비유하자면 ER는 3개의 구상 클래스(concrete class)를 가지는 추상 클래스(abstract class)로 볼 수 있습니다. 이러한 구조를 그림으로 나타내면 아래와 같습니다:
+객체 지향 모델로 비유하자면 환경 레코드는 3개의 구상 클래스(concrete class)를 가지는 추상 클래스(abstract class)로 볼 수 있습니다. 이러한 구조를 그림으로 나타내면 아래와 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/execution-context/environment_record_hierarchy.png" alt="Environment Record 계층">
-    <figcaption>Environment Record 계층.</figcaption>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/execution-context/environment_record_hierarchy.png" alt="환경 레코드 계층">
+    <figcaption>환경 레코드 계층.</figcaption>
 </figure>
 
-- **declarative ER**: 변수·함수 선언 등을 바인딩하는 역할을 합니다. declarative ER은 또다시 두 개의 자식 클래스로 나뉩니다:
-  - **function ER**: 어떤 함수 내의 최상위 스코프(top-level)에 존재하는 식별자들을 바인딩합니다. 만약 이 함수가 화살표 함수가 아니라면 `this` 바인딩도 같이 수행합니다. 또, 화살표 함수가 아니면서 `super` 메서드를 참조하고 있다면 `super` 메서드 호출에 필요한 상태 또한 가집니다.
-  - **module ER**: 어떤 모듈의 최상위 스코프에 존재하는 식별자들을 바인딩 합니다. 또한, 이 모듈이 명시적으로 `import` 한 바인딩에 대한 정보도 가집니다. module ER의 `[[OuterEnv]]` 는 global ER을 가리킵니다.
-- **object ER**: 각 object ER은 *바인딩 객체(binding object)*라고 하는 객체와 연결됩니다. object ER은 바인딩 객체의 "문자열" 식별자들을 바인딩하는데, 문자열이 아닌 속성 key들은 바인딩 되지 않습니다. 또한, 객체의 속성은 동적으로 추가되거나 제거될 수 있기 때문에 object ER에 의해 바인딩된 식별자는 속성을 추가하거나 제거하는 연산에 의해 변경될 수도 있습니다.
-- **global ER**: 글로벌 스코프에 존재하는 식별자들을 바인딩 합니다. 즉, built-in 객체, 전역 객체(global object)의 속성 및 글로벌 스코프 내의 모든 식별자를 바인딩하는 역할을 합니다. global ER은 이론상으론 하나의 레코드이나 실질적으론 declarative 및 object ER 두 개로 구성됩니다. global ER의 `[[OuterEnv]]`는 `null`입니다.
+#### 선언 환경 레코드
 
-또한, 방금 살펴본 ER 외에도 `PrivateEnvironment Record`라는 것이 존재합니다. 이 레코드에는 클래스의 private 속성·메서드·접근자(accessor)에 관한 정보가 저장됩니다.
+**선언 환경 레코드(declarative Environment Record)**는 변수 선언·함수 선언·함수 인자 등의 바인딩 정보를 기록합니다. 예를 들면,
+
+```ts
+// "a", "b", "c" 식별자 바인딩 모두 선언 환경 레코드에 저장됩니다
+function foo(a) {
+  let b = 10;
+  function c() {}
+}
+
+// catch 절의 예외 인자 "e"의 바인딩 또한 선언 환경 레코드에 저장됩니다
+try {
+  // ...
+} catch(e) {
+  // ...
+}
+```
+
+일반적으로 선언 환경 레코드의 바인딩들은 가상 머신의 레지스터와 같이 "로우 레벨"에 저장되는 것으로 여겨집니다. 즉, 스펙에선 이를 단순한 객체와 같은 형태로 구현할 것을 요구하고 있지 않습니다(오히려 이러한 형태로 구현하지 말 것을 간접적으로 권장하고 있습니다). 왜냐면 비효율적일 수 있기 때문이죠.
+
+선언 환경 레코드는 [lexical addressing](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node131.html)기법을 사용하여 변수 접근을 최적화할 수도 있습니다. 즉 스코프의 중첩 깊이에 관계없이, 스코프 체인을 찾아보지 않고 원하는 변수에 바로 접근하는 것이죠. 물론 스펙에서 이를 직접 언급하고 있지는 않습니다.
+
+|💡 **Activation Object**|
+|-|
+|선언 환경 레코드에 대한 개념은 ES5에 나온 개념이고, 그 이전의 ES3 까진 *activation object* 라는 개념이 사용됐었습니다. 실제로 activation object에선 객체를 이용하여 이와 같은 정보들을 저장했는데, 자바스크립트 창시자인 [Brendan Eich에 의하면](https://mail.mozilla.org/pipermail/es-discuss/2010-April/010915.html) 이는 실수라고 합니다. 1995년 자바스크립트 개발 당시, 개발을 서두르기 위해 이렇게 했다고 하네요. 따라서 이러한 역사를 살펴봤을 때, 선언 환경 레코드가(activation object를 대체하기 위해) 등장한 이유는 구현의 효율성을 증대하기 위함이라고 볼 수 있을 것 같습니다.|
+
+선언 환경 레코드는 또다시 두 개의 자식 클래스로 나뉩니다.
+
+- **함수 환경 레코드(function Environment Record)**: 어떤 함수 내의 최상위 스코프(top-level)에 존재하는 식별자들의 바인딩을 저장합니다. 만약 이 함수가 화살표 함수가 아니라면 `this` 바인딩도 같이 저장합니다. 또, 화살표 함수가 아니면서 `super` 메서드를 참조하고 있다면 `super` 메서드 호출에 필요한 상태 또한 저장합니다.
+- **모듈 환경 레코드(module Environment Record)**: 어떤 모듈의 최상위 스코프에 존재하는 식별자들의 바인딩을 저장합니다. 또한, 이 모듈이 명시적으로 `import` 한 바인딩에 대한 정보도 저장합니다. 모듈 환경 레코드의 `[[OuterEnv]]` 는 글로벌 환경 레코드를 가리킵니다.
+
+#### 객체 환경 레코드
+
+**객체 환경 레코드(object Environment Record)**는 객체의 "문자열" 식별자들의 바인딩을 저장하는데, 이 바인딩들이 저장되는 객체를 *바인딩 객체(binding object)*라고 합니다. 문자열이 아닌 식별자들은 저장되지 않습니다. 또한 자바스크립트에서 객체의 속성은 동적으로 추가되거나 제거될 수 있으므로, 객체 환경 레코드에 저장된 식별자 바인딩들은 속성을 추가하거나 제거하는 연산에 의해 변경될 수도 있습니다.
+
+#### 글로벌 환경 레코드
+
+**글로벌 환경 레코드(global Environment Record)**는 글로벌 컨텍스트(스코프)에 존재하는 식별자들의 바인딩을 저장합니다. 즉, built-in 객체들, 전역 객체의 속성들과 더불어 글로벌 스코프 내의 모든 식별자들의 바인딩을 저장합니다. 이론상으로 글로벌 환경 레코드는 하나의 레코드이지만, 실질적으로 선언 환경 레코드 및 객체 환경 레코드로 구성되어 있습니다. 글로벌 환경 레코드의 `[[OuterEnv]]`는 `null` 입니다.
+
+
+또한, 여기에서 살펴본 환경 레코드들 외에도 `PrivateEnvironment Record`라는 것이 존재합니다. 이 레코드에는 클래스의 private 속성·메서드·접근자(accessor)에 관한 정보가 저장됩니다.
 
 ## 실행 컨텍스트 (Execution Context)
 
@@ -110,3 +145,5 @@ EC는 앞서 살펴봤던 기본 4가지 구성 요소 이외에 아래의 구�
 - https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0
 - https://meetup.toast.com/posts/129
 - https://homoefficio.github.io/2016/01/16/JavaScript-%EC%8B%9D%EB%B3%84%EC%9E%90-%EC%B0%BE%EA%B8%B0-%EB%8C%80%EB%AA%A8%ED%97%98/
+- https://dmitrysoshnikov.com/ecmascript/es5-chapter-3-1-lexical-environments-common-theory
+- http://dmitrysoshnikov.com/ecmascript/es5-chapter-3-2-lexical-environments-ecmascript-implementation/
