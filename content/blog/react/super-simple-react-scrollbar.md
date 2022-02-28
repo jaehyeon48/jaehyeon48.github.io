@@ -100,3 +100,77 @@ draft: false
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/react/super-simple-react-scrollbar/scrollbar_bug.gif" alt="최소 thumb 높이 조정 계산" />
 </figure>
+
+## 2022.02.28 업데이트
+
+커스텀 스크롤바를 사용하다 보니, 리스트 아이템이 추가되거나 제거되는 경우에도 `thumb`의 높이와 `y` 좌표를 다시 계산해줘야 한다는 사실을 알게되어, 이를 반영해주었습니다.
+
+우선 `y` 좌표를 구하는 로직의 경우, `useEffect`를 이용하여 아래와 같이 스크롤바 훅을 사용하는 컴포넌트가 업데이트 될 때마다 `useEffect`를 실행해주어 `y` 좌표를 다시 계산하게 하였습니다:
+
+```ts
+const calculateThumbY = useCallback(() => {
+  if (!thumbRef.current) return;
+  if (!outerContainerRef.current) return;
+  if (!innerContainerRef.current) return;
+
+  const { clientHeight: outerH } = outerContainerRef.current;
+  const { clientHeight: innerH } = innerContainerRef.current;
+  const { top: outerTop } = outerContainerRef.current.getBoundingClientRect();
+  const { top: innerTop } = innerContainerRef.current.getBoundingClientRect();
+
+  const revisedThumbScrollY =
+  	originalThumbH.current === -1
+  	  ? calculateRevisedThumbH({
+  	  	  outerTop,
+  	  	  innerTop,
+  	  	  outerH,
+  	  	  innerH,
+  	  	  outerContainerBorderWidth,
+  	  	  thumbH
+  	    })
+  	  : calculateRevisedThumbH({
+  	  	  outerTop,
+  	  	  innerTop,
+  	  	  outerH,
+  	  	  innerH,
+  	  	  thumbH: originalThumbH.current,
+  	  	  outerContainerBorderWidth,
+  	  	  isRevisedToMinH: true
+  	    });
+  thumbRef.current.style.transform = `translateY(${revisedThumbScrollY}px)`;
+}, [thumbH, innerContainerRef, outerContainerRef, outerContainerBorderWidth]);
+
+useEffect(() => {
+  calculateThumbY();
+}, [calculateThumbY]);
+```
+
+그 다음, `thumb`의 높이를 구하는 이펙트의 의존성 배열을 제거하여 컴포넌트가 리렌더링될 때마다 높이를 다시 구하도록 하였습니다:
+
+```ts{21}
+useEffect(() => {
+  let intervalId: NodeJS.Timer;
+	function initThumbHeight() {
+	  if (!outerContainerRef.current || !innerContainerRef.current || !thumbRef.current) return;
+	  clearInterval(intervalId);
+	  const { clientHeight: outerH } = outerContainerRef.current;
+	  const { clientHeight: innerH } = innerContainerRef.current;
+	  if (innerH <= outerH) {
+	  	setThumbHeight(0);
+	  	return;
+	  }
+
+	  const thumbHCandidate = outerH ** 2 / innerH;
+	  if (thumbHCandidate < MIN_THUMB_H) originalThumbH.current = thumbHCandidate;
+	  setThumbHeight(thumbHCandidate < MIN_THUMB_H ? MIN_THUMB_H : thumbHCandidate);
+	}
+
+  if (!outerContainerRef.current || !innerContainerRef.current || !thumbRef.current) {
+    intervalId = setInterval(initThumbHeight, 1);
+  } else initThumbHeight();
+});
+```
+
+이때 예상되는 문제는, 아무래도 리스트 자체가 아니라 리스트의 부모가 리렌더링 되는 경우에도 (불필요하게?) 스크롤바 관련 계산이 다시 발생한다는 점인데, 이는 계산관련 로직을 외부로 위임하여 리스트가 업데이트 되는 경우에 해당 로직들을 외부에서 호출하도록 하면 최적화할 수 있을 듯 합니다.
+
+하지만 현재로선 일단 위 로직대로 사용하고 이후 성능상 저하가 많이 발생한다고 하면 그때가서 최적화할 수 있는 방안들을 살펴보려고 합니다.
