@@ -129,7 +129,7 @@ console.log(Number(myObj3)); // 456.123
 ### [object Object]
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_object_error.png" alt="JavaScript [object Object]" style="width:721px; height: 550px" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_object_error.png" alt="JavaScript [object Object]" />
     <figcaption>출처: https://forum.osticket.com/d/87852-equipment-error-object-object-instead-of-usernames-in-dropdown-menu</figcaption>
 </figure>
 
@@ -166,7 +166,7 @@ console.log(`${myObj} is awesome!`); // [object Object] is awesome!
 덧셈과 관련한 자바스크립트의 대표적인 이상행동(?) 또한 이와 관련되어 있습니다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/why_javascript_behaves_like_that.jpg" alt="자바스크립트는 왜 그모양일까" style="width:721px; height: 550px" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/why_javascript_behaves_like_that.jpg" alt="자바스크립트는 왜 그모양일까" style="width:471px; height: 600px" />
     <figcaption>출처: http://www.yes24.com/Product/Goods/90283410</figcaption>
 </figure>
 
@@ -182,7 +182,7 @@ console.log(myObj + '1'); // [object Object]1
 우선 덧셈 연산을 수행하기 전에, `myObj`의 타입이 객체이므로 이를 원시 타입으로 (암묵적으로) 변환합니다. 이때 힌트를 `default`로 설정하여 `ToPrimitive` 알고리즘을 실행하는데, 그말인 즉 힌트를 `number`로 가정하고 `OrdinaryToPrimitive` 알고리즘을 실행하게 됩니다. 따라서 `myObj`의 `valueOf()` 메서드가 먼저 실행되는데, 이때 객체의 `valueOf()` 메서드의 기본 동작은 자기 자신을 반환하는 것입니다. 이에 따라 `valueOf()`의 실행 결과로 객체인 `myObj`가 반환되므로, 그 다음으로 `myObj`의 `toString()` 메서드가 실행됩니다. 앞서 살펴봤듯이 객체의 `toString()` 기본 동작은 `"[object Type]"` 문자열을 반환하는 것이므로 여기선 `"[object Object]"` 문자열이 반환됩니다. 따라서 최종적으로 정리하자면 `myObj` 객체가 `"[object Object]"` 원시 타입(문자열)로 자동 변환되어 문자열 `"1"`과 이어 붙이는 연산을 수행해서 `myObj + '1'`의 결과로 `"[object Object]1"`이 반환됩니다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion1.png" alt="암묵적 객체 변환1" style="width:721px; height: 550px" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion1.png" alt="암묵적 객체 변환1" />
 </figure>
 
 만약 위 예제에서, `myObj` 객체에 `valueOf()`, `[Symbol.toPrimitive]` 등의 메서드를 따로 구현하면 아래와 같은 결과가 나옵니다:
@@ -212,7 +212,7 @@ console.log(myObj2 + 1); // 101
 ```
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion2.png" alt="암묵적 객체 변환2" style="width:721px; height: 550px" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion2.png" alt="암묵적 객체 변환2" />
 </figure>
 
 ## 레퍼런스
