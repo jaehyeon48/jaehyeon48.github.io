@@ -217,7 +217,80 @@ console.log(myObj2 + 1); // 101
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion2.png" alt="암묵적 객체 변환2" />
 </figure>
 
+## [Symbol.toPrimitive] 메서드가 구현된 내장 객체
+
+앞서 `ToPrimitive` 섹션에서 살펴봤듯이 `ToPrimitive` 추상 연산을 수행할 때 힌트가 주어지지 않으면 (즉, 힌트가 `default` 이면), 그리고 객체에 `[Symbol.toPrimitive]` 메서드가 정의되지 않으면 힌트를 `number`로 가정하고 타입 변환을 수행한다는 것을 살펴봤었습니다.
+
+하지만 자바스크립트에서 기본적으로 제공되는 내장 객체중에 `Date` 객체와 `Symbol` 객체는 자체적으로 `[Symbol.toPrimitive]` 메서드를 가지고 있어 타입 변환을 할 때 이 메서드가 사용됩니다. 이들을 하나씩 살펴봅시다.
+
+### Date.prototype\[Symbol.toPrimitive\]\(hint\)
+
+`Date` 객체에 정의된 `[Symbol.toPrimitive]` 메서드는 인자로 `hint`를 넘겨받아 변환을 수행합니다. 스펙에 정의된 메서드의 내용을 자바스크립트로 구현해보면 아래와 같습니다:
+
+```js
+Date.prototype[Symbol.toPrimitive] = function(hint) {
+  let o = this;
+  if (TypeOf(o) === 'object') throw new TypeError();
+  if (hint !== 'string' && hint !== 'number' && hint !== 'default') {
+    throw new TypeError();
+  }
+
+  let tryFirst = hint === 'number'
+    ? 'number'
+    : 'string';
+  return OrdinaryToPrimitive(o, tryFirst);
+}
+```
+
+이 알고리즘을 살펴봤을 때, 기존의 `ToPrimitive`와 다른 점은 `Date` 객체를 원시 타입으로 변환할 때 힌트가 `default` 이면 `number`가 아니라 `string`으로 간주한다는 점입니다. 이후 `OrdinaryToPrimitive`를 호출하여 변환을 이어 나간다는 점에선 기존과 같습니다. 즉, 일반 객체와 같이 `Date` 객체의 `toString()`, `valueOf()` 메서드를 호출하여 `Date` 객체를 원시 타입으로 변환합니다.
+
+[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toString#description)에서 살펴볼 수 있듯이, `Date` 객체의 `toString()` 메서드는 해당 `Date` 객체의 날짜를 나타내는 문자열로 변환하고, `valueOf()` 메서드는 1970년 1월 1일 00:00:00 UTC를 기준으로 몇 *밀리초*가 지났는지를 나타내는 숫자를 반환합니다:
+
+```js
+const myDate = new Date('2020-01-01');
+// 힌트를 'default', 즉 'string'으로 하여 Date 객체를 변환합니다.
+console.log(myDate + 'hello, world!'); // Wed Jan 01 2020 09:00:00 GMT+0900 (Korean Standard Time)hello, world!
+
+// Date 객체의 변환 결과가 문자열이므로 숫자 123을 문자열 "123"으로 변환한 뒤 문자열 이어붙이기 연산을 수행합니다.
+console.log(myDate + 123); // Wed Jan 01 2020 09:00:00 GMT+0900 (Korean Standard Time)123
+
+
+/* [Symbol.toPrimitive] 메서드를 명시적으로 사용하여 힌트를 직접 지정할 수도 있습니다. */
+// 힌트가 'number'인 경우 Date 객체의 valueOf()을 이용하여 변환을 마무리합니다.
+console.log(myDate[Symbol.toPrimitive]('number')); // 1577836800000
+
+// 힌트가 'string'인 경우 Date 객체의 toString()을 이용하여 변환을 마무리합니다.
+console.log(myDate[Symbol.toPrimitive]('string')); // Wed Jan 01 2020 09:00:00 GMT+0900 (Korean Standard Time)
+
+// 힌트가 'default'인 경우 힌트를 'string'으로 간주합니다.
+console.log(myDate[Symbol.toPrimitive]('default')); // Wed Jan 01 2020 09:00:00 GMT+0900 (Korean Standard Time)
+```
+
+### Symbol.prototype\[Symbol.toPrimitive\]\(\)
+
+`Symbol`의 경우 간단합니다. 특정 심볼에 대해 `[Symbol.toPrimitive]()` 메서드를 호출하면 해당 심볼을 그대로 반환하는 것이 전부입니다. 왜냐면 **심볼 자체가 원시 타입**이기 때문이죠! 심볼의 경우 힌트는 사용되지 않습니다.
+
+```js
+const mySymbol = Symbol('hello, world!');
+// 심볼은 그 자체로 원시 타입이므로 자기 자신을 반환합니다.
+console.log(mySymbol[Symbol.toPrimitive]()); // Symbol(hello, world!)
+console.log(mySymbol[Symbol.toPrimitive]() === mySymbol); // true
+
+// 힌트는 사용되지 않습니다.
+console.log(mySymbol[Symbol.toPrimitive]('number')); // Symbol(hello, world!)
+console.log(mySymbol[Symbol.toPrimitive]('string')); // Symbol(hello, world!)
+console.log(mySymbol[Symbol.toPrimitive]('default')); // Symbol(hello, world!)
+console.log(mySymbol[Symbol.toPrimitive]('hey')); // Symbol(hello, world!)
+
+// 심볼의 valueOf() 메서드는 자기 자신을 반환합니다
+console.log(mySymbol.valueOf() === mySymbol) // true;
+
+// 심볼의 toString() 메서드는 해당 심볼을 나타내는 문자열을 반환합니다.
+console.log(mySymbol.toString()) // "Symbol(hello, world)"
+```
+
 ## 레퍼런스
 
 - [ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/#sec-type-conversion)
 - [Type coercion in JavaScript](https://2ality.com/2019/10/type-coercion.html)
+- [MDN Web Docs](https://developer.mozilla.org/en-US/)
