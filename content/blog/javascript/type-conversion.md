@@ -5,7 +5,7 @@ category: 'JavaScript'
 draft: false
 ---
 
-자바스크립트의 연산들은 특정 타입에 대해서 수행됩니다. 만약 어떤 연산에 대해 연산자가 기대하는 것과는 다른 타입의 입력을 주게 되면 (예를 들어 덧셈 `+` 연산의 피연산자로 객체를 사용하는 경우) 자바스크립트는 해당 입력의 타입을 자동으로 변환합니다. 이를 암묵적인(implicit) 타입 변환이라고도 하는데, 자바스크립트가 과연 어떻게 타입을 자동으로 변환하는지에 대해 살펴봅시다.
+자바스크립트의 연산들은 특정 타입에 대해서 수행됩니다. 만약 어떤 연산에 대해 연산자가 기대하는 것과는 다른 타입의 입력을 주게 되면 (예를 들어 덧셈 `+` 연산의 피연산자로 객체를 사용하는 경우) 자바스크립트는 해당 입력의 타입을 자동으로 변환합니다. 이를 암묵적인(implicit) 타입 변환, 혹은 강제 타입 변환(type coercion)이라고도 하는데, 자바스크립트가 과연 어떻게 타입을 자동으로 변환하는지에 대해 살펴봅시다.
 
 일단 그 전에, 먼저 다음의 두 함수를 살펴봅시다. 아래 두 함수는 스펙 상에서만 존재하는 함수입니다:
 
@@ -49,7 +49,7 @@ function ToPrimitive(input, preferredType = 'default') {
 }
 ```
 
-위 코드와 같이, 힌트(`preferredType`)가 주어지지 않은 경우, 일반적으로 `ToPrimitive`는 힌트를 `number`으로 가정하고 동작을 수행합니다. 하지만 이는 객체의 [Symbol.toPrimitive](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toPrimitive) 속성을 통해 변경할 수 있는데, 자바스크립트의 내장 객체중에선 `Symbol` 객체와 `Date` 객체만이 이 속성을 정의하고 있습니다. `Date` 객체의 경우, 힌트가 주어지지 않으면 힌트를 `string` 으로 가정하고 동작을 수행합니다.
+위 코드와 같이, 힌트(`preferredType`)가 주어지지 않은 경우, 일반적으로 `ToPrimitive`는 힌트를 `number`로 가정하고 동작을 수행합니다. 하지만 이는 객체의 [Symbol.toPrimitive](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toPrimitive) 속성을 통해 변경할 수 있는데, 자바스크립트의 내장 객체 중에선 `Symbol` 객체와 `Date` 객체만이 이 속성을 정의하고 있습니다. `Date` 객체의 경우, 힌트가 주어지지 않으면 힌트를 `string` 으로 가정하고 동작을 수행합니다.
 
 만약 `ToPrimitive`에 전달된 `input`이 객체이고, 이 객체에 `[Symbol.toPrimitive]`가 정의되지 않았다면 `OrdinaryToPrimitive` 추상 연산을 통해 타입 변환 동작을 마무리합니다:
 
@@ -91,7 +91,7 @@ console.log(String(myObj)); // "hello, world"
 console.log(Number(myObj)); // 123
 ```
 
-만약 처음으로 호출한 메서드가 객체를 반환한다면 그 다음 메서드 (힌트가 `string`인 경우 `valueOf`, 힌트가 `number`인 경우 `toString`)를 호출하여, 해당 메서드가 반환한 값을 이용해 타입 변환을 수행합니다:
+만약 처음으로 호출한 메서드가 객체를 반환한다면 그다음 메서드 (힌트가 `string`인 경우 `valueOf`, 힌트가 `number`인 경우 `toString`)를 호출하여, 해당 메서드가 반환한 값을 이용해 타입 변환을 수행합니다:
 
 ```js
 const myObj1 = {
@@ -99,7 +99,7 @@ const myObj1 = {
   valueOf() { return 123; }
 };
 // 처음엔 myObj1의 toString()을 호출하는데, 이 메서드가 객체를 반환하므로 
-// 그 다음으로 valueOf()를 호출하여 그 결과값 123(숫자 타입)을
+// 그다음으로 valueOf()를 호출하여 그 결과값 123(숫자 타입)을
 // "123"(문자열)으로 변환합니다. 즉, String(123)을 하는 것과 같습니다.
 console.log(String(myObj1)); // "123"
 
@@ -109,7 +109,7 @@ const myObj2 = {
   valueOf() { return []; }
 };
 // 처음엔 myObj2의 valueOf()를 호출하는데, 이 메서드가 객체를 반환하므로
-// 그 다음으로 toString()을 호출하여 그 결과값 'hello, world'를
+// 그다음으로 toString()을 호출하여 그 결과값 'hello, world'를
 // 숫자 타입으로 변환합니다. 이때 'hello, world'를 숫자 타입으로 변환하면 NaN 이므로
 // 최종 결과로 NaN이 반환됩니다. 즉, Number('hello, world')와 같습니다.
 console.log(Number(myObj2)); // NaN
@@ -120,7 +120,7 @@ const myObj3 = {
   valueOf() { return []; }
 }
 // 처음엔 myObj3의 valueOf()를 호출하는데, 이 메서드가 객체를 반환하므로
-// 그 다음으로 toString()을 호출하여 그 결과값 '456.123'을
+// 그다음으로 toString()을 호출하여 그 결과값 '456.123'을
 // 숫자 타입으로 변환합니다. 이때 문자열 '456.123'을 숫자 타입으로 변환하면 456.123 이므로
 // 최종 결과로 456.123이 반환됩니다. 즉, Number('456.123')과 같습니다.
 console.log(Number(myObj3)); // 456.123
@@ -133,7 +133,7 @@ console.log(Number(myObj3)); // 456.123
     <figcaption>출처: https://forum.osticket.com/d/87852-equipment-error-object-object-instead-of-usernames-in-dropdown-menu</figcaption>
 </figure>
 
-아마 자바스크립트를 사용하시면서 `[object Object]`를 보신 적이 있으실 겁니다. 이는 객체의 `toString()` 기본 동작이 `[object Type]`을 리턴하는것이기 때문에 발생하는 현상입니다. 이때 `[object Type]` 에서 `Type`은 인자로 전달된 객체의 타입을 의미합니다. 예를 들어, 다음과 같이 `Object.prototype`에 정의된 `toString()`을 이용하여 다음과 같이 타입을 살펴볼 수 있습니다:
+아마 자바스크립트를 사용하시면서 `[object Object]`를 보신 적이 있으실 겁니다. 이는 객체의 `toString()` 기본 동작이 `[object Type]`을 반환하는것이기 때문에 발생하는 현상입니다. 이때 `[object Type]` 에서 `Type`은 인자로 전달된 객체의 타입을 의미합니다. 예를 들어, 다음과 같이 `Object.prototype`에 정의된 `toString()`을 이용하여 다음과 같이 타입을 살펴볼 수 있습니다:
 
 ```js
 console.log(Object.prototype.toString.call(null)); // [object Null]
@@ -153,7 +153,7 @@ console.log(Object.prototype.toString.call(new ArrayBuffer)); // [object ArrayBu
 // ...
 ```
 
-위와 같이 객체의 `toString()` 메서드 기본 동작이 `[object Type]` 문자열을 반환하는 것이기 때문에, 실수로 다음과 같은 동작을 수행하게 되는 경우 `[object Object]`와 같은 결과를 보게됩니다:
+위와 같이 객체의 `toString()` 메서드 기본 동작이 `[object Type]` 문자열을 반환하는 것이기 때문에, 실수로 다음과 같은 동작을 수행하게 되는 경우 `[object Object]`와 같은 결과를 보게 됩니다:
 
 ```js
 const myObj = {
@@ -179,7 +179,9 @@ const myObj = {
 console.log(myObj + '1'); // [object Object]1
 ```
 
-우선 덧셈 연산을 수행하기 전에, `myObj`의 타입이 객체이므로 이를 원시 타입으로 (암묵적으로) 변환합니다. 이때 힌트를 `default`로 설정하여 `ToPrimitive` 알고리즘을 실행하는데, 그말인 즉 힌트를 `number`로 가정하고 `OrdinaryToPrimitive` 알고리즘을 실행하게 됩니다. 따라서 `myObj`의 `valueOf()` 메서드가 먼저 실행되는데, 이때 객체의 `valueOf()` 메서드의 기본 동작은 자기 자신을 반환하는 것입니다. 이에 따라 `valueOf()`의 실행 결과로 객체인 `myObj`가 반환되므로, 그 다음으로 `myObj`의 `toString()` 메서드가 실행됩니다. 앞서 살펴봤듯이 객체의 `toString()` 기본 동작은 `"[object Type]"` 문자열을 반환하는 것이므로 여기선 `"[object Object]"` 문자열이 반환됩니다. 따라서 최종적으로 정리하자면 `myObj` 객체가 `"[object Object]"` 원시 타입(문자열)로 자동 변환되어 문자열 `"1"`과 이어 붙이는 연산을 수행해서 `myObj + '1'`의 결과로 `"[object Object]1"`이 반환됩니다.
+우선 덧셈 연산을 수행하기 전에, `myObj`의 타입이 객체이므로 이를 원시 타입으로 (암묵적으로) 변환합니다. 이때 힌트를 `default`로 설정하여 `ToPrimitive` 알고리즘을 실행하는데, 그 말인 즉 힌트를 `number`로 가정하고 `OrdinaryToPrimitive` 알고리즘을 실행하게 됩니다. 따라서 `myObj`의 `valueOf()` 메서드가 먼저 실행되는데, 이때 객체의 `valueOf()` 메서드의 기본 동작이 자기 자신을 반환하는 것이므로 `valueOf()`의 실행 결과로 객체인 `myObj`가 반환됩니다. 따라서 그다음으로 `myObj`의 `toString()` 메서드가 실행되는데, 앞서 살펴봤듯이 객체의 `toString()`의 기본 동작은 `"[object Type]"` 문자열을 반환하는 것이므로 여기선 `"[object Object]"` 문자열이 반환됩니다.
+
+최종적으로 정리하자면 `myObj` 객체가 `"[object Object]"` 원시 타입(문자열)으로 자동 변환되어 문자열 `'1'`과 이어 붙이는 연산을 수행해서 `myObj + '1'`의 결과로 `"[object Object]1"`이 반환됩니다.
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion1.png" alt="암묵적 객체 변환1" />
@@ -193,7 +195,7 @@ const myObj1 = {
   valueOf() { return 2; }
 };
 
-// valueOf() 호출 시 원시 타입인 숫자 2를 반환하므로 암묵적 변환이 myObj1을 2로 변환하고 종료됩니다.
+// valueOf() 호출 시 원시 타입인 숫자 2를 반환하므로 암묵적 변환의 결과로 myObj1이 2로 변한됩니다.
 // 여기선 덧셈 연산의 두 번째 피연산자가 문자열이므로 2를 다시 문자열 "2"로 변환하여 문자열 이어붙이기를
 // 수행하게 됩니다. 따라서 최종 결과는 "21"이 됩니다.
 console.log(myObj1 + '1'); // "21"
@@ -204,7 +206,7 @@ const myObj2 = {
   [Symbol.toPrimitive]() { return 100; }
 };
 
-// 이 경우 myObj2가 [Symbol.toPrimitive] 메서드를 가지고 있기 때문에, toPrimitive 추상 연산에서
+// 이 경우 myObj2가 [Symbol.toPrimitive] 메서드를 가지고 있기 때문에, ToPrimitive 추상 연산에서
 // OrdinaryToPrimitive 추상 연산으로 넘어가지 않고, [Symbol.toPrimitive] 메서드를 실행하여
 // 변환을 수행합니다. 따라서 myObj2가 원시 타입인 숫자 100으로 변환되고 여기선 덧셈 연산의 두 피연산자
 // 모두 숫자이므로 수학에서의 덧셈 연산을 수행하여 최종 결과가 100 + 1 = 101이 됩니다.
@@ -217,5 +219,5 @@ console.log(myObj2 + 1); // 101
 
 ## 레퍼런스
 
-[ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/#sec-type-conversion)
-[Type coercion in JavaScript](https://2ality.com/2019/10/type-coercion.html)
+- [ECMAScript® 2023 Language Specification](https://tc39.es/ecma262/#sec-type-conversion)
+- [Type coercion in JavaScript](https://2ality.com/2019/10/type-coercion.html)
