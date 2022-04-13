@@ -1,6 +1,6 @@
 import { graphql } from 'gatsby'
 import _ from 'lodash'
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { Category } from '../components/category'
 import { Contents } from '../components/contents'
 import { Head } from '../components/head'

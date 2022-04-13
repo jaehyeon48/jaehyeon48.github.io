@@ -3,11 +3,18 @@
 .categories {
   position: sticky;
   top: 76px;
-  height: fit-content;
   width: 24%;
+  height: fit-content;
   border-radius: 4px;
   margin-left: 2em;
-  padding: 0 1em;
+  padding-top: 14px;
+  font-size: 14px;
+
+  ul {
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 0 8px 14px;
+  }
 
   @media screen and (max-width: 1124px) {
     width: 40%;
@@ -18,14 +25,14 @@
     width: 100%;
     top: 0;
     margin: 0 0 2em 0;
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 
 .categories-header {
   text-align: center;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 16px;
   margin: 0.3em 0;
 }
 
@@ -39,8 +46,8 @@
 
   .item {
     display: inline-block;
-    margin: 0.5em 0;
-    border-radius: 15px;
+    margin: 8px 0;
+    border-radius: 8px;
     white-space: normal;
     box-sizing: border-box;
     cursor: pointer;
@@ -48,13 +55,13 @@
 
     div {
       display: block;
-      padding: 14px 16px 16px 16px;
+      padding: 10px 8px;
       box-sizing: border-box;
       text-align: center;
     }
 
     @media screen and (max-width: 768px) {
-      margin: 1em 0;
+      margin: 12px 0;
     }
   }
 
