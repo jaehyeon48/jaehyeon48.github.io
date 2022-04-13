@@ -52,6 +52,7 @@ export default ({ data, location }) => {
         category={category}
       />
       <Category
+        posts={posts}
         categories={categories}
         category={category}
         selectCategory={selectCategory}
