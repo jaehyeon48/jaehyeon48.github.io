@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Jaehyeon's Dev Blog]]></title><description><![CDATA[개발자로서 성장해 나가는 것을 기록하는 블로그입니다. 개발을 통해 보다 나은 세상을 만드는데 기여하고 싶습니다.]]></description><link>https://jaehyeon48.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 21 Apr 2022 09:34:04 GMT</lastBuildDate><item><title><![CDATA[NGINX의 아키텍처]]></title><description><![CDATA[왜 아키텍처가 중요한가? NGINX…]]></description><link>https://jaehyeon48.github.io/nginx/nginx-architecture/</link><guid isPermaLink="false">https://jaehyeon48.github.io/nginx/nginx-architecture/</guid><pubDate>Thu, 21 Apr 2022 00:00:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;왜-아키텍처가-중요한가&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%99%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EA%B0%80-%EC%A4%91%EC%9A%94%ED%95%9C%EA%B0%80&quot; aria-label=&quot;왜 아키텍처가 중요한가 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;왜 아키텍처가 중요한가?&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Jaehyeon's Dev Blog]]></title><description><![CDATA[개발자로서 성장해 나가는 것을 기록하는 블로그입니다. 개발을 통해 보다 나은 세상을 만드는데 기여하고 싶습니다.]]></description><link>https://jaehyeon48.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 21 Apr 2022 11:03:11 GMT</lastBuildDate><item><title><![CDATA[NGINX의 아키텍처]]></title><description><![CDATA[왜 아키텍처가 중요한가? NGINX…]]></description><link>https://jaehyeon48.github.io/nginx/nginx-architecture/</link><guid isPermaLink="false">https://jaehyeon48.github.io/nginx/nginx-architecture/</guid><pubDate>Thu, 21 Apr 2022 00:00:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;왜-아키텍처가-중요한가&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%99%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EA%B0%80-%EC%A4%91%EC%9A%94%ED%95%9C%EA%B0%80&quot; aria-label=&quot;왜 아키텍처가 중요한가 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;왜 아키텍처가 중요한가?&lt;/h2&gt;
 &lt;p&gt;NGINX의 아키텍처를 살펴보기 전에, 우선 아키텍처의 중요성에 대해 간단히 살펴보고 가봅시다.&lt;/p&gt;
 &lt;p&gt;일반적으로, 프로그램의 기본 베이스는 프로세스와 스레드입니다. (넓은 시각에서 보자면, 프로세스와 스레드는 메모리를 공유하는 정도의 차이 이외엔 거의 같다고 볼 수도 있습니다). 프로세스와 스레드는 CPU 코어에서 실행될 수 있는 명령어들의 모음이라고 볼 수 있는데, 대부분의 복잡한 프로그램들은 여러 개의 프로세스 혹은 스레드를 병렬로 실행합니다. 그 이유는:&lt;/p&gt;
 &lt;ul&gt;
@@ -116,6 +116,244 @@
 &lt;h2 id=&quot;레퍼런스&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EB%A0%88%ED%8D%BC%EB%9F%B0%EC%8A%A4&quot; aria-label=&quot;레퍼런스 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;레퍼런스&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://www.nginx.com/blog/inside-nginx-how-we-designed-for-performance-scale/&quot; target=&quot;_blank&quot; rel=&quot;noreferrer noopener&quot;&gt;Inside NGINX: Designed for Performance &amp;#x26; Scalability&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[Ubuntu 20.04에서 Nginx 설치 및 설정하기]]></title><description><![CDATA[이 포스트는 프로젝트를 배포하는 과정에서 참고한 여러 개의 포스트를 종합한 글입니다. Ubuntu 20.04에 Nginx 설치하기 Nginx…]]></description><link>https://jaehyeon48.github.io/nginx/configure-nginx-on-ubuntu-2004/</link><guid isPermaLink="false">https://jaehyeon48.github.io/nginx/configure-nginx-on-ubuntu-2004/</guid><pubDate>Thu, 21 Apr 2022 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;이 포스트는 프로젝트를 배포하는 과정에서 참고한 여러 개의 포스트를 종합한 글입니다.&lt;/p&gt;
+&lt;h2 id=&quot;ubuntu-2004에-nginx-설치하기&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#ubuntu-2004%EC%97%90-nginx-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0&quot; aria-label=&quot;ubuntu 2004에 nginx 설치하기 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Ubuntu 20.04에 Nginx 설치하기&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Nginx 설치&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;apt&lt;/span&gt; update
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;apt&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;&lt;strong&gt;방화벽 설정&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw app list&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;위 명령을 실행하면 아래와 같은 리스트가 출력됩니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;Available applications:
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+  OpenSbash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;각 설정이 의미하는 바는 다음과 같습니다:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Nginx HTTP&lt;/strong&gt;: 포트 80번만 허용&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Nginx HTTPS&lt;/strong&gt;: 포트 443번만 허용&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Nginx Full&lt;/strong&gt;: 포트 80, 443번 허용&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;방화벽 설정을 적용하는 방법은 다음과 같습니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw allow &lt;span class=&quot;token string&quot;&gt;&apos;Nginx HTTP&apos;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;이후 아래 명령어를 입력하여 상태를 체크합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw status&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;Status: active
+
+To                         Action      From
+--                         ------      ----
+Nginx HTTP                 ALLOW       Anywhere
+Nginx HTTP &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;v6&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;            ALLOW       Anywhere &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;v6&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;만약 방화벽이 &lt;code class=&quot;language-text&quot;&gt;inactive&lt;/code&gt; 상태라면 아래 명령어를 입력하여 활성화 합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw &lt;span class=&quot;token builtin class-name&quot;&gt;enable&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Nginx 상태 체크&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;위 과정을 거치면 우분투가 Nginx를 실행합니다. 이때 아래 명령어를 실행하여 정상적으로 실행 중인지 체크할 수 있습니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;systemctl status nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;/lib/systemd/system/nginx.service&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; enabled&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; vendor preset: enabled&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+     Active: active &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;running&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; since Wed &lt;span class=&quot;token number&quot;&gt;2022&lt;/span&gt;-04-20 09:03:47 UTC&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; 24h ago
+       Docs: man:nginx&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+   Main PID: &lt;span class=&quot;token number&quot;&gt;20596&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nginx&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      Tasks: &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;limit: &lt;span class=&quot;token number&quot;&gt;1147&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+     Memory: &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;.4M
+     CGroup: /system.slice/nginx.service
+             ├─20596 nginx: master process /usr/sbin/nginx -g daemon on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; master_process on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+             └─20597 nginx: worker process&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;또한, 브라우저 주소창에 서버의 ip 혹은 도메인 이름을 입력하여 아래와 같은 기본 Nginx 랜딩 페이지가 표시되는지 살펴봅니다:&lt;/p&gt;
+&lt;figure&gt;
+    &lt;img src=&quot;https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/nginx/configure-nginx-on-ubuntu-2004/welcome_to_nginx.png&quot; alt=&quot;Nginx 랜딩 페이지&quot;&gt;
+  &lt;figcaption&gt;Nginx 랜딩 페이지.&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;위 랜딩 페이지가 표시된다면 Nginx가 정상적으로 동작하고 있다는 뜻입니다.&lt;/p&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Nginx 프로세스 관리 명령어&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 시작&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl start nginx
+
+&lt;span class=&quot;token comment&quot;&gt;# 종료&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl stop nginx
+
+&lt;span class=&quot;token comment&quot;&gt;# 재시작&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl restart nginx
+
+&lt;span class=&quot;token comment&quot;&gt;# 리로드 (변경된 설정을 적용하는 경우 사용. 기존 연결을 끊지 않음.)&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl reload nginx
+
+&lt;span class=&quot;token comment&quot;&gt;# 기본적으로 서버 시작 시 nginx가 자동으로 실행되는데, 이를 막고 싶은 경우&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl disable nginx
+
+&lt;span class=&quot;token comment&quot;&gt;# 서버 시작 시 자동으로 nginx를 실행하고 싶은 경우&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl &lt;span class=&quot;token builtin class-name&quot;&gt;enable&lt;/span&gt; nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;&lt;strong&gt;서버 블록 설정&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 1. 디렉토리 생성:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mkdir&lt;/span&gt; -p /var/www/도메인 이름/html
+
+&lt;span class=&quot;token comment&quot;&gt;# 2. 소유자 설정:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;chown&lt;/span&gt; -R &lt;span class=&quot;token environment constant&quot;&gt;$USER&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token environment constant&quot;&gt;$USER&lt;/span&gt; /var/www/도메인 이름/html
+
+&lt;span class=&quot;token comment&quot;&gt;# 3. 권한 설정:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;chmod&lt;/span&gt; -R &lt;span class=&quot;token number&quot;&gt;755&lt;/span&gt; /var/www/도메인 이름
+
+&lt;span class=&quot;token comment&quot;&gt;# 4. index.html 생성:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /var/www/도메인 이름/html/index.html
+
+&lt;span class=&quot;token comment&quot;&gt;# 5. 서버 블록 생성:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /etc/nginx/sites-available/도메인 이름
+
+&lt;span class=&quot;token comment&quot;&gt;# 아래 내용 입력:&lt;/span&gt;
+server &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    listen &lt;span class=&quot;token number&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    listen &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;::&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;:80&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    root /var/www/도메인 이름/html&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    index index.html index.htm index.nginx-debian.html&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    server_name 도메인 이름 www.도메인 이름&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    location / &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        try_files &lt;span class=&quot;token variable&quot;&gt;$uri&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$uri&lt;/span&gt;/ &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 6. 심볼릭 링크 생성:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ln&lt;/span&gt; -s /etc/nginx/sites-available/도메인 이름 /etc/nginx/sites-enabled/
+
+&lt;span class=&quot;token comment&quot;&gt;# 7. nginx.conf 파일 설정:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /etc/nginx/nginx.conf
+
+&lt;span class=&quot;token comment&quot;&gt;# 아래 내용으로 수정:&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+http &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+    server_names_hash_bucket_size &lt;span class=&quot;token number&quot;&gt;64&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+
+&lt;span class=&quot;token comment&quot;&gt;# 8. 설정 파일에 문법 오류가 없는지 검사:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; nginx -t
+
+&lt;span class=&quot;token comment&quot;&gt;# 9. Nginx 재시작:&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl restart nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;이제 브라우저 주소 창에 &lt;code class=&quot;language-text&quot;&gt;http://도메인 이름&lt;/code&gt;을 입력하면 아까 생성한 &lt;code class=&quot;language-text&quot;&gt;index.html&lt;/code&gt; 의 내용이 표시됩니다.&lt;/p&gt;
+&lt;h2 id=&quot;https-적용&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#https-%EC%A0%81%EC%9A%A9&quot; aria-label=&quot;https 적용 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;HTTPS 적용&lt;/h2&gt;
+&lt;p&gt;📌 HTTPS를 적용하고자 하는 경우, 반드시 등록된 도메인이 있어야 하고, 도메인에 대한 A 레코드가 존재해야 합니다. 또한, 위에서 설정했던 내용들이 적용되어 있어야 합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Certbot 설치&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;apt&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; certbot python3-certbot-nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;&lt;strong&gt;방화벽에서 HTTPS 허용&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw allow &lt;span class=&quot;token string&quot;&gt;&apos;Nginx Full&apos;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# HTTP와 HTTPS 모두 허용&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; ufw delete allow &lt;span class=&quot;token string&quot;&gt;&apos;Nginx HTTP&apos;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# 기존의 HTTP 허용 설정 제거&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;SSL 인증서 발급&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; certbot --nginx -d 도메인 이름 -d www.도메인 이름&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;이때, 만약 처음으로 &lt;code class=&quot;language-text&quot;&gt;certbot&lt;/code&gt;을 실행하는 경우라면 이메일을 입력하라는 문구와 약관 동의 안내창이 뜰것입니다. 이 과정을 진행하면 &lt;code class=&quot;language-text&quot;&gt;certbot&lt;/code&gt;은 Let’s Encrypt 서버와 통신하여 여러분이 입력한 도메인이 유효한지 체크하는 과정을 거칩니다.&lt;/p&gt;
+&lt;p&gt;체크에 성공하면 &lt;code class=&quot;language-text&quot;&gt;certbot&lt;/code&gt;은 아래와 같이 HTTPS 설정을 어떻게 할 것인가를 물어보게 됩니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: No redirect - Make no further changes to the webserver configuration.
+2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for
+new sites, or if you&apos;re confident your site works on HTTPS. You can undo this
+change by editing your web server&apos;s configuration.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press &apos;c&apos; to cancel):&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;위 두 가지 옵션 중 하나를 선택하시고 엔터를 누르면 아래와 같은 메시지가 뜨면서 설정이 업데이트되고 Nginx가 재시작됩니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;IMPORTANT NOTES:
+ - Congratulations&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt; Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/example.com/fullchain.pem
+   Your key &lt;span class=&quot;token function&quot;&gt;file&lt;/span&gt; has been saved at:
+   /etc/letsencrypt/live/example.com/privkey.pem
+   Your cert will expire on &lt;span class=&quot;token number&quot;&gt;2020&lt;/span&gt;-08-18. To obtain a new or tweaked
+   version of this certificate &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; the future, simply run certbot again
+   with the &lt;span class=&quot;token string&quot;&gt;&quot;certonly&quot;&lt;/span&gt; option. To non-interactively renew *all* of
+   your certificates, run &lt;span class=&quot;token string&quot;&gt;&quot;certbot renew&quot;&lt;/span&gt;
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let&apos;s Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;이제 &lt;code class=&quot;language-text&quot;&gt;/etc/nginx/sites-available/도메인 이름&lt;/code&gt; 파일에 접속해 보면 자동으로 적용된 설정을 보실 수 있으실 겁니다.&lt;/p&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Certbot 자동 갱신 확인하기&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Let’s Encrypt의 인증서는 90일 동안 유효합니다. 다행히도 &lt;code class=&quot;language-text&quot;&gt;certbot&lt;/code&gt; 패키지는 타이머를 설정하여 하루에 두 번 체크한 뒤 인증서 만료 기간이 30일 이내라면 자동으로 갱신합니다.&lt;/p&gt;
+&lt;p&gt;이 타이머의 상태는 아래의 명령어를 통해 체크할 수 있습니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl status certbot.timer&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;● certbot.timer - Run certbot twice daily
+     Loaded: loaded &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;/lib/systemd/system/certbot.timer&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; enabled&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; vendor preset: enabled&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+     Active: active &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;waiting&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; since Mon &lt;span class=&quot;token number&quot;&gt;2020&lt;/span&gt;-05-04 &lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;:04:36 UTC&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; weeks &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; days ago
+    Trigger: Thu &lt;span class=&quot;token number&quot;&gt;2020&lt;/span&gt;-05-21 05:22:32 UTC&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; 9h left
+   Triggers: ● certbot.service&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;자동 갱신 과정을 테스트하려면 아래의 명령어를 이용할 수 있습니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; certbot renew --dry-run&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;http2-적용&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#http2-%EC%A0%81%EC%9A%A9&quot; aria-label=&quot;http2 적용 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;HTTP/2 적용&lt;/h2&gt;
+&lt;p&gt;📌 HTTP/2를 적용하고자 하는 경우, 반드시 등록된 도메인과 서버에 TLS 설정이 적용되어 있어야 합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;HTTP/2 옵션 켜기&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 설정 파일 열기&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /etc/nginx/sites-enabled/도메인 이름
+
+&lt;span class=&quot;token comment&quot;&gt;# 아래 내용 입력 (&apos;http2&apos; 단어 추가)&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+    listen &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;::&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;:443 ssl http2 &lt;span class=&quot;token assign-left variable&quot;&gt;ipv6only&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; 
+    listen &lt;span class=&quot;token number&quot;&gt;443&lt;/span&gt; ssl http2&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; 
+&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+
+&lt;span class=&quot;token comment&quot;&gt;# 설정 파일 문법 체크&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; nginx -t&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;&lt;strong&gt;안전하지 않은 Cipher Suite 제거&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 설정 파일 열기&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /etc/nginx/sites-enabled/도메인 이름
+
+&lt;span class=&quot;token comment&quot;&gt;# 아래 내용 주석 처리 (혹은 제거)&lt;/span&gt;
+include /etc/letsencrypt/options-ssl-nginx.conf&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# managed by Certbot&amp;lt;^&gt;&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 이후 위 라인 바로 밑에 아래 내용 추가&lt;/span&gt;
+ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;MD5&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;만약 self-signed 인증서를 사용하는 경우, 아래의 과정또한 수행합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 설정 파일 열기&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;nano&lt;/span&gt; /etc/nginx/snippets/ssl-params.conf
+
+&lt;span class=&quot;token comment&quot;&gt;# 아래 내용 찾기&lt;/span&gt;
+ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 위 내용을 아래 내용으로 바꾸기&lt;/span&gt;
+ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;MD5&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;설정 과정이 끝나면 Nginx 설정을 적용합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl reload nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;HSTS(HTTP Strict Transport Security) 설정하기&lt;/strong&gt; &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;기존에도 HTTP 연결을 HTTPS로 리다이렉트 한다고 하더라도, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security&quot; target=&quot;_blank&quot; rel=&quot;noreferrer noopener&quot;&gt;HSTS&lt;/a&gt; 설정을 통해 반드시 HTTPS로만 통신하도록 강제할 수 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 설정 파일 열기&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;vi&lt;/span&gt; /etc/nginx/sites-enabled/도메인 이름
+
+&lt;span class=&quot;token comment&quot;&gt;# &apos;ssl_ciphers&apos; 설정을 포함하는 서버 블록에 아래 라인 추가&lt;/span&gt;
+add_header Strict-Transport-Security &lt;span class=&quot;token string&quot;&gt;&quot;max-age=31536000&quot;&lt;/span&gt; always&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;기본적으로 위 헤더는 서브도메인에 대해선 적용되지 않습니다. 만약 서브도메인에도 HSTS를 적용하고 싶다면 &lt;code class=&quot;language-text&quot;&gt;includeSubDomains&lt;/code&gt; 값을 추가하면 됩니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;add_header Strict-Transport-Security &lt;span class=&quot;token string&quot;&gt;&quot;max-age=31536000; includeSubDomains&quot;&lt;/span&gt; always&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;레퍼런스&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EB%A0%88%ED%8D%BC%EB%9F%B0%EC%8A%A4&quot; aria-label=&quot;레퍼런스 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; width=&quot;18&quot; height=&quot;18&quot; focusable=&quot;false&quot; data-prefix=&quot;fas&quot; data-icon=&quot;link&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path fill=&quot;#05b166&quot; d=&quot;M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;레퍼런스&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04&quot; target=&quot;_blank&quot; rel=&quot;noreferrer noopener&quot;&gt;How To Install Nginx on Ubuntu 20.04&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04&quot; target=&quot;_blank&quot; rel=&quot;noreferrer noopener&quot;&gt;How To Secure Nginx with Let’s Encrypt on Ubuntu 20.04&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-20-04&quot; target=&quot;_blank&quot; rel=&quot;noreferrer noopener&quot;&gt;How To Set Up Nginx with HTTP/2 Support on Ubuntu 20.04&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content:encoded></item><item><title><![CDATA[자바스크립트에서 재귀호출로 인한 스택 오버플로우를 막는 방법]]></title><description><![CDATA[…]]></description><link>https://jaehyeon48.github.io/javascript/prevent-stack-overflow-in-js/</link><guid isPermaLink="false">https://jaehyeon48.github.io/javascript/prevent-stack-overflow-in-js/</guid><pubDate>Fri, 15 Apr 2022 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;자바스크립트로 프로그래밍을 하다가 한 번쯤은 아래와 같은 에러를 만나보셨을 겁니다:&lt;/p&gt;
 &lt;figure&gt;
   &lt;img src=&quot;https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/prevent-stack-overflow-in-js/fig1.png&quot; alt=&quot;자바스크립트의 스택 오버플로우 에러&quot;&gt;
