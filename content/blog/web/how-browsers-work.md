@@ -153,6 +153,10 @@ X-Firefox-Spdy: h2
 
 브라우저의 렌더링 엔진이 웹 페이지를 분석해서 화면에 표시하는 작업들은 선후 관계가 비교적 명확하므로 일반적으로 단일 스레드(주로 메인 스레드)에 의해 수행됩니다. 예를 들어 HTML이 해석되지 않으면 CSS와 자바스크립트가 수행될 수 없고, DOM이 만들어지지 않으면 브라우저가 화면을 구성할 수 없으며, 화면을 구성하지 못하면 결국 페이지를 그리지 못하게 되는 것이지요. 따라서 이러한 일련의 작업을 브라우저가 어떠한 순서로 처리하는지 이해하는 것은 웹 최적화뿐만 아니라 웹 개발에도 매우 중요하다고 할 수 있습니다.
 
+|📌|
+|-|
+|여기서 **critical**의 의미는 페이지를 처음 그리는데 필요한 자원, 즉 페이지의 초기 렌더링 과정을 blocking 하는 자원을 의미합니다 (parser-blocking한 자원). 주로 HTML, CSS, 스크립트 파일이 *critical*한 자원이며 이미지 같은 자원들은 일반적으로 "critical"하게 취급되지 않습니다 (따라서 초기 렌더링을 blocking하지 않습니다). 물론 critical 하지 않은 자원들도 빠르게 다운로드 해야겠지만요!|
+
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/how_browsers_work/crp.png" alt="Critical Rendering Path" />
     <figcaption>Critical Rendering Path.</figcaption>
@@ -430,3 +434,4 @@ CSS2 스펙에 명시된 페인팅 순서는 [여기](https://www.w3.org/TR/CSS2
 - https://developers.google.com/web/fundamentals/performance/critical-rendering-path
 - https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work
 - https://www.html5rocks.com/en/tutorials/speed/layers/
+- [Analyzing Critical Rendering Path Performance](https://web.dev/critical-rendering-path-analyzing-crp/)
