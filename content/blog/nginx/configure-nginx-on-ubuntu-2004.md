@@ -29,7 +29,7 @@ Available applications:
   Nginx Full
   Nginx HTTP
   Nginx HTTPS
-  OpenSbash
+  OpenSSH
 ```
 
 각 설정이 의미하는 바는 다음과 같습니다:
