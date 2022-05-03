@@ -198,7 +198,11 @@ DOM 트리의 루트는 `<html>` 태그이며 트리의 각 요소를 DOM 노드
     <figcaption>DOM 트리.</figcaption>
 </figure>
 
-HTML을 파싱하는 과정에서 브라우저 파서가 이미지와 같이 파싱을 방해하지 않는 리소스(non-blocking resource)를 만나게 되면 백그라운드에서 해당 리소스를 다운받음과 동시에 파싱을 계속해서 이어나갑니다. 외부 CSS 파일을 만나도 마찬가지인데요, 하지만 자바스크립트 파일(`<script>` 태그)을 만나게 되면 이야기가 좀 달라집니다. 기본적으로 브라우저는 `<script>` 태그를 만나게 되면 파싱을 일시 중지하고 해당 스크립트를 실행한 다음 다시 파싱을 재개합니다. 만약 `<script src="...">`와 같이 외부 스크립트 파일이라면 해당 스크립트 파일을 다운로드하여 실행을 완료할 때까지 파싱을 일시 중지하게 됩니다. 물론 pre-load scanner 덕분에 이 딜레이를 단축할 수는 있으나, 스크립트 파일이 많은 경우 여전히 이때문에 렌더링이 지연될 수 있어 웹 성능에 악영향을 미칠 수 있습니다. pre-load scanner에 관한 내용은 [여기](https://calendar.perfplanet.com/2013/big-bad-preloader/)와 [여기](https://andydavies.me/blog/2013/10/22/how-the-browser-pre-loader-makes-pages-load-faster/)를 참고해 주세요.
+HTML을 파싱하는 과정에서 브라우저 파서가 이미지와 같이 파싱을 방해하지 않는 리소스(non-blocking resource)를 만나게 되면 백그라운드에서 해당 리소스를 다운받음과 동시에 파싱을 계속해서 이어나갑니다. 하지만 `<style>`, `<link>`, `<script>` 태그를 만나게 되면 이야기가 좀 달라집니다. 
+
+우선 `<style>` 혹은 `<link rel="stylesheet" href="some/path/to/css">` 태그를 만나게 되면 HTML 파서는 하던 일을 잠시 멈추고 CSS 파서가 `<style>` 태그 혹은 외부 CSS 파일을 분석하여 CSSOM을 만들게 됩니다.
+
+또한 스크립트의 경우, 기본적으로 브라우저는 `<script>` 태그를 만나게 되면 파싱을 일시 중지하고 해당 스크립트를 실행한 다음 다시 파싱을 재개합니다. 만약 `<script src="...">`와 같이 외부 스크립트 파일이라면 해당 스크립트 파일을 다운로드하여 실행을 완료할 때까지 파싱을 일시 중지하게 됩니다. 물론 pre-load scanner 덕분에 이 딜레이를 단축할 수는 있으나, 스크립트 파일이 많은 경우 여전히 이때문에 렌더링이 지연될 수 있어 웹 성능에 악영향을 미칠 수 있습니다. pre-load scanner에 관한 내용은 [여기](https://calendar.perfplanet.com/2013/big-bad-preloader/)와 [여기](https://andydavies.me/blog/2013/10/22/how-the-browser-pre-loader-makes-pages-load-faster/)를 참고해 주세요.
 
 물론 초기 렌더링에 관여하지 않는 스크립트 파일의 경우, `async`, `defer` 속성을 사용하여 이러한 동작을 변경할 수도 있습니다. 이 속성들의 동작을 그림으로 나타내면 다음과 같습니다:
 
