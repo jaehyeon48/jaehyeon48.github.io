@@ -164,6 +164,20 @@ Sec-WebSocket-Extensions: deflate-frame
 - **Masking-key**: 클라이언트에서 서버로 전송되는 모든 프레임은 32비트 값을 이용하여 마스킹 되는데, 마스킹 될 때 사용된 key를 나타냅니다. 크기는 `MASK`의 값이 0인 경우 0, `MASK`의 값이 1인 경우 4바이트입니다.
 - **Payload data**: 클라이언트와 서버가 주고받는 실제 데이터를 의미합니다. Payload 데이터는 확장에서 사용되는 Extension 데이터와 앱에서 사용되는 Application 데이터로 다시 나뉩니다.
 
+## 연결 종료하기
+
+웹 소켓을 연결할 때 opening handshake 과정을 거쳤던 것처럼, 연결을 종료할 때도 closing handshake 과정을 거칩니다. 하지만 연결 종료를 위한 handshake 과정은 opening handshake 보다는 훨씬 간단합니다 😀
+
+웹 소켓 연결 종료는 클라이언트, 서버 중 연결 종료를 원하는 곳에서 연결 종료를 위한 Close 프레임을 전송함으로써 이뤄집니다 (opcode가 "8"인 프레임). 이 컨트롤 프레임에는 추가로 연결을 종료하는 이유 등의 정보가 포함될 수 있습니다.
+
+클라이언트 혹은 서버에서 Close 프레임을 보내 웹 소켓 연결을 종료하고자 한다면, 반대 측에선 그에 대한 응답으로 똑같이 Close 프레임을 전송합니다. 이때 현재 전송 중인 메시지가 있다면 Close 프레임 응답을 늦출 순 있지만, 이미 Close 프레임을 보낸 반대 측에서 해당 데이터를 처리할지는 알 수 없습니다. 최종적으로 웹 소켓 연결이 종료되면 곧이어 TCP 연결 또한 종료됩니다.
+
+## 🏓 Ping, Pong
+
+웹 소켓 프로토콜에는 웹 소켓 연결이 정상적으로 유지되고 있는지를 살펴보기 위해 ping-pong 메커니즘을 사용합니다. 한쪽에서 ping 프레임을 전송하면 다른 한쪽에서 ping 프레임을 받는 즉시 pong 프레임을 전송(응답)하는 형식으로 동작하는 것이죠.
+
+이때, ping 프레임은 Opcode가 "9"인 컨트롤 프레임, pong 프레임은 Opcode가 "10"인 컨트롤 프레임입니다.
+
 ## 레퍼런스
 
 - [RFC 6202 - Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP](https://datatracker.ietf.org/doc/html/rfc6202)
