@@ -4,10 +4,13 @@ import { ThemeSwitch } from '../theme-switch';
 
 import './index.scss';
 
-export const Top = ({ title }) => {
+export const Top = ({ title, selectCategory }) => {
+  function resetCategory() {
+    selectCategory('All');
+  }
   return (
     <nav className="top">
-      <Link to={`/`} className="link">
+      <Link to={`/`} className="link" onClick={resetCategory}>
         {title}
       </Link>
       <ThemeSwitch />

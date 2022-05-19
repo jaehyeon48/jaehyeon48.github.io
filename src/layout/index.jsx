@@ -4,10 +4,10 @@ import { Footer } from '../components/footer';
 
 import './index.scss';
 
-export const Layout = ({ title, children }) => {
+export const Layout = ({ title, children, selectCategory }) => {
   return (
     <React.Fragment>
-      <Top title={title} />
+      <Top title={title} selectCategory={selectCategory}/>
       <main className="main">
         {children}
       </main>
