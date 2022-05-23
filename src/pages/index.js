@@ -30,6 +30,12 @@ export default ({ data, location }) => {
   const [count, countRef, increaseCount] = useRenderedCount()
   const [category, selectCategory] = useCategory()
 
+  useEffect(() => {
+    const curCategory = location.search.match(/\?category=(.*)/);
+    if (!curCategory) return;
+    selectCategory(decodeURIComponent(curCategory[1]));
+  }, [location]);
+
   useIntersectionObserver()
   useScrollEvent(() => {
     const currentPos = window.scrollY + window.innerHeight
