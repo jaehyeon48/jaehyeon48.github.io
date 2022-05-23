@@ -1,7 +1,7 @@
 ---
 title: '구글 V8 엔진 살펴보기'
 date: 2022-05-21
-category: 'Web'
+category: 'JavaScript'
 draft: false
 ---
 
@@ -14,7 +14,7 @@ V8 엔진은 대표적으로 구글 크롬 브라우저, Node.js 에서 사용�
 우선, V8 엔진의 구조는 아래 그림과 같이 나타낼 수 있습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/v8_engine_structure.png" alt="구글 V8 엔진 구조" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/v8_engine_structure.png" alt="구글 V8 엔진 구조" />
     <figcaption>구글 V8 엔진 구조. 출처: https://medium.com/@yanguly/sparkplug-v8-baseline-javascript-compiler-758a7bc96e84</figcaption>
 </figure>
 
@@ -39,7 +39,7 @@ function fn() {
 ```
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/ast_example.png" alt="AST 예시" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/ast_example.png" alt="AST 예시" />
     <figcaption>AST 예시. 출처: https://www.youtube.com/watch?v=Fg7niTmNNLg</figcaption>
 </figure>
 
@@ -50,7 +50,7 @@ function fn() {
 아래 그림에서 볼 수 있듯, 파싱 작업은 V8 엔진 전체 실행 시간의 약 15~20%를 차지하는 작업입니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/v8_parsing_time.png" alt="V8 엔진에서 파싱 작업이 차지하는 비율" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/v8_parsing_time.png" alt="V8 엔진에서 파싱 작업이 차지하는 비율" />
     <figcaption>V8 엔진에서 파싱 작업이 차지하는 비율. 출처: https://www.youtube.com/watch?v=Fg7niTmNNLg</figcaption>
 </figure>
 
@@ -90,7 +90,7 @@ lazy();
 ## 바이트 코드 생성
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/ignition_logo.png" alt="Ignition 로고" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/ignition_logo.png" alt="Ignition 로고" />
     <figcaption>Ignition 로고. 출처: https://v8.js.cn/blog/launching-ignition-and-turbofan/</figcaption>
 </figure>
 
@@ -151,7 +151,7 @@ Handler Table (size = 16)
 `LdaSmi [1]`는 small integer `1`을 accumulator 레지스터에 로드하라는 뜻입니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/ldasmi1.png" alt="LdaSmi [1]" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/ldasmi1.png" alt="LdaSmi [1]" />
     <figcaption>LdaSmi [1]. 출처: https://medium.com/dailyjs/understanding-v8s-bytecode-317d46c94775</figcaption>
 </figure>
 
@@ -160,7 +160,7 @@ Handler Table (size = 16)
 `Star r0`는 현재 accumulator 레지스터에 있는 값을 `r0` 레지스터에 저장하라는 뜻입니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/starr0.png" alt="Star r0" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/starr0.png" alt="Star r0" />
     <figcaption>Star r0. 출처: https://medium.com/dailyjs/understanding-v8s-bytecode-317d46c94775</figcaption>
 </figure>
 
@@ -180,7 +180,7 @@ Handler Table (size = 16)
 그럼 맨 뒤의 `[4]`가 의미하는 것은 무엇일까요? 이는 `incrementX()` 함수의 *피드백 벡터(feedback vector)*의 인덱스를 의미하는데, 피드백 벡터는 성능 최적화에 사용되는 정보들이 저장됩니다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/ldanamedproperty.png" alt="LdaNamedProperty a0, [0], [4]" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/ldanamedproperty.png" alt="LdaNamedProperty a0, [0], [4]" />
     <figcaption>LdaNamedProperty a0, [0], [4]. 출처: https://medium.com/dailyjs/understanding-v8s-bytecode-317d46c94775</figcaption>
 </figure>
 
@@ -189,7 +189,7 @@ Handler Table (size = 16)
 `Add r0, [6]`는 `r0` 레지스터에 있는 값을 accumulator 레지스터에 누적하라는 뜻입니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/addr06.png" alt="Add r0, [6]" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/addr06.png" alt="Add r0, [6]" />
     <figcaption>Add r0, [6]. 출처: https://medium.com/dailyjs/understanding-v8s-bytecode-317d46c94775</figcaption>
 </figure>
 
@@ -202,7 +202,7 @@ Handler Table (size = 16)
 ## 최적화 컴파일러
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/turbofan_logo.png" alt="TurboFan 로고" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/turbofan_logo.png" alt="TurboFan 로고" />
     <figcaption>TurboFan 로고. 출처: https://v8.js.cn/blog/launching-ignition-and-turbofan/</figcaption>
 </figure>
 
@@ -213,7 +213,7 @@ V8의 Ignition은 바이트 코드를 실행하면서 Profiler를 통해 어떤 
 또한 최적화된 기계어 코드가 바이트 코드보다 일반적으로 메모리를 더 많이 사용하는데, 이러한 측면까지 모두 고려해서 자바스크립트 코드를 여러 개의 계층으로 나누어 실행하는 것입니다.
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/web/google-v8-engine/tradeoff_startup_speed.png" alt="코드 생성속도와 실행속도간의 trade-off" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/google-v8-engine/tradeoff_startup_speed.png" alt="코드 생성속도와 실행속도간의 trade-off" />
     <figcaption>코드 생성속도와 실행속도간의 trade-off. 출처: https://mathiasbynens.be/notes/prototypes#tradeoffs</figcaption>
 </figure>
 
