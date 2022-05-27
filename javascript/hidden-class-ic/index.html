@@ -259,6 +259,136 @@ console<span class="token punctuation">.</span><span class="token function">log<
     <figcaption>딕셔너리 형태로 배열 요소를 저장하는 방식. 출처: https://mathiasbynens.be/notes/shapes-ics</figcaption>
 </figure>
 <p>프로퍼티 속성이 기본값이 아닌 배열 요소가 <em>단 하나</em>만 존재해도 엔진은 위와 같이 딕셔너리의 형태로 배열 요소를 저장합니다. 이는 기존의 방식에 비해 비효율적이고 느린 방식이므로 <strong>웬만하면 Object.defineProperty 메서드를 이용하여 배열 요소의 프로퍼티 속성을 변경하지 않는 것을 권장합니다!</strong></p>
+<h2 id="프로토타입-프로퍼티-접근-최적화" style="position:relative;"><a href="#%ED%94%84%EB%A1%9C%ED%86%A0%ED%83%80%EC%9E%85-%ED%94%84%EB%A1%9C%ED%8D%BC%ED%8B%B0-%EC%A0%91%EA%B7%BC-%EC%B5%9C%EC%A0%81%ED%99%94" aria-label="프로토타입 프로퍼티 접근 최적화 permalink" class="anchor before"><svg aria-hidden="true" width="18" height="18" focusable="false" data-prefix="fas" data-icon="link" viewBox="0 0 512 512"><path fill="#05b166" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg></a>프로토타입 프로퍼티 접근 최적화</h2>
+<p><code class="language-text">프로토타입</code> 도 우리가 앞서 살펴본 방식과 동일하게 동작합니다. 왜냐하면 자바스크립트의 프로토타입 또한 일반 객체니까요! 아래 예시를 살펴봅시다:</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Bar</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>x <span class="token operator">=</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">Bar</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">getX</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">getX</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 위 프로토타입 기반 코드는 아래의 클래스 기반으로 바꿀 수 있습니다:</span>
+<span class="token keyword">class</span> <span class="token class-name">Bar</span> <span class="token punctuation">{</span>
+	<span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>x <span class="token operator">=</span> x<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token function">getX</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 인스턴스화</span>
+<span class="token keyword">const</span> foo <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Bar</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
+<p>위 코드를 실행하여 <code class="language-text">foo</code> 인스턴스를 생성하면 내부적으로 아래와 같은 구조가 형성됩니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/class_shape_1.png" alt="클래스 모양 1">
+    <figcaption>클래스 모양 1. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>위 상황에서 아래와 같이 또 다른 인스턴스를 생성한 경우는 아래와 같습니다:</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> qux <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Bar</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/class_shape_2.png" alt="클래스 모양 2">
+    <figcaption>클래스 모양 2. 출처: `https://mathiasbynens.be/notes/prototypes`</figcaption>
+</figure>
+<h3 id="프로토타입-프로퍼티-접근" style="position:relative;"><a href="#%ED%94%84%EB%A1%9C%ED%86%A0%ED%83%80%EC%9E%85-%ED%94%84%EB%A1%9C%ED%8D%BC%ED%8B%B0-%EC%A0%91%EA%B7%BC" aria-label="프로토타입 프로퍼티 접근 permalink" class="anchor before"><svg aria-hidden="true" width="18" height="18" focusable="false" data-prefix="fas" data-icon="link" viewBox="0 0 512 512"><path fill="#05b166" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg></a>프로토타입 프로퍼티 접근</h3>
+<p>클래스를 정의하고 인스턴스를 생성하면 내부적으로 어떤 일이 일어나는지 살펴봤으니, 인스턴스의 메서드를 호출하면 어떤 일이 일어나는지 살펴봅시다.</p>
+<p>아래 코드와 같이, 메서드를 호출하는 행위는 실제로 두 단계에 걸쳐 일어난다고 볼 수 있습니다:</p>
+<div class="gatsby-highlight has-highlighted-lines" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> x <span class="token operator">=</span> foo<span class="token punctuation">.</span><span class="token function">getX</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 실제로는 두 단계에 걸쳐 일어나는 것으로 볼 수 있습니다.</span>
+<span class="gatsby-highlight-code-line"><span class="token keyword">const</span> $getX <span class="token operator">=</span> foo<span class="token punctuation">.</span>getX<span class="token punctuation">;</span></span><span class="gatsby-highlight-code-line"><span class="token keyword">const</span> x <span class="token operator">=</span> <span class="token function">$getX</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>foo<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre></div>
+<p>즉,</p>
+<ol>
+<li>메서드도 프로토타입의 프로퍼티이므로, 프로토타입 프로퍼티 탐색을 통해 호출하고자 하는 메서드를 찾습니다 (즉, 프로퍼티를 load 합니다).</li>
+<li>원래의 인스턴스를 메서드의 <code class="language-text">this</code> 값으로 세팅한 뒤 메서드를 호출합니다.</li>
+</ol>
+<p>첫 번째 과정부터 살펴봅시다. 우선 엔진은 메서드를 호출한 인스턴스(여기선 <code class="language-text">foo</code>)의 “모양”에 <code class="language-text">getX</code> 프로퍼티가 있는지 살펴봅니다. <code class="language-text">foo</code> 인스턴스의 모양에서 <code class="language-text">getX</code> 를 찾지 못했으니 프로토타입 체인을 따라 <code class="language-text">foo</code> 인스턴스의 프로토타입인 <code class="language-text">Bar.prototype</code> 객체의 “모양”을 살펴봅니다. <code class="language-text">Bar.prototype</code> 의 “모양”으로 부터 <code class="language-text">getX</code> 의 존재를 확인하였고, 그 오프셋이 <code class="language-text">0</code> 이라는것 까지 확인했으니 엔진은 <code class="language-text">Bar.prototype</code> 객체의 0번째 인덱스로 가서 최종적으로 찾고자 하는 <code class="language-text">getX</code> 함수를 발견합니다. 이것이 바로 메서드를 찾는 과정인데, 앞서 살펴본 객체의 프로퍼티를 찾는 과정과 동일함을 알 수 있습니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/method_load.png" alt="메서드를 찾는 과정">
+    <figcaption>메서드를 찾는 과정. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<hr />
+<p>이전에 “모양”과 인라인 캐시를 통해 객체의 프로퍼티 접근을 최적화하는 기법을 살펴봤었는데요, 이러한 것들을 프로토타입에는 어떻게 적용할 수 있을까요?</p>
+<p>앞서 <code class="language-text">getX</code> 프로퍼티를 찾는 과정을 다시 예로 들자면, 프로토타입 프로퍼티 접근을 최적화하기 위해선 다음 세 가지를 체크했어야 합니다:</p>
+<ol>
+<li><code class="language-text">foo</code> 인스턴스의 “모양”이 바뀌지 않았는지? 즉, <code class="language-text">foo</code> 인스턴스에 프로퍼티를 추가하거나 제거하지 않고 초기의 상태(<code class="language-text">getX</code> 가 없는 상태)를 유지하는지 체크해야 합니다.</li>
+<li>자바스크립트에선 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf" target="_blank" rel="noreferrer noopener">Object.setPrototypeOf()</a> (혹은 <code class="language-text">__proto__</code>) 을 통해 프로토타입 체인을 변경할 수 있으므로, <code class="language-text">foo</code> 인스턴스의 프로토타입이 원래의 <code class="language-text">Bar.prototype</code> 인지(혹시 바뀌진 않았는지) 체크해야 합니다.</li>
+<li><code class="language-text">Bar.prototype</code> 의 “모양”이 바뀌지 않았는지? 즉, <code class="language-text">Bar.prototype</code> 에 프로퍼티를 추가하거나 제거하지 않고 초기의 상태(<code class="language-text">getX</code> 가 있는 상태)를 유지하는지 체크해야 합니다.</li>
+</ol>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_property_access.png" alt="프로토타입 프로퍼티 접근 최적화를 위한 세 가지 체크">
+    <figcaption>프로토타입 프로퍼티 접근 최적화를 위한 세 가지 체크. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>즉, 프로토타입 프로퍼티 접근을 최적화하기 위해선 인스턴스에 대해 1가지 체크를 해야하고, 우리가 찾고자 하는 프로퍼티를 가지는 프로토타입이 나올 때까지 각 프로토타입별로 2가지 체크를 해야 합니다. 다시 말해, 우리가 찾고자 하는 프로퍼티를 가지고 있는 프로토타입까지 도달하는데 <code class="language-text">N</code> 개의 프로토타입을 거쳤다면 총 <code class="language-text">1 + 2N</code> 번의 체크를 수행해야 하죠.</p>
+<p>일반적으론 프로토타입 체인이 그리 길지는 않기 때문에 이 정도면 괜찮은 것 같지만, DOM과 같이 프로토타입의 체인이 훨씬 긴 경우 이야기가 좀 달라집니다:</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> anchor <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// HTMLAnchorElement</span>
+<span class="token keyword">const</span> title <span class="token operator">=</span> anchor<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span><span class="token string">'title'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
+<p>위 코드에선 <code class="language-text">HTMLAnchorElement</code> 를 생성한 뒤 <code class="language-text">getAttribute</code> 메서드를 호출하였는데, 이렇게 단순한 <code class="language-text">a</code> 요소 하나의 프로토타입 체인에 존재하는 프로토타입의 개수는 무려 6개나 됩니다. 대부분의 DOM 관련 메서드는 <code class="language-text">HTMLAnchorElement</code> 와 같은 요소에 직접 존재하지 않기 때문에 프로토타입 체인을 타고 거슬러 올라가야만 합니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/anchor_prototype_chain.png" alt="<a> 요소의 프로토타입">
+    <figcaption>anchor 요소의 프로토타입. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>실제로 <code class="language-text">getAttribute</code> 메서드는 <code class="language-text">Element.prototype</code> 에 존재하는데, 그 말은 <code class="language-text">anchor.getAttribute()</code> 를 수행할 때마다 엔진이 아래와 같은 작업을 수행해야 한다는 뜻이죠:</p>
+<ol>
+<li><code class="language-text">getAttribute</code> 메서드가 <code class="language-text">anchor</code> 객체에 존재하지 않음을 확인.</li>
+<li>다음 프로토타입이 <code class="language-text">HTMLAnchorElement.prototype</code> 인지 확인한 뒤, 여기에 <code class="language-text">getAttribute</code>가 있는지 확인.</li>
+<li>그다음 프로토타입이 <code class="language-text">HTMLElement.prototype</code> 인지 확인한 뒤, 여기에 <code class="language-text">getAttribute</code>가 있는지 확인.</li>
+<li>그다음 프로토타입이 <code class="language-text">Element.prototype</code> 인지 확인한 뒤, 여기에 <code class="language-text">getAttribute</code>가 있는지 확인.</li>
+<li>최종적으로 <code class="language-text">getAttribute</code> 를 발견!</li>
+</ol>
+<p>이렇게 DOM을 조작하는 코드는 흔하기 때문에 엔진은 프로토타입 프로퍼티에 접근하는데 필요한 체크를 줄이기 위해 트릭을 사용합니다.</p>
+<p>앞서 살펴본 예시를 다시 살펴봅시다:</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">class</span> <span class="token class-name">Bar</span> <span class="token punctuation">{</span>
+	<span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span>x <span class="token operator">=</span> x<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+	<span class="token function">getX</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>x<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> foo <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Bar</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> $getX <span class="token operator">=</span> foo<span class="token punctuation">.</span>getX<span class="token punctuation">;</span></code></pre></div>
+<p>우리가 원하는 프로퍼티를 찾을 때까지 총 <code class="language-text">1 + 2N</code> 번의 체크를 수행했었어야 했습니다. “모양”에 프로퍼티가 존재하는지와 객체의 프로토타입이 원래의 프로토타입인지를 체크했었어야 했죠.</p>
+<p>하지만 아래 그림처럼 객체에다 프로토타입 링크를 저장하는 것이 아니라 객체의 “모양”에 프로토타입 링크를 저장하면, 즉 객체가 프로토타입을 가리키는 것이 아니라 객체의 “모양”이 프로토타입을 가리키도록 하면 프로토타입이 원래의 프로토타입인지를 체크하는 과정을 생략할 수 있습니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_access_optimization.png" alt="프로토타입 프로퍼티 접근 최적화">
+    <figcaption>프로토타입 프로퍼티 접근 최적화. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>위와 같이 최적화된 버전의 경우, 프로토타입 체인이 바뀌면 “모양” 객체가 가리키는 프로토타입 링크 또한 바뀌기 때문에 프로토타입 체인을 통해 프로퍼티를 찾을 때 “모양”이 프로퍼티를 가지고 있는지만 체크하면 됩니다. 따라서 기존의 <code class="language-text">1 + 2N</code> 번의 체크에서 <code class="language-text">1 + N</code> 번의 체크로 줄어든 것이죠!</p>
+<p>이에 더 나아가 동일한 프로퍼티를 연속으로 접근하는 경우 엔진은 이러한 체크를 상수 시간에 수행하는데, 어떻게 그럴 수 있는지 한 번 살펴봅시다.</p>
+<h2 id="유효-셀-validity-cells" style="position:relative;"><a href="#%EC%9C%A0%ED%9A%A8-%EC%85%80-validity-cells" aria-label="유효 셀 validity cells permalink" class="anchor before"><svg aria-hidden="true" width="18" height="18" focusable="false" data-prefix="fas" data-icon="link" viewBox="0 0 512 512"><path fill="#05b166" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg></a>유효 셀 (Validity cells)</h2>
+<p>자바스크립트의 각 프로토타입은 다른 프로토타입과는 공유하지 않는 자신만의 “모양”을 가집니다. 그리고 이러한 “프로토타입 모양”에는 <code class="language-text">ValidityCell</code> 이라는 것이 존재합니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/validity_cell.png" alt="Validity cell">
+    <figcaption>Validity cell. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p><code class="language-text">ValidityCell</code> 은 처음엔 유효(<code class="language-text">Valid: true</code>)한 상태였다가, 누군가 프로토타입 혹은 프로토타입 체인 상에서 상위에 있는 프로토타입을 변경하면 “무효화(invalidate)“됩니다. 이것이 어떻게 동작하는지 한 번 살펴봅시다.</p>
+<p>연속된 프로토타입 프로퍼티 접근을 최적화하기 위해, 엔진은 인라인 캐시에 4가지 정보를 저장합니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_ic.png" alt="프로토타입 인라인 캐시">
+    <figcaption>프로토타입 인라인 캐시. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>코드를 최초로 실행하면서 캐시 warm up을 수행할 때, 엔진은 아래 네 가지 정보를 인라인 캐시에 저장합니다:</p>
+<ol>
+<li>프로퍼티의 오프셋.</li>
+<li>프로퍼티를 가지고 있는 프로토타입.</li>
+<li>인스턴스의 “모양”.</li>
+<li>인스턴스의 “모양”이 가리키는 프로토타입(즉, 인스턴스의 바로 위에 있는 프로토타입)의 ValidityCell.</li>
+</ol>
+<p>이후 인라인 캐시 히트가 발생하면 엔진은 인스턴스의 “모양”과 ValidityCell을 확인하는데, 만약 (ValidityCell이) 유효하다면 다른 과정을 다 건너뛰고 인라인 캐시에 저장된 프로토타입에 가서 오프셋 값을 가지고 프로퍼티를 바로 찾게 됩니다.</p>
+<p>하지만 만약 프로토타입이 변경되었다면 새로운 “모양”이 할당되고 ValidityCell은 “무효화”(즉, <code class="language-text">Valid: false</code> 로 바뀜) 됩니다. 그러면 이후에 캐시 미스가 발생하여 성능이 나빠지게 되는 것이죠:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/invalidate_validitycell.png" alt="ValidityCell 무효화">
+    <figcaption>ValidityCell 무효화. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<hr />
+<p>DOM 조작을 하는 예시로 다시 돌아가서 생각해보면, <code class="language-text">Object.prototype</code> 과 같은 프로토타입을 변경하게 되면 비단 <code class="language-text">Object.prototype</code> 의 ValidityCell을 무효화할 뿐만 아니라 <code class="language-text">Object.prototype</code> 의 하위 프로토타입 모두를 무효화하게 됩니다:</p>
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_chain_validitycell.png" alt="프로토타입 변경이 프로토타입 체인에 미치는 영향">
+    <figcaption>프로토타입 변경이 프로토타입 체인에 미치는 영향. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+<p>위 그림에서 볼 수 있듯이, <code class="language-text">Object.prototype</code> 과 같이 프로토타입 체인 상에서 상위에 위치한 프로토타입을 수정하는 경우 하위에 존재하는 <em>모든</em> 프로토타입을 전부 무효화 해버립니다. 따라서 런타임에 프로토타입을 수정하게 되면 성능이 매우 나빠질 수도 있으니, 되도록 이러지 마세요!</p>
+<h2 id="마치며" style="position:relative;"><a href="#%EB%A7%88%EC%B9%98%EB%A9%B0" aria-label="마치며 permalink" class="anchor before"><svg aria-hidden="true" width="18" height="18" focusable="false" data-prefix="fas" data-icon="link" viewBox="0 0 512 512"><path fill="#05b166" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg></a>마치며</h2>
+<p>여태껏 자바스크립트 엔진이 어떻게 내부적으로 객체를 저장하는지 살펴봤고, “모양”과 인라인 캐시 그리고 ValidityCell을 이용해서 어떻게 최적화를 하는지 살펴봤습니다. 이를 통해 알 수 있는 점은, 성능을 최대한으로 이끌어내기 위해선 (동일한 모양을 가질 수 있도록) 객체를 동일한 방식으로 초기화하는 것이 중요하다는 것, 그리고 최대한 프로토타입을 조작하지 않는 것이 중요하다는 것입니다.</p>
 <h2 id="레퍼런스" style="position:relative;"><a href="#%EB%A0%88%ED%8D%BC%EB%9F%B0%EC%8A%A4" aria-label="레퍼런스 permalink" class="anchor before"><svg aria-hidden="true" width="18" height="18" focusable="false" data-prefix="fas" data-icon="link" viewBox="0 0 512 512"><path fill="#05b166" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path></svg></a>레퍼런스</h2>
 <ul>
 <li><a href="https://mathiasbynens.be/notes/shapes-ics" target="_blank" rel="noreferrer noopener">JavaScript engine fundamentals: Shapes and Inline Caches · Mathias Bynens</a></li>
