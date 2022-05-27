@@ -178,12 +178,15 @@ console.log(`${myObj} is awesome!`); // [object Object] is awesome!
 const myObj = {
   // ...
 };
-console.log(myObj + '1'); // [object Object]
+console.log(myObj + '1'); // [object Object]1
+console.log(myObj + 1); // [object Object]1
 ```
 
 우선 덧셈 연산을 수행하기 전에, `myObj`의 타입이 객체이므로 이를 원시 타입으로 (암묵적으로) 변환합니다. 이때 힌트를 `default`로 설정하여 `ToPrimitive` 알고리즘을 실행하는데, 그 말인 즉 힌트를 `number`로 가정하고 `OrdinaryToPrimitive` 알고리즘을 실행하게 됩니다. 따라서 `myObj`의 `valueOf()` 메서드가 먼저 실행되는데, 이때 객체의 `valueOf()` 메서드의 기본 동작이 자기 자신을 반환하는 것이므로 `valueOf()`의 실행 결과로 객체인 `myObj`가 반환됩니다. 따라서 그다음으로 `myObj`의 `toString()` 메서드가 실행되는데, 앞서 살펴봤듯이 객체의 `toString()`의 기본 동작은 `"[object Type]"` 문자열을 반환하는 것이므로 여기선 `"[object Object]"` 문자열이 반환됩니다.
 
 최종적으로 정리하자면 `myObj` 객체가 `"[object Object]"` 원시 타입(문자열)으로 자동 변환되어 문자열 `'1'`과 이어 붙이는 연산을 수행해서 `myObj + '1'`의 결과로 `"[object Object]1"`이 반환됩니다.
+
+두 번째 경우도 마찬가지로 먼저 `myObj` 객체가 `"[object Object]"` 문자열로 자동 변환되는데, 이러면 문자열과 숫자 간의 덧셈이므로 숫자를 문자열로 변환하여 문자열 concatenation 연산을 수행합니다. 따라서 `myObj + 1`의 결과로 `"[object Object]1"`이 반환됩니다.
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/object_conversion1.png" alt="암묵적 객체 변환1" />
@@ -201,6 +204,10 @@ const myObj1 = {
 // 여기선 덧셈 연산의 두 번째 피연산자가 문자열이므로 2를 다시 문자열 "2"로 변환하여 문자열 이어붙이기를
 // 수행하게 됩니다. 따라서 최종 결과는 "21"이 됩니다.
 console.log(myObj1 + '1'); // "21"
+
+// 마찬가지로, 암묵적 변환의 결과로 myObj1이 2로 변환되기 때문에 결과적으로 2 + 1 연산을 수행한 것이나
+// 다름없습니다.
+console.log(myObj1 + 1); // 3
 
 // [Symbol.toPrimitive]를 따로 구현한 경우
 const myObj2 = {
