@@ -215,6 +215,10 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <span class="token comment">// 수행하게 됩니다. 따라서 최종 결과는 "21"이 됩니다.</span>
 console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>myObj1 <span class="token operator">+</span> <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// "21"</span>
 
+<span class="token comment">// 마찬가지로, 암묵적 변환의 결과로 myObj1이 2로 변환되기 때문에 결과적으로 2 + 1 연산을 수행한 것이나</span>
+<span class="token comment">// 다름없습니다.</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>myObj1 <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 3</span>
+
 <span class="token comment">// [Symbol.toPrimitive]를 따로 구현한 경우</span>
 <span class="token keyword">const</span> myObj2 <span class="token operator">=</span> <span class="token punctuation">{</span>
   <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
