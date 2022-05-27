@@ -167,7 +167,7 @@ console.log(`${myObj} is awesome!`); // [object Object] is awesome!
 
 <figure>
     <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/type-conversion/why_javascript_behaves_like_that.jpg" alt="자바스크립트는 왜 그모양일까" style="width:471px; height: 600px" />
-    <figcaption>출처: http://www.yes24.com/Product/Goods/90283410</figcaption>
+    <figcaption>자바스크립트는 왜 그모양일까... 출처: http://www.yes24.com/Product/Goods/90283410</figcaption>
 </figure>
 
 자바스크립트에서 덧셈(+)연산은, 크게 두 가지 동작을 수행합니다. 만약 두 피연산자의 타입이 모두 숫자인 경우 수학에서의 덧셈 연산을, 두 피연산자 중 하나라도 문자열인 경우 문자열 이어붙이기(concatenation) 동작을 수행합니다. 또, 객체 타입이 피연산자로 주어지는 경우 힌트를 'default'로 설정하여 해당 객체를 원시 타입으로 변환한 뒤 연산을 수행합니다. 다음을 살펴봅시다:
@@ -176,7 +176,7 @@ console.log(`${myObj} is awesome!`); // [object Object] is awesome!
 const myObj = {
   // ...
 };
-console.log(myObj + '1'); // [object Object]1
+console.log(myObj + '1'); // [object Object]
 ```
 
 우선 덧셈 연산을 수행하기 전에, `myObj`의 타입이 객체이므로 이를 원시 타입으로 (암묵적으로) 변환합니다. 이때 힌트를 `default`로 설정하여 `ToPrimitive` 알고리즘을 실행하는데, 그 말인 즉 힌트를 `number`로 가정하고 `OrdinaryToPrimitive` 알고리즘을 실행하게 됩니다. 따라서 `myObj`의 `valueOf()` 메서드가 먼저 실행되는데, 이때 객체의 `valueOf()` 메서드의 기본 동작이 자기 자신을 반환하는 것이므로 `valueOf()`의 실행 결과로 객체인 `myObj`가 반환됩니다. 따라서 그다음으로 `myObj`의 `toString()` 메서드가 실행되는데, 앞서 살펴봤듯이 객체의 `toString()`의 기본 동작은 `"[object Type]"` 문자열을 반환하는 것이므로 여기선 `"[object Object]"` 문자열이 반환됩니다.
