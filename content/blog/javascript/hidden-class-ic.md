@@ -298,6 +298,192 @@ const arr = Object.defineProperty(
 
 프로퍼티 속성이 기본값이 아닌 배열 요소가 *단 하나*만 존재해도 엔진은 위와 같이 딕셔너리의 형태로 배열 요소를 저장합니다. 이는 기존의 방식에 비해 비효율적이고 느린 방식이므로 **웬만하면 Object.defineProperty 메서드를 이용하여 배열 요소의 프로퍼티 속성을 변경하지 않는 것을 권장합니다!**
 
+## 프로토타입 프로퍼티 접근 최적화
+
+`프로토타입` 도 우리가 앞서 살펴본 방식과 동일하게 동작합니다. 왜냐하면 자바스크립트의 프로토타입 또한 일반 객체니까요! 아래 예시를 살펴봅시다:
+
+```js
+function Bar(x) {
+    this.x = x;
+}
+
+Bar.prototype.getX = function getX() {
+	return this.x;
+};
+
+// 위 프로토타입 기반 코드는 아래의 클래스 기반으로 바꿀 수 있습니다:
+class Bar {
+	constructor(x) {
+		this.x = x;
+	}
+	getX() {
+		return this.x;
+	}
+}
+
+// 인스턴스화
+const foo = new Bar(true);
+```
+
+위 코드를 실행하여 `foo` 인스턴스를 생성하면 내부적으로 아래와 같은 구조가 형성됩니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/class_shape_1.png" alt="클래스 모양 1" />
+    <figcaption>클래스 모양 1. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+위 상황에서 아래와 같이 또 다른 인스턴스를 생성한 경우는 아래와 같습니다:
+
+```js
+const qux = new Bar(false);
+```
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/class_shape_2.png" alt="클래스 모양 2" />
+    <figcaption>클래스 모양 2. 출처: `https://mathiasbynens.be/notes/prototypes`</figcaption>
+</figure>
+
+### 프로토타입 프로퍼티 접근
+
+클래스를 정의하고 인스턴스를 생성하면 내부적으로 어떤 일이 일어나는지 살펴봤으니, 인스턴스의 메서드를 호출하면 어떤 일이 일어나는지 살펴봅시다.
+
+아래 코드와 같이, 메서드를 호출하는 행위는 실제로 두 단계에 걸쳐 일어난다고 볼 수 있습니다:
+
+```js{4-5}
+const x = foo.getX();
+
+// 실제로는 두 단계에 걸쳐 일어나는 것으로 볼 수 있습니다.
+const $getX = foo.getX;
+const x = $getX.call(foo);
+```
+
+즉,
+
+1. 메서드도 프로토타입의 프로퍼티이므로, 프로토타입 프로퍼티 탐색을 통해 호출하고자 하는 메서드를 찾습니다 (즉, 프로퍼티를 load 합니다).
+2. 원래의 인스턴스를 메서드의 `this` 값으로 세팅한 뒤 메서드를 호출합니다.
+
+첫 번째 과정부터 살펴봅시다. 우선 엔진은 메서드를 호출한 인스턴스(여기선 `foo`)의 "모양"에 `getX` 프로퍼티가 있는지 살펴봅니다. `foo` 인스턴스의 모양에서 `getX` 를 찾지 못했으니 프로토타입 체인을 따라 `foo` 인스턴스의 프로토타입인 `Bar.prototype` 객체의 "모양"을 살펴봅니다. `Bar.prototype` 의 "모양"으로 부터 `getX` 의 존재를 확인하였고, 그 오프셋이 `0` 이라는것 까지 확인했으니 엔진은 `Bar.prototype` 객체의 0번째 인덱스로 가서 최종적으로 찾고자 하는 `getX` 함수를 발견합니다. 이것이 바로 메서드를 찾는 과정인데, 앞서 살펴본 객체의 프로퍼티를 찾는 과정과 동일함을 알 수 있습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/method_load.png" alt="메서드를 찾는 과정" />
+    <figcaption>메서드를 찾는 과정. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+<hr />
+
+이전에 "모양"과 인라인 캐시를 통해 객체의 프로퍼티 접근을 최적화하는 기법을 살펴봤었는데요, 이러한 것들을 프로토타입에는 어떻게 적용할 수 있을까요?
+
+앞서 `getX` 프로퍼티를 찾는 과정을 다시 예로 들자면, 프로토타입 프로퍼티 접근을 최적화하기 위해선 다음 세 가지를 체크했어야 합니다:
+
+1. `foo` 인스턴스의 "모양"이 바뀌지 않았는지? 즉, `foo` 인스턴스에 프로퍼티를 추가하거나 제거하지 않고 초기의 상태(`getX` 가 없는 상태)를 유지하는지 체크해야 합니다.
+2. 자바스크립트에선 [Object.setPrototypeOf()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf) (혹은 `__proto__`) 을 통해 프로토타입 체인을 변경할 수 있으므로, `foo` 인스턴스의 프로토타입이 원래의 `Bar.prototype` 인지(혹시 바뀌진 않았는지) 체크해야 합니다.
+3. `Bar.prototype` 의 "모양"이 바뀌지 않았는지? 즉, `Bar.prototype` 에 프로퍼티를 추가하거나 제거하지 않고 초기의 상태(`getX` 가 있는 상태)를 유지하는지 체크해야 합니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_property_access.png" alt="프로토타입 프로퍼티 접근 최적화를 위한 세 가지 체크" />
+    <figcaption>프로토타입 프로퍼티 접근 최적화를 위한 세 가지 체크. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+즉, 프로토타입 프로퍼티 접근을 최적화하기 위해선 인스턴스에 대해 1가지 체크를 해야하고, 우리가 찾고자 하는 프로퍼티를 가지는 프로토타입이 나올 때까지 각 프로토타입별로 2가지 체크를 해야 합니다. 다시 말해, 우리가 찾고자 하는 프로퍼티를 가지고 있는 프로토타입까지 도달하는데 `N` 개의 프로토타입을 거쳤다면 총 `1 + 2N` 번의 체크를 수행해야 하죠.
+
+일반적으론 프로토타입 체인이 그리 길지는 않기 때문에 이 정도면 괜찮은 것 같지만, DOM과 같이 프로토타입의 체인이 훨씬 긴 경우 이야기가 좀 달라집니다:
+
+```js
+const anchor = document.createElement('a'); // HTMLAnchorElement
+const title = anchor.getAttribute('title');
+```
+
+위 코드에선 `HTMLAnchorElement` 를 생성한 뒤 `getAttribute` 메서드를 호출하였는데, 이렇게 단순한 `a` 요소 하나의 프로토타입 체인에 존재하는 프로토타입의 개수는 무려 6개나 됩니다. 대부분의 DOM 관련 메서드는 `HTMLAnchorElement` 와 같은 요소에 직접 존재하지 않기 때문에 프로토타입 체인을 타고 거슬러 올라가야만 합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/anchor_prototype_chain.png" alt="<a> 요소의 프로토타입" />
+    <figcaption>anchor 요소의 프로토타입. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+실제로 `getAttribute` 메서드는 `Element.prototype` 에 존재하는데, 그 말은 `anchor.getAttribute()` 를 수행할 때마다 엔진이 아래와 같은 작업을 수행해야 한다는 뜻이죠:
+
+1. `getAttribute` 메서드가 `anchor` 객체에 존재하지 않음을 확인.
+2. 다음 프로토타입이 `HTMLAnchorElement.prototype` 인지 확인한 뒤, 여기에 `getAttribute`가 있는지 확인.
+3. 그다음 프로토타입이 `HTMLElement.prototype` 인지 확인한 뒤, 여기에 `getAttribute`가 있는지 확인.
+4. 그다음 프로토타입이 `Element.prototype` 인지 확인한 뒤, 여기에 `getAttribute`가 있는지 확인.
+5. 최종적으로 `getAttribute` 를 발견!
+
+이렇게 DOM을 조작하는 코드는 흔하기 때문에 엔진은 프로토타입 프로퍼티에 접근하는데 필요한 체크를 줄이기 위해 트릭을 사용합니다.
+
+앞서 살펴본 예시를 다시 살펴봅시다:
+
+```js
+class Bar {
+	constructor(x) { this.x = x; }
+	getX() { return this.x; }
+}
+
+const foo = new Bar(true);
+const $getX = foo.getX;
+```
+
+우리가 원하는 프로퍼티를 찾을 때까지 총 `1 + 2N` 번의 체크를 수행했었어야 했습니다. "모양"에 프로퍼티가 존재하는지와 객체의 프로토타입이 원래의 프로토타입인지를 체크했었어야 했죠.
+
+하지만 아래 그림처럼 객체에다 프로토타입 링크를 저장하는 것이 아니라 객체의 "모양"에 프로토타입 링크를 저장하면, 즉 객체가 프로토타입을 가리키는 것이 아니라 객체의 "모양"이 프로토타입을 가리키도록 하면 프로토타입이 원래의 프로토타입인지를 체크하는 과정을 생략할 수 있습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_access_optimization.png" alt="프로토타입 프로퍼티 접근 최적화" />
+    <figcaption>프로토타입 프로퍼티 접근 최적화. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+위와 같이 최적화된 버전의 경우, 프로토타입 체인이 바뀌면 "모양" 객체가 가리키는 프로토타입 링크 또한 바뀌기 때문에 프로토타입 체인을 통해 프로퍼티를 찾을 때 "모양"이 프로퍼티를 가지고 있는지만 체크하면 됩니다. 따라서 기존의 `1 + 2N` 번의 체크에서 `1 + N` 번의 체크로 줄어든 것이죠!
+
+이에 더 나아가 동일한 프로퍼티를 연속으로 접근하는 경우 엔진은 이러한 체크를 상수 시간에 수행하는데, 어떻게 그럴 수 있는지 한 번 살펴봅시다.
+
+## 유효 셀 (Validity cells)
+
+자바스크립트의 각 프로토타입은 다른 프로토타입과는 공유하지 않는 자신만의 "모양"을 가집니다. 그리고 이러한 "프로토타입 모양"에는 `ValidityCell` 이라는 것이 존재합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/validity_cell.png" alt="Validity cell" />
+    <figcaption>Validity cell. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+`ValidityCell` 은 처음엔 유효(`Valid: true`)한 상태였다가, 누군가 프로토타입 혹은 프로토타입 체인 상에서 상위에 있는 프로토타입을 변경하면 "무효화(invalidate)"됩니다. 이것이 어떻게 동작하는지 한 번 살펴봅시다.
+
+연속된 프로토타입 프로퍼티 접근을 최적화하기 위해, 엔진은 인라인 캐시에 4가지 정보를 저장합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_ic.png" alt="프로토타입 인라인 캐시" />
+    <figcaption>프로토타입 인라인 캐시. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+코드를 최초로 실행하면서 캐시 warm up을 수행할 때, 엔진은 아래 네 가지 정보를 인라인 캐시에 저장합니다:
+
+1. 프로퍼티의 오프셋.
+2. 프로퍼티를 가지고 있는 프로토타입.
+3. 인스턴스의 "모양".
+4. 인스턴스의 "모양"이 가리키는 프로토타입(즉, 인스턴스의 바로 위에 있는 프로토타입)의 ValidityCell.
+
+이후 인라인 캐시 히트가 발생하면 엔진은 인스턴스의 "모양"과 ValidityCell을 확인하는데, 만약 (ValidityCell이) 유효하다면 다른 과정을 다 건너뛰고 인라인 캐시에 저장된 프로토타입에 가서 오프셋 값을 가지고 프로퍼티를 바로 찾게 됩니다.
+
+하지만 만약 프로토타입이 변경되었다면 새로운 "모양"이 할당되고 ValidityCell은 "무효화"(즉, `Valid: false` 로 바뀜) 됩니다. 그러면 이후에 캐시 미스가 발생하여 성능이 나빠지게 되는 것이죠:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/invalidate_validitycell.png" alt="ValidityCell 무효화" />
+    <figcaption>ValidityCell 무효화. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+<hr />
+
+DOM 조작을 하는 예시로 다시 돌아가서 생각해보면, `Object.prototype` 과 같은 프로토타입을 변경하게 되면 비단 `Object.prototype` 의 ValidityCell을 무효화할 뿐만 아니라 `Object.prototype` 의 하위 프로토타입 모두를 무효화하게 됩니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/javascript/hidden-class-ic/prototype_chain_validitycell.png" alt="프로토타입 변경이 프로토타입 체인에 미치는 영향" />
+    <figcaption>프로토타입 변경이 프로토타입 체인에 미치는 영향. 출처: https://mathiasbynens.be/notes/prototypes</figcaption>
+</figure>
+
+위 그림에서 볼 수 있듯이, `Object.prototype` 과 같이 프로토타입 체인 상에서 상위에 위치한 프로토타입을 수정하는 경우 하위에 존재하는 *모든* 프로토타입을 전부 무효화 해버립니다. 따라서 런타임에 프로토타입을 수정하게 되면 성능이 매우 나빠질 수도 있으니, 되도록 이러지 마세요!
+
+## 마치며
+
+여태껏 자바스크립트 엔진이 어떻게 내부적으로 객체를 저장하는지 살펴봤고, "모양"과 인라인 캐시 그리고 ValidityCell을 이용해서 어떻게 최적화를 하는지 살펴봤습니다. 이를 통해 알 수 있는 점은, 성능을 최대한으로 이끌어내기 위해선 (동일한 모양을 가질 수 있도록) 객체를 동일한 방식으로 초기화하는 것이 중요하다는 것, 그리고 최대한 프로토타입을 조작하지 않는 것이 중요하다는 것입니다.
+
 ## 레퍼런스
 
 - [JavaScript engine fundamentals: Shapes and Inline Caches · Mathias Bynens](https://mathiasbynens.be/notes/shapes-ics)
