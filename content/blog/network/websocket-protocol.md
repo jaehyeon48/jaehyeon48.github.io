@@ -14,7 +14,7 @@ draft: false
 [이 사이트](https://www.codeproject.com/Articles/209041/HTML5-Web-Socket-in-Essence#Background)에 기존의 HTTP 폴링 방식과 웹 소켓을 비교한 자료가 있는데, 이에 따르면 하나의 HTTP 요청/응답의 경우 헤더 크기가 871바이트지만, 웹 소켓의 경우 하나의 메시지를 주고받는데 2바이트 만이 사용되었다고 합니다. 이들의 차이를 차트로 나타내면 아래와 같습니다:
 
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/websocket-protocol/compare_poll_ws.gif" alt="폴링과 웹 소켓 비교" />
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/polling-and-sse/compare_poll_ws.gif" alt="폴링과 웹 소켓 비교" />
   <figcaption>폴링과 웹 소켓 비교.</figcaption>
 </figure>
 
