@@ -69,7 +69,7 @@
 <p>하지만 이러한 기법들은 근본적으로 HTTP 프로토콜을 사용하는데, HTTP 프로토콜은 애초에 요청/응답 형태로 동작하는 프로토콜이라서 클라이언트가 요청하지 않으면 서버는 클라이언트에게 응답해줄 수 없습니다. 따라서 서버에서 새로운 데이터가 생성되는 즉시 해당 데이터를 전달받기 위해선 클라이언트는 주기적으로 서버에게 요청을 날려 데이터를 받아와야만 했습니다. 하지만 이렇게 주기적으로 요청을 날리는 방식에선, 서버에서 새로운 데이터가 생성되지 않은 경우 이러한 요청은 무용지물이 되고 오히려 자원만 낭비한 꼴이 됩니다 (빈 응답을 받거나, 기존과 동일한 응답을 받을 테니까요). 또한 매번 연결을 맺었다 끊어야 하고, HTTP 헤더로 인한 오버헤드 또한 무시할 수 없었습니다.</p>
 <p><a href="https://www.codeproject.com/Articles/209041/HTML5-Web-Socket-in-Essence#Background" target="_blank" rel="noreferrer noopener">이 사이트</a>에 기존의 HTTP 폴링 방식과 웹 소켓을 비교한 자료가 있는데, 이에 따르면 하나의 HTTP 요청/응답의 경우 헤더 크기가 871바이트지만, 웹 소켓의 경우 하나의 메시지를 주고받는데 2바이트 만이 사용되었다고 합니다. 이들의 차이를 차트로 나타내면 아래와 같습니다:</p>
 <figure>
-    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/websocket-protocol/compare_poll_ws.gif" alt="폴링과 웹 소켓 비교">
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/polling-and-sse/compare_poll_ws.gif" alt="폴링과 웹 소켓 비교">
   <figcaption>폴링과 웹 소켓 비교.</figcaption>
 </figure>
 <p>위 그림의 유즈 케이스 A는 1,000명의 클라이언트가 1초마다 각각 폴링과 웹 소켓을 사용하여 요청을 보낸 경우의 bps, B는 10,000명의 클라이언트, C는 100,000명의 클라이언트인 경우를 나타냅니다. HTTP 헤더 크기에 따라 차이가 나겠지만, 불필요하게 주고받은 데이터 크기는 웹 소켓이 폴링에 비해 최대 1,000배가량 적었고, 레이턴시도 웹 소켓이 폴링의 1/3 수준이었다고 합니다.</p>
