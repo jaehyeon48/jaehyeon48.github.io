@@ -60,6 +60,7 @@
 <url> <loc>https://jaehyeon48.github.io/web/samesite/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/software-architecture/refactoring-summary-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/web/cors-on-local-environment/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://jaehyeon48.github.io/os/ipc/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/process-scheduling/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/process/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/os-architectures/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
