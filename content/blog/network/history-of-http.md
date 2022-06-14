@@ -135,9 +135,35 @@ Connection: close
 
 이러한 문제로 인해 HTTP/1.1의 파이프라이닝 기술은 HTTP/2의 멀티플렉싱 기술로 대체되어 실제로는 거의 사용되지 않습니다.
 
+### SPDY
+
+HTTP/1.1 까지 존재했던 성능 이슈를 다시 한번 짚어보자면 아래와 같습니다:
+
+- 기본적으로 앞선 요청에 대한 응답이 도착하기 전엔 다음 요청을 보낼 수 없는 HOL 문제가 존재했습니다. 혹여 파이프라이닝을 도입한다고 하더라도, 이전 요청의 응답이 도착하기 전에 다음 요청을 보낼 수 있게 되지만 응답을 요청 순서에 따라 받아야 하므로 여전히 HOL 문제가 존재합니다.
+- 응답을 보낸 뒤 연결을 끊기 때문에, 여러 요청을 보내는 경우 매번 TCP handshake, (필요하다면) TLS negotiation, (필요하다면) DNS lookup 과정을 거쳐야 해서 오버헤드가 발생합니다. 또한 TCP를 통해 데이터를 전송할 때, 처음에는 데이터를 적게 보내고 점점 보내는 양을 늘려가는 slow start 방식을 사용하기 때문에 이에 따른 성능 저하도 발생합니다.
+- 이러한 한계점을 보완하기 위해 Keep-Alive 기능을 사용하기도 하고, 또 브라우저에서 한 도메인 당 여러 개의 연결을 생성하여 요청을 병렬로 처리함으로써 HOL 문제 등을 어느 정도 해소하긴 하지만 근본적인 해결책이라고 할 순 없습니다.
+
+이러한 문제를 근본적으로 해결하기 위해, 2009년 구글에서 SPDY("스피디"라고 읽는 듯 합니다)라는 실험용 프로토콜을 개발하였습니다. SPDY는 HTTP와는 완전 별개의 프로토콜이 아니라 TLS 위에서 동작하는 프로토콜로, HTTP 요청을 보내면 이를 SPDY 요청으로 변환하여 서버에 날리고, 응답을 다시 HTTP로 변환하는 방식으로 동작합니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http_vs_spdy.png" alt="HTTP/1.1 vs SPDY 프로토콜" />
+  <figcaption>기존의 HTTP vs. SPDY 프로토콜</figcaption>
+</figure>
+
+
+실제 여러 사이트를 대상으로 SPDY를 실험한 결과, 페이지 로딩 속도가 최대 64% 향상되는 성과를 보였다고 합니다. 이후 2010년 가을부터 구글 크롬에서 SPDY를 지원하기 시작했고, 파이어폭스와 오페라는 2012년부터 지원하기 시작했습니다.
+
+SPDY가 HTTP/1.1 까지 존재했던 한계점을 극복하기 위해 도입한 기술들을 간략히 소개하자면 다음과 같습니다:
+
+- **Multiplexed streams**: 하나의 TCP 연결을 통해 여러 요청·응답을 독립적인 스트림으로 묶어 처리합니다. 또한, 한 스트림이 진행 중이더라도 다른 스트림이 끼어드는(interleaving) 것이 가능합니다.
+- **Request prioritization**: 각 스트림의 우선순위를 설정하여 우선순위가 낮은 데이터를 전송하는 와중에 우선순위가 높은 데이터가 끼어들어서 더 빨리 전달될 수 있도록 합니다.
+- **Binary protocol**: 프레임을 텍스트가 아닌 바이너리로 구성하여 파싱을 더욱 빠르게 하고 오류 발생 가능성을 낮춥니다.
+- **Header compression**: 헤더 압축을 통해 요청 데이터의 크기를 더욱 작게 할 수 있게 됩니다.
+- **Server push**: 서버 푸시를 통해 클라이언트가 요청하지 않은 컨텐츠도 서버가 미리 빠르게 전송하여 RTT를 줄일 수 있습니다. 예를 들어, 클라이언트가 서버에 `index.html` 파일을 요청한 경우 서버에서 CSS 파일도 같이 내려주어 클라이언트가 서버로 보내는 CSS 요청만큼의 시간을 절약할 수 있습니다.
+
 ### HTTP/2
 
-작성 중...
+SPDY를 통해 HTTP/1.1 에서 존재했던 한계점을 극복할 수 있다는 사실을 확인한 HTTP WG는 약 SPDY를 기반으로 다음 버전의 HTTP를 만드는 작업에 착수하였으며, 약 2년가량의 작업 끝에 2015년 5월에 RFC 7540 문서로 공식 발표되었습니다.
 
 ## 레퍼런스
 
@@ -145,3 +171,4 @@ Connection: close
 - [RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616)
 - [Evolution of HTTP - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP)
 - [Connection management in HTTP/1.x - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Connection_management_in_HTTP_1.x)
+- [SPDY는 무엇인가? | Naver D2](https://d2.naver.com/helloworld/140351)
