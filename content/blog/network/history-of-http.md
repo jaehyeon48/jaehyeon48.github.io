@@ -151,7 +151,7 @@ HTTP/1.1 까지 존재했던 성능 이슈를 다시 한번 짚어보자면 아�
 </figure>
 
 
-실제 여러 사이트를 대상으로 SPDY를 실험한 결과, 페이지 로딩 속도가 최대 64% 향상되는 성과를 보였다고 합니다. 이후 2010년 가을부터 구글 크롬에서 SPDY를 지원하기 시작했고, 파이어폭스와 오페라는 2012년부터 지원하기 시작했습니다.
+실제 여러 사이트를 대상으로 SPDY를 실험한 결과, 페이지 로딩 속도가 최대 55% 향상되는 성과를 보였다고 합니다. 이후 2010년 가을부터 구글 크롬에서 SPDY를 지원하기 시작했고, 파이어폭스와 오페라는 2012년부터 지원하기 시작했습니다.
 
 SPDY가 HTTP/1.1 까지 존재했던 한계점을 극복하기 위해 도입한 기술들을 간략히 소개하자면 다음과 같습니다:
 
@@ -163,12 +163,112 @@ SPDY가 HTTP/1.1 까지 존재했던 한계점을 극복하기 위해 도입한 
 
 ### HTTP/2
 
-SPDY를 통해 HTTP/1.1 에서 존재했던 한계점을 극복할 수 있다는 사실을 확인한 HTTP WG는 약 SPDY를 기반으로 다음 버전의 HTTP를 만드는 작업에 착수하였으며, 약 2년가량의 작업 끝에 2015년 5월에 RFC 7540 문서로 공식 발표되었습니다.
+SPDY를 통해 HTTP/1.1에서 존재했던 한계점을 극복할 수 있다는 사실을 확인한 HTTP WG는 약 SPDY를 기반으로 다음 버전의 HTTP를 만드는 작업에 착수하였으며, 약 2년가량의 작업 끝에 2015년 5월에 RFC 7540 문서로 공식 발표되었습니다.
+
+HTTP/2의 주목적은 앞서 SPDY에서도 살펴봤듯이 멀티플렉싱 방식을 사용하여 요청·응답을 처리하고, HTTP 헤더 압축을 통해 헤더에 의한 오버헤드를 줄이는 등의 기법을 통해 HTTP/1.1까지 존재했던 HOL과 같은 문제들을 근본적으로 해결하면서 latency를 줄이는 것입니다. 앞서 SPDY 섹션에서 간략히 소개했던 기능들을 자세히 살펴보겠습니다.
+
+#### 이진 프레이밍 레이어 (Binary Framing Layer)
+
+HTTP/1.1까지는 각 요청·응답이 `메시지`라는 단위로 구성되어 있었습니다. 그리고 각 메시지에는 상태 라인(status line), 헤더 및 페이로드로 구성되어 요청과 응답에 필요한 정보가 저장되고, 이러한 요청·응답을 ASCII로 인코딩하여 표현하였습니다.
+
+하지만 HTTP/2에선 **이진 프레이밍 레이어(Binary Framing Layer)**라는 새로운 레이어를 통해 메시지를 이진 형식으로 캡슐화하여 데이터를 주고받습니다. HTTP/2에는 메시지 이외에 `스트림`과 `프레임`이라는 단위가 추가되었는데, 각각의 구조를 설명하자면 다음과 같습니다:
+
+- **스트림(Stream)**: 클라이언트와 서버 사이에 맺어진 연결을 통해 양방향으로 주고받는 메시지의 "흐름"입니다. 한 연결 내의 가상 채널이라고 할 수 있습니다.
+- **메시지(Message)**: HTTP/1.1에서와 마찬가지로 요청·응답의 단위이며, 다수의 프레임으로 구성됩니다.
+- **프레임(Frame)**: HTTP/2 통신의 가장 작은 단위로, HTTP 헤더, 페이로드와 같은 데이터가 저장됩니다.
+
+즉, HTTP/2에선 여러 개의 프레임이 모여 메시지가 되고, 여러 개의 메시지가 모여 스트림이 되는 구조입니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_stream_message_frame.png" alt="HTTP/2의 스트림, 메시지, 프레임" />
+  <figcaption>HTTP/2의 스트림, 메시지, 프레임.</figcaption>
+</figure>
+
+HTTP/1.1까지는 요청·응답이 메시지라는 단위로 완벽히 구분되어 있었으나, HTTP/2에선 스트림이라는 단위를 통해 요청·응답이 하나의 단위로 묶일 수 있는 구조가 되었습니다.
+
+각 스트림은 31비트 unsigned 타입의 정수를 사용해서 식별하며, 클라이언트가 시작한(initiate) 스트림은 홀수 번호를 사용하고 서버가 시작한 스트림은 짝수 번호를 사용합니다(또한, 0번 스트림은 연결 제어 메시지를 전송할 때 사용됩니다). 또한 HTTP/1.1에서 연결을 재사용할 수 있었던 것과는 달리, HTTP/2의 스트림은 재사용되지 않습니다.
+
+요청·응답을 보낼 때 이러한 스트림 번호를 각 요청·응답 프레임에 매핑하는데, 클라이언트는 응답 스트림의 번호를 통해 어떤 요청에 대한 응답인지 구분합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_stream_detail.png" alt="HTTP/2 스트림의 상세 구조" />
+  <figcaption>HTTP/2 스트림의 상세 구조. 출처: HTTP/2 in Action | Manning Publications</figcaption>
+</figure>
+
+위 그림에선 하나의 TCP 연결에 여러 개의 스트림(5, 7, 9번)이 존재하고 있습니다. 또, 프레이밍 레이어를 통해 각 요청 및 응답을 바이너리 프레임으로 변환하고 있음을 알 수 있는데, 각 요청 메시지들은 하나의 헤더 프레임으로만 구성되어 있고, 각 응답 메시지들은 두 개의 프레임(헤더, 바디)으로 구성되어있음을 알 수 있습니다. 그리고 각각의 프레임에 스트림 번호를 매겨 서로 연관된 요청 프레임과 응답 프레임을 구분하고 있음을 알 수 있습니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_data_flow.gif" alt="HTTP/2 데이터 흐름" />
+  <figcaption>HTTP/2 데이터 흐름. 출처: https://freecontent.manning.com/animation-http-1-1-vs-http-2-vs-http-2-with-push/</figcaption>
+</figure>
+
+<hr />
+
+이러한 스트림 구조 덕분에 서버에서 만들어지는 응답 프레임들이 요청 순서에 상관없이 응답이 만들어진 순서대로 클라이언트에게 전달될 수 있게 되었습니다. 즉, 하나의 TCP 연결을 통해 여러 요청과 응답이 비동기 방식으로 이뤄지는 "멀티플렉싱"이 사용되는 것인데, 이를 통해 HTTP/1.1까지 존재했던 HOL 문제를 해결할 수 있게 되었습니다.
+
+#### 멀티플렉싱
+
+HTTP/1.1에선 하나의 TCP 연결에서 한순간에 최대 하나의 응답만을 보낼 수 있었습니다. 이에 따라 어떤 한 응답이 지연되면 이후의 응답이 모두 지연되는 HOL 문제가 발생했었습니다. 물론 이러한 한계를 극복하기 위해 여러 개의 연결을 생성하여 병렬적으로 처리하려고 했으나, 이 방식 또한 연결을 생성할 때마다 TCP handshake, (필요하다면) TLS negotiation을 거쳐야 하고 또 TCP slow start로 인한 성능 저하 문제가 여전히 존재했었습니다.
+
+하지만 HTTP/2에선 스트림이 가진 유연한 구조 덕분에 응답 프레임을 요청 순서와 관계없이 클라이언트에게 전달할 수 있게 되었습니다. 즉, 하나의 TCP 연결 내에서 다수의 클라이언트 요청과 서버 응답이 비동기 방식으로 이뤄지는 **멀티플렉싱(multiplexing)** 방식이 도입된 것이죠.
+
+앞서 이진 프레이밍 레이어를 알아볼 때 살펴봤듯이, 멀티플렉싱은 하나의 HTTP 메시지를 여러 프레임으로 나눠 서로 교차(interleave)하여 전송하고 이를 다시 하나로 합치는 방식으로 동작합니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_multiplexing.png" alt="HTTP/2 멀티플렉싱" />
+  <figcaption>HTTP/2 멀티플렉싱. 출처: https://web.dev/performance-http2/</figcaption>
+</figure>
+
+위와 같은 방식을 통해, 여러 개의 TCP 연결을 생성할 필요가 없어졌고, 또한 처리가 오래 걸리는 응답으로 인한 병목 현상을 제거함으로써 자연스레 HOL 문제를 해결하였습니다.
+
+#### 스트림 우선순위
+
+HTTP/1.1 까지는 하나의 요청·응답으로 동작했기 때문에 프로토콜 레벨에서 우선순위를 결정하는 것이 아니라 클라이언트에서 어떤 순서로 요청을 할 것인가를 결정했었습니다. 이를테면 HTML, CSS, 자바스크립트와 같은 크리티컬한(초기 렌더링에 꼭 필요한) 자원을 먼저 요청하고, 상대적으로 덜 중요한 이미지 등을 나중에 요청하는 방식이었습니다.
+
+하지만 HTTP/2에선 멀티플렉싱 방식을 통해 여러 프레임을 서로 교차시켜 전송할 수 있다 보니, 이미지와 같이 상대적으로 덜 중요한 자원이 대역폭을 소모함으로 인해 페이지 로딩이 느려질 수 있습니다. 따라서 각 스트림의 우선순위를 설정하여 우선순위가 높은 중요한 자원이 더 빨리 전달되게 할 수 있습니다.
+
+HTTP/2에서 스트림의 우선순위를 정할 때, 클라이언트는 1~256 사이의 가중치와 다른 스트림에 대한 의존성을 명시하여 `우선순위 트리`를 만듭니다. 그러면 서버는 이 트리를 보고 스트림의 우선순위에 따라 CPU, 메모리 같은 자원을 할당하고, 응답을 보낼 때 우선순위가 높은 스트림이 최적으로 전달되도록 대역폭을 할당합니다.
+
+우선순위 트리는 부모 스트림에서 자식 스트림을 가리키는 방식으로 의존 관계를 나타내고, 각 스트림에 가중치를 할당하여 같은 부모를 가지는 sibling 스트림에 대해 자원을 어느 비율로 할당할지 결정하게 됩니다. 아래 그림을 통해 우선순위 트리를 어떻게 해석하는지 살펴보겠습니다:
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_prioritization_tree.png" alt="HTTP/2 우선 순위 트리" />
+  <figcaption>HTTP/2 우선 순위 트리. 출처: https://web.dev/performance-http2/</figcaption>
+</figure>
+
+**(A)**
+
+스트림 1번과 3번 모두 암묵적인 "루트"를 부모로 하고 있습니다. 이때 스트림 1번의 가중치는 12이고 3번의 가중치는 4이므로, 각 스트림의 가중치에 모든 sibling 스트림의 가중치를 합한 `16`을 나눈 만큼 자원을 할당합니다. 따라서 스트림 1번은 전체 자원의 75%(12/16), 스트림 3번은 25%(4/16)을 가져가게 됩니다.
+
+**(B)**
+
+스트림 5번이 7번의 부모 스트림이므로, 스트림 5번이 먼저 모든 자원을 할당받고, 그다음으로 스트림 7번이 모든 자원을 할당받습니다. 이처럼 부모·자식 간에는 가중치에 따라 자원을 할당하지 않습니다.
+
+**(C)**
+
+스트림 5번이 먼저 모든 자원을 할당받고, 그다음으로 스트림 7번이 모든 자원을 할당받고, 마지막으로 스트림 1번은 모든 자원의 75%만큼, 스트림 3번은 모든 자원의 25%만큼 할당받게 됩니다.
+
+**(D)**
+
+스트림 5번이 먼저 모든 자원을 할당받고, 그다음으로 스트림 7번과 9번이 동일하게 50%씩 할당받고, 마지막으로 스트림 1번이 75%만큼, 3번이 25%만큼 할당받게 됩니다.
+
+⚠️ 이때, 서버가 항상 우선순위 트리에 따라 스트림을 특정 순서로 처리한다는 보장은 없습니다. 만약 우선순위를 무조건 준수한다고 하면 우선순위가 높은 응답의 처리가 지연되는 경우, 우선순위가 낮은 응답은 보낼 준비가 되었다고 해도 전송할 수 없을 테니까요!
+
+#### 서버 푸시
+
+HTTP/2에선 클라이언트의 요청 없이도 서버에서 응답을 알아서 보낼 수 있는 **서버 푸시(Server push)** 기능이 추가되었습니다. 클라이언트가 특정 컨텐츠, 예를 들어 `index.html`을 요청하면 서버는 이후 추가될 요청을 예상하고 클라이언트가 요청하지 않은 `app.css`, `script.js`과 같은 컨텐츠도 함께 내려주게 됩니다. 이렇게 하면 굳이 요청을 보내지 않아도 필요한 리소스를 응답받을 수 있어 보내지 않은 요청만큼의 자원과 시간을 절약하는 효과를 얻을 수 있습니다.
+
+<figure>
+    <img src="https://cdn.jsdelivr.net/gh/jaehyeon48/jaehyeon48.github.io@master/assets/images/network/history-of-http/http2_prioritization_tree.png" alt="HTTP/2 서버 푸시" />
+  <figcaption>HTTP/2 서버 푸시. 출처: https://freecontent.manning.com/animation-http-1-1-vs-http-2-vs-http-2-with-push/</figcaption>
+</figure>
 
 ## 레퍼런스
 
 - [HTTP/2 in Action | Manning Publications](https://www.manning.com/books/http2-in-action)
 - [RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616)
+- [RFC 7540 - Hypertext Transfer Protocol Version 2 (HTTP/2)](https://datatracker.ietf.org/doc/html/rfc7540)
 - [Evolution of HTTP - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP)
 - [Connection management in HTTP/1.x - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Connection_management_in_HTTP_1.x)
 - [SPDY는 무엇인가? | Naver D2](https://d2.naver.com/helloworld/140351)
+- [웹에 날개를 달아주는 웹 성능 최적화 기법 | 루비페이퍼](https://book.naver.com/bookdb/book_detail.nhn?bid=17664118)
