@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url> <loc>https://jaehyeon48.github.io/javascript/how-async-works-under-the-hood/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/network/history-of-http/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/algorithms/sorting/heap-sort/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/javascript/hidden-class-ic/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
@@ -60,6 +61,7 @@
 <url> <loc>https://jaehyeon48.github.io/web/samesite/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/software-architecture/refactoring-summary-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/web/cors-on-local-environment/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://jaehyeon48.github.io/computer-architecture/computer-architecture-intro/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/ipc/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/process-scheduling/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://jaehyeon48.github.io/os/process/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
