@@ -7,6 +7,7 @@ import { PostTitle } from '../components/post-title';
 import { PostDate } from '../components/post-date';
 import { PostContainer } from '../components/post-container';
 import { PostNavigator } from '../components/post-navigator';
+import { Head } from '../components/head';
 import { Disqus } from '../components/disqus';
 import { Utterances } from '../components/utterances';
 import * as ScrollManager from '../utils/scroll';
@@ -29,6 +30,7 @@ export default ({ data, pageContext, location }) => {
 
   return (
     <Layout location={location} title={title}>
+    <Head title={postTitle} description={post.excerpt}></Head>
       <div className="post-container">
         <PostTitle title={postTitle} category={category} />
         <PostDate date={date} />

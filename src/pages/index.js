@@ -51,6 +51,7 @@ export default ({ data, location }) => {
 
   return (
     <Layout location={location} title={siteMetadata.title} selectCategory={selectCategory}>
+      <Head title={HOME_TITLE} keywords={siteMetadata.keywords} />
       <Contents
         posts={posts}
         countOfInitialPost={countOfInitialPost}
