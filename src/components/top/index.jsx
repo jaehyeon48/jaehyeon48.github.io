@@ -6,7 +6,7 @@ import './index.scss';
 
 export const Top = ({ title, selectCategory }) => {
   function resetCategory() {
-    selectCategory('All');
+    if (selectCategory) selectCategory('All');
   }
   return (
     <nav className="top">
