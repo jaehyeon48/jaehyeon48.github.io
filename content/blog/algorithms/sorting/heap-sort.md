@@ -207,3 +207,4 @@ console.log(a); // [ 3, 4, 6, 7, 8, 9 ]
 ## REFERENCE
 
 - [쉽게 배우는 알고리즘 - 문병로](https://book.naver.com/bookdb/book_detail.nhn?bid=13241308)
+- [데이터 구조의 정렬 알고리즘](https://www.scaler.com/topics/data-structures/sorting-algorithms/)
