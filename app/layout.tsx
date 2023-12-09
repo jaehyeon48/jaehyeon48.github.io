@@ -1,10 +1,15 @@
-import './globals.css'
+import '@/globals.css'
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 
 export const metadata: Metadata = {
   title: "Jaehyeon48's Blog",
   description: 'A personal blog by Jaehyeon Kim',
 }
+
+const pretendardFont = localFont({
+  src: '../public/fonts/pretenard-variable.woff2',
+})
 
 export default function RootLayout({
   children,
@@ -13,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body className={pretendardFont.className}>{children}</body>
     </html>
   )
 }
