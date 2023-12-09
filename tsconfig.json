@@ -23,6 +23,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@styles/*": [
+        "styled-system/*"
       ]
     },
     "lib": [

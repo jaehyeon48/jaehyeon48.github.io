@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "panda codegen"
   },
   "dependencies": {
     "next": "14.0.4",
@@ -15,6 +16,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@pandacss/dev": "0.21.0",
     "@titicaca/eslint-config-triple": "5.1.0",
     "@titicaca/prettier-config-triple": "1.1.0",
     "@titicaca/stylelint-config-triple": "1.2.1",
