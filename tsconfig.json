@@ -24,6 +24,9 @@
       "@/*": [
         "src/*"
       ],
+      "@components/*": [
+        "src/components/*"
+      ],
       "@styles/*": [
         "styled-system/*"
       ]
