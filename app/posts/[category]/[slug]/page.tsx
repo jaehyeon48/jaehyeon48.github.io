@@ -17,7 +17,7 @@ export default async function PostPage({
 }: PostPageProps) {
   const {
     content,
-    frontMatter: { title },
+    frontMatter: { title, updatedAt },
   } = await getPost({ category, slug })
 
   return (
@@ -33,7 +33,7 @@ export default async function PostPage({
           <h1 className={headerTitle()}>{title}</h1>
         </div>
       </Header>
-      <PostBody>{content}</PostBody>
+      <PostBody updatedAt={updatedAt}>{content}</PostBody>
     </>
   )
 }
