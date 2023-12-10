@@ -4,7 +4,7 @@
   "description": "A personal blog by Jaehyeon Kim",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run prepare && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
