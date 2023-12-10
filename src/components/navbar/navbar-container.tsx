@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react'
 
-import { HEADER_HEIGHT_PX } from '../header'
+import { HEADER_HEIGHT_PX } from '../header/header'
 
 import { css } from '@styles/css'
 

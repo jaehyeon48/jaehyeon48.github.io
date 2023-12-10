@@ -1,12 +1,9 @@
-import { Header } from '@/components/header'
-import { CaretRightIcon } from '@/icons/caret-right'
 import { PostBody } from '@/mdx/post-body'
 import { getPosts } from '@/utils/get-posts'
 import { getPost } from '@/utils/get-post'
 
-import { ANCHOR_STYLE } from './styles'
-
-import { contentSection, flex, headerTitle } from '@styles/patterns'
+import { contentSection, headerTitle } from '@styles/patterns'
+import { Header, HeaderContentPath } from '@components/header'
 
 interface PostPageProps {
   params: {
@@ -27,26 +24,12 @@ export default async function PostPage({
     <>
       <Header>
         <div className={contentSection()}>
-          <div
-            className={flex({
-              gap: 2,
-              align: 'center',
-              color: 'g',
-              hideBelow: 'sm',
-            })}
-          >
-            <a href="/" className={ANCHOR_STYLE}>
-              Home
-            </a>
-            <CaretRightIcon width={18} height={18} color="gray.400" />
-            <a href={`/posts/${category}`} className={ANCHOR_STYLE}>
-              {category}
-            </a>
-            <CaretRightIcon width={18} height={18} color="gray.400" />
-            <a href={`/posts/${category}/${slug}`} className={ANCHOR_STYLE}>
-              {slug}
-            </a>
-          </div>
+          <HeaderContentPath
+            paths={[
+              { href: `/posts/categories/${category}`, label: category },
+              { href: `/posts/${category}/${slug}`, label: slug },
+            ]}
+          />
           <h1 className={headerTitle()}>{title}</h1>
         </div>
       </Header>
