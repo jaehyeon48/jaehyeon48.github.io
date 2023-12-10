@@ -1,7 +1,7 @@
 import { Header } from '@/components/header'
 import { CaretRightIcon } from '@/icons/caret-right'
 import { PostBody } from '@/mdx/post-body'
-import { getAllPosts } from '@/utils/get-all-posts'
+import { getPosts } from '@/utils/get-posts'
 import { getPost } from '@/utils/get-post'
 
 import { ANCHOR_STYLE } from './styles'
@@ -74,7 +74,7 @@ export default async function PostPage({
 }
 
 export async function generateStaticParams() {
-  const allPosts = await getAllPosts()
+  const allPosts = await getPosts()
 
   return allPosts.map(({ frontMatter: { category, slug } }) => ({
     category,

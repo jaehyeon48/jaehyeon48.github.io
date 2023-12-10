@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { getAllPosts } from './get-all-posts'
+import { getPosts } from './get-posts'
 
 interface GetPostArgs {
   category: string
@@ -8,7 +8,7 @@ interface GetPostArgs {
 }
 
 export async function getPost({ category, slug }: GetPostArgs) {
-  const allPosts = await getAllPosts()
+  const allPosts = await getPosts()
 
   const post = allPosts.find(
     ({ frontMatter }) =>

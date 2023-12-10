@@ -7,12 +7,21 @@ import matter from 'gray-matter'
 
 import { FrontMatter } from '@/types'
 
-export const getAllPosts = cache(getAllPostsImpl)
+import { getCategories } from './get-categories'
 
-export async function getAllPostsImpl() {
+interface GetPostsArgs {
+  category?: string
+}
+
+export const getPosts = cache(getPostsImpl)
+
+export async function getPostsImpl({ category }: GetPostsArgs = {}) {
   const pathToPostsDir = `${process.cwd()}/src/posts`
+  const allCategories = await getCategories()
 
-  const categories = await readdir(pathToPostsDir)
+  const categories = category
+    ? allCategories.filter((cat) => cat === category)
+    : allCategories
 
   const posts = await Promise.all(
     categories.map(async (category) => {
