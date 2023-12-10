@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
 import { css } from '@styles/css'
+import { Navbar } from '@components/navbar/navbar'
 
 export const metadata: Metadata = {
   title: "Jaehyeon48's Blog",
@@ -22,7 +23,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={pretendardFont.variable}>
-      <body className={css({ fontFamily: 'pretendard' })}>
+      <body
+        className={css({
+          fontFamily: 'pretendard',
+          backgroundColor: 'emerald.100',
+        })}
+      >
+        <Navbar />
         <main>{children}</main>
       </body>
     </html>
