@@ -22,7 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={pretendardFont.variable}>
-      <body className={css({ fontFamily: 'pretendard' })}>{children}</body>
+      <body className={css({ fontFamily: 'pretendard' })}>
+        <main>{children}</main>
+      </body>
     </html>
   )
 }
