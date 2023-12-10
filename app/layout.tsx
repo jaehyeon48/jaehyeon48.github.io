@@ -6,7 +6,7 @@ import { css } from '@styles/css'
 import { Navbar } from '@components/navbar/navbar'
 
 export const metadata: Metadata = {
-  title: "Jaehyeon48's Blog",
+  title: "Jae's Blog",
   description: 'A personal blog by Jaehyeon Kim',
 }
 
