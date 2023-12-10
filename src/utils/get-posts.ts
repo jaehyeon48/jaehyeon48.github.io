@@ -15,7 +15,7 @@ interface GetPostsArgs {
 
 export const getPosts = cache(getPostsImpl)
 
-export async function getPostsImpl({ category }: GetPostsArgs = {}) {
+async function getPostsImpl({ category }: GetPostsArgs = {}) {
   const pathToPostsDir = `${process.cwd()}/src/posts`
   const allCategories = await getCategories()
 
