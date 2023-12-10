@@ -9,12 +9,18 @@ import { css } from '@styles/css'
 const NAVBAR_HEIGHT_PX = 50
 
 export function NavbarContainer({ children }: { children: ReactNode }) {
-  const [isBelowHeaderBottom, setIsBelowHeaderBottom] = useState(false)
+  const [yPosRespectToHeaderBottom, setYPosRespectToHeaderBottom] = useState<
+    'above' | 'intersecting' | 'below'
+  >('above')
 
   useEffect(() => {
     function detectGoBelowHeaderBottom() {
-      setIsBelowHeaderBottom(
-        window.scrollY >= HEADER_HEIGHT_PX + NAVBAR_HEIGHT_PX,
+      setYPosRespectToHeaderBottom(
+        window.scrollY < HEADER_HEIGHT_PX
+          ? 'above'
+          : window.scrollY >= HEADER_HEIGHT_PX + NAVBAR_HEIGHT_PX
+            ? 'below'
+            : 'intersecting',
       )
     }
 
@@ -33,7 +39,12 @@ export function NavbarContainer({ children }: { children: ReactNode }) {
         width: '100vw',
         height: NAVBAR_HEIGHT_PX,
         zIndex: 999,
-        backdropFilter: isBelowHeaderBottom ? 'blur(1.5px)' : 'none',
+        backgroundColor:
+          yPosRespectToHeaderBottom === 'above'
+            ? 'emerald.100'
+            : yPosRespectToHeaderBottom === 'below'
+              ? 'white'
+              : 'transparent',
       })}
     >
       {children}

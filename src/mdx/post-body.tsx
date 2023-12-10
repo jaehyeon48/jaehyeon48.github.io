@@ -13,11 +13,7 @@ export function PostBody({
 }) {
   return (
     <div className={css({ backgroundColor: 'white' })}>
-      <article
-        className={contentSection({
-          padding: '80px 0 50px',
-        })}
-      >
+      <article className={contentSection({})}>
         <MDXRemote
           source={children}
           options={{

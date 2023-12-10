@@ -27,13 +27,7 @@ export default async function PostPage({
   return (
     <>
       <Header>
-        <div
-          className={contentSection({
-            position: 'absolute',
-            bottom: '50px',
-            left: 0,
-          })}
-        >
+        <div className={contentSection()}>
           <div
             className={flex({
               gap: 2,

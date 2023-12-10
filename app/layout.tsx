@@ -23,12 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={pretendardFont.variable}>
-      <body
-        className={css({
-          fontFamily: 'pretendard',
-          backgroundColor: 'emerald.100',
-        })}
-      >
+      <body className={css({ fontFamily: 'pretendard' })}>
         <Navbar />
         <main>{children}</main>
       </body>
