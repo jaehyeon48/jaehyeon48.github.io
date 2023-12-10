@@ -52,6 +52,6 @@ function isValidFrontMatter(data: unknown): data is FrontMatter {
     'title' in data &&
     'category' in data &&
     'slug' in data &&
-    'createdAt' in data
+    'updatedAt' in data
   )
 }

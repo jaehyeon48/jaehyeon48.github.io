@@ -3,9 +3,7 @@ export interface FrontMatter {
   category: string
   slug: string
   /** JavaScript timestamp */
-  createdAt: number
-  /** JavaScript timestamp */
-  updatedAt?: number
+  updatedAt: number
 }
 
 export interface Post {
