@@ -21,6 +21,31 @@ export default defineConfig({
     },
   },
 
+  patterns: {
+    extend: {
+      contentSection: {
+        description: 'A container that wraps content section',
+        transform(props) {
+          return {
+            position: 'relative',
+            mx: 'auto',
+            maxWidth: {
+              base: 'xl',
+              md: '2xl',
+              lg: '3xl',
+              xl: '5xl',
+            },
+            px: {
+              base: '16px',
+              lg: 0,
+            },
+            ...props,
+          }
+        },
+      },
+    },
+  },
+
   // The output directory for your css system
   outdir: 'styled-system',
 })
