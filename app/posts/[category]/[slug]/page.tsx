@@ -6,8 +6,7 @@ import { getPost } from '@/utils/get-post'
 
 import { ANCHOR_STYLE } from './styles'
 
-import { css } from '@styles/css'
-import { contentSection, flex } from '@styles/patterns'
+import { contentSection, flex, headerTitle } from '@styles/patterns'
 
 interface PostPageProps {
   params: {
@@ -48,18 +47,7 @@ export default async function PostPage({
               {slug}
             </a>
           </div>
-          <h1
-            className={css({
-              fontSize: {
-                base: '24px',
-                lg: '30px',
-              },
-              fontWeight: 700,
-              marginTop: '4px',
-            })}
-          >
-            {title}
-          </h1>
+          <h1 className={headerTitle()}>{title}</h1>
         </div>
       </Header>
       <PostBody>{content}</PostBody>

@@ -43,6 +43,20 @@ export default defineConfig({
           }
         },
       },
+      headerTitle: {
+        description: 'A style for the title of the header',
+        transform(props) {
+          return {
+            fontSize: {
+              base: '24px',
+              lg: '30px',
+            },
+            fontWeight: 700,
+            marginTop: '4px',
+            ...props,
+          }
+        },
+      },
     },
   },
 

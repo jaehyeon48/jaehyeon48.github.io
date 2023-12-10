@@ -19,3 +19,4 @@ export * from './float.mjs';
 export * from './bleed.mjs';
 export * from './visually-hidden.mjs';
 export * from './content-section.mjs';
+export * from './header-title.mjs';
