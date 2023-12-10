@@ -1,4 +1,6 @@
-import { readdir } from 'node:fs/promises'
+import { PostBody } from '@/mdx/post-body'
+import { getAllPosts } from '@/utils/get-all-posts'
+import { getPost } from '@/utils/get-post'
 
 interface PostPageProps {
   params: {
@@ -7,27 +9,19 @@ interface PostPageProps {
   }
 }
 
-export default function PostPage({
+export default async function PostPage({
   params: { category, slug },
 }: PostPageProps) {
-  return (
-    <>
-      <p>category: {category}</p>
-      <p>slug: {slug}</p>
-    </>
-  )
-}
+  const { content } = await getPost({ category, slug })
 
-const CWD = process.cwd()
+  return <PostBody>{content}</PostBody>
+}
 
 export async function generateStaticParams() {
-  const categories = await readdir(`${CWD}/src/posts`)
-  const slugs = await Promise.all(categories.map(generateSlugsFromCategory))
+  const allPosts = await getAllPosts()
 
-  return slugs.flat()
-}
-
-async function generateSlugsFromCategory(category: string) {
-  const posts = await readdir(`${CWD}/src/posts/${category}`)
-  return posts.map((post) => ({ category, post: post.replace('.mdx', '') }))
+  return allPosts.map(({ frontMatter: { category, slug } }) => ({
+    category,
+    slug,
+  }))
 }
